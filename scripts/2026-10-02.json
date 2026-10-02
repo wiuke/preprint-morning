@@ -1,0 +1,864 @@
+{
+  "date": "2026-10-02",
+  "format": "dialogue",
+  "n_papers": 71,
+  "episode_title": "Metacells meet random matrix theory, why Wilcoxon markers lie, and saturation mutagenesis at scale",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Morning. It's October second, and the archive and bio-archive gave us about seventy-one new papers overnight in our areas."
+    },
+    {
+      "speaker": "Leo",
+      "text": "We picked five for the deep dive today. There's a paper that finally gives PCA space on scRNA-seq data a real statistical model, a pretty uncomfortable audit of how we find marker genes in atlases, a trick to make saturation mutagenesis of the genome tractable, some careful math on when moment-closure approximations for bursty gene expression actually behave, and a organoid paper that recreates a form of human brain development you can't see in mice."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's start with the one that's going to annoy everyone who's ever eyeballed a U-MAP. Paper one, from Leviyang."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, so the setup. Basically every scRNA-seq pipeline does the same thing: log-normalize, z-score, then PCA, and then every downstream tool, clustering, trajectory inference, whatever, just works in that PCA space and assumes it behaves nicely. But nobody has actually derived what the distribution of cells in PCA space should look like from a real statistical model of the counts."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So what did they do differently?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They start from the metacell model, which treats the count matrix as coming from groups of highly similar cells, metacells, each with its own underlying expression profile and Poisson or multinomial sampling noise on top. Using random matrix theory, they show that if you run the standard log-normalize, z-score, PCA workflow on counts generated this way, the cells land in PCA space as a Gaussian mixture, one Gaussian component per metacell."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's actually a clean result. First time anyone's connected a generative count model to the geometry everyone's been informally assuming looks like blobs."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Exactly, and it's not just elegant, they test it. They fit the predicted Gaussian mixture against eleven real datasets. On simulated data drawn from the metacell model itself, the predictions nail it. On real data, the predicted variance is too small, the real cells are noisier than the model expects."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What's eating that extra variance?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Gene correlations within a metacell that the model doesn't capture. The metacell model assumes genes are conditionally independent given the metacell's expression profile, but real genes co-vary even within a supposedly homogeneous group of cells, co-regulation, technical batch structure, whatever. That correlation structure inflates the true variance beyond what the simple model predicts."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So it's a diagnosis of a known limitation, dressed up with an actual quantitative handle on it."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And a useful one. They also find the noise level varies a lot across different metacells, which means treating PCA space as isotropic, equal noise everywhere, which most clustering and trajectory tools implicitly do, is throwing away information. If you knew which regions of PCA space were noisier, you could reweight distances, confidence intervals, nearest-neighbor graphs, all of it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Why this matters for us: basically every tool downstream of PCA, Leiden clustering, pseudotime, integration methods, is standing on an assumption this paper just showed is only sometimes true, and gives you a way to check which regime your dataset is in."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two in the show notes, from Doggett and colleagues, is a reality check on something even more basic: how we even decide what a marker gene is."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is the one about Wilcoxon, right, the default test in Seurat and the recommended one in Scanpy for finding cluster markers."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right. The question is deceptively simple: does the Wilcoxon rank-sum statistic actually rank genes by how good a marker they are, or does it rank them by something else entirely."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the answer is something else."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Something else. The standardized Wilcoxon statistic grows with sample size at a fixed true effect size, that's just a structural property of the test. So across clusters of different sizes in an atlas, the scores aren't comparable, a bigger cluster will systematically out-score a smaller one even with equivalent marker quality."
+    },
+    {
+      "speaker": "Ava",
+      "text": "How strong is that effect in practice, not just in theory?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They checked three real atlases, lung, kidney, and brain. Mean Wilcoxon score correlates with the log of cluster size at around zero point nine to zero point nine five, that's a huge correlation, basically saying your marker score is mostly telling you about cluster size, not biology."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Did they rule out that bigger clusters just happen to have better markers for some real reason?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They controlled for that with partial correlation against classification performance, the relationship barely moved. They also downsampled clusters and the Wilcoxon-size relationship decayed in exactly the pattern you'd predict, and it showed up in simulations with marker quality held fixed. So it's the test, not biology."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What did they compare it against?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "NS-Forest, a classification-based marker approach, which showed much lower correlation with cluster size, around zero point one to zero point three. And when they looked at specificity directly, what fraction of cells expressing the gene are actually in the target cluster, Wilcoxon's top genes had median on-target fractions of around zero point two in lung, zero point seventeen in kidney, and just zero point zero eight in brain. NS-Forest's markers were far more specific, up around zero point six, zero point seven, and zero point three six in the same tissues."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So the genes everyone's citing as canonical cell-type markers in these atlas papers might just be the genes that happened to sit in large clusters."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the uncomfortable implication. They also tried fixing the effect size version of the Wilcoxon statistic directly, normalizing by the pair count, which does remove the size dependence mathematically. But it nominates essentially the same gene list, which tells you the size bias and the poor specificity are two separate bugs, fixing one doesn't fix the other."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Worth remembering next time a cell-type marker list from an atlas paper gets treated as ground truth for annotation transfer or for designing a CITE-seq panel."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper three, from Yuan and colleagues at Calico, tackles a much more computational problem: how do you interrogate a long-context sequence model base by base without it costing a fortune."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is in silico saturation mutagenesis, where you mutate every single position in a sequence window and ask the model how much the prediction changes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, and the problem is scale. These sequence-to-function models now take hundreds of kilobases of context, so scoring every possible single-nucleotide mutation one at a time means millions of forward passes per gene, billions to trillions genome-wide. It's accurate but basically unaffordable at scale."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So what's the trick?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They reframe saturation mutagenesis as a sparse recovery problem, something like compressed sensing. Instead of mutating one position at a time, Multi-ISM introduces combinations of mutations simultaneously and uses the sparsity of regulatory effects, most positions don't matter, only a few do, to recover individual variant effects from far fewer model evaluations. They get forty-five-fold fewer evaluations than exhaustive single-variant ISM, while matching or beating it on variant-effect benchmarks."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And it's not tied to one architecture?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the other selling point, it's architecture-agnostic, so it transfers across different sequence-to-function models without retraining anything."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What did they actually do with the speedup?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Applied it to five thousand protein-coding genes, including over three thousand OMIM disease genes, generating base-pair-resolution, tissue-resolved attribution maps across five-hundred-kilobase windows around each gene. That's a scale that was simply not computationally reachable before with exhaustive ISM."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Did the maps actually tell them anything biological, beyond being fast?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "A few things. The maps supported enhancer-to-gene prioritization and flagged cell-type-specific regulatory elements. Gene-level summaries of mutational sensitivity tracked known constraint, more evolutionarily constrained genes had smaller predicted effects from mutation, which is a nice internal consistency check. And when they aggregated the predicted effects into a rare-variant burden score per gene, it improved prediction of personalized expression over a standard common-variant elastic net model, with the biggest gains specifically for expression outliers, the individuals whose expression a common-variant model gets most wrong."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That outlier point matters for rare disease work, that's exactly where common-variant approaches are weakest and where you'd want a rare noncoding variant explanation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, and the broader pitch is that this turns nucleotide-resolution interpretation of these huge models from a special one-off analysis into something you can run routinely as new models or new cell types come online."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper four is a pure methods paper, from Zhou and Jia, on the statistics underneath stochastic gene expression models, and it's the kind of result that's quietly important if you've ever fit a moment-closure approximation to bursty expression data."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Moment closure is the standard trick for stochastic biochemical networks: instead of tracking the full probability distribution of molecule counts, which is often intractable, you track a few low-order moments, mean, variance, and close the system by assuming some functional form for the higher moments."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the problem is those closures can produce nonsense."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Exactly, physically meaningless dynamics, negative variances, divergences, that kind of thing. This paper systematically asks, for a bursty gene expression model with nonlinear protein degradation, which second-order closures are actually dynamically stable, not just numerically close on average."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Which closures did they compare?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Gaussian, log-normal, and negative-binomial. The Gaussian closure fails their stability criterion for every parameter value they tried, it's just never dynamically sound for this kind of system. The log-normal and negative-binomial closures both have a unique, physically sensible fixed point, and they're stable exactly when a simple condition on burst size and synthesis rate holds."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Is that condition restrictive in practice?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Not really, they show it's automatically satisfied whenever the steady-state mean protein copy number is at least one, which covers most biologically realistic regimes. So in practice the negative-binomial and log-normal closures are safe bets, Gaussian basically never is."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And accuracy, not just stability?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Negative-binomial comes out most accurate across a broad parameter sweep, Gaussian the least. They also build higher-order negative-binomial closures and show accuracy keeps improving as you go to higher order."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is a good one to file away if you're ever modeling transcriptional bursting or building a systems biology model with feedback on protein degradation, it's a direct warning against the Gaussian closure that a lot of people reach for by default because it's the simplest."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Last deep dive, paper five, is further from our usual beat methodologically but it's a striking use of organoids for something genuinely hard to study otherwise."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is about interneurons still migrating into the cortex after birth."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, the human brain isn't done at birth, there are streams of late-born interneurons still migrating into the postnatal cortex, a process that simply doesn't happen in rodents, so you can't study it in the standard mouse models, you're stuck with post-mortem human tissue."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So what did cerebral organoids let them do that post-mortem tissue couldn't?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They grew cerebral organoids out past six months and found they spontaneously recapitulate this postnatal migration, which means you can now watch it live and perturb it genetically, something impossible with fixed post-mortem sections."
+    },
+    {
+      "speaker": "Ava",
+      "text": "How did they actually characterize the migration itself?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Live imaging combined with mathematical modeling of the cell trajectories. They found the interneurons intrinsically migrate in chains, that's a property of the cells themselves, while interactions with astrocytes further organize those chains into coherent streams. So there are two separable layers, a cell-intrinsic chain-forming behavior and an extrinsic, astrocyte-dependent organizing step."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And they tied this to a molecular signature?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Spatial and single-cell transcriptomics identified a distinct molecular signature specific to these postnatal migratory streams, and that signature was enriched for genes associated with neurodevelopmental disorders. Then they went functional: perturbing two autism-associated genes, C-N-T-N-five and F-G-F-fourteen, each disrupted chain organization and migration, but differently."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Why does this matter beyond neuroscience, for someone more focused on regulatory genomics or lineage tracing?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "It's a nice template for the general strategy, combine long-term organoid culture, live imaging, quantitative trajectory modeling, and spatial transcriptomics to reconstruct a developmental process you otherwise only ever see as a frozen snapshot. The lineage-tracing and cell-fate-decision crowd will recognize the pattern even if the specific biology is neurodevelopmental."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Now the quicker ones. Paper six, SFUMATO, from Giustolisi and colleagues, is a Bayesian clustering method for spatial transcriptomics that skips hard cluster boundaries in favor of posterior probabilities over transcriptional states at each spatial location, so you get continuous, uncertainty-aware tissue maps instead of a single hard label per pixel, tested on Xenium mouse brain and breast cancer data where it recovers pathology-relevant regions without needing prior cell segmentation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper seven, ORBIT, from Qiu and colleagues, is a rank-based statistical framework for combining evidence across different omics layers and cohorts when you only trust the direction and relative rank of each feature's effect, not the raw effect size. Applied to chronic kidney disease and dilated cardiomyopathy, it surfaced disease programs, like extracellular matrix remodeling and mitochondrial failure, that weren't significant in any single layer alone."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eight looks at what happens when the T-E-T family of DNA demethylases is lost in blood and stem cells. Lopez-Moyado and colleagues show T-E-T loss doesn't just change methylation, it actively selects for specific pre-existing aneuploid subclones, chromosome seventeen trisomy recurs across more than ten independent tumors, linking epigenetic enzyme loss directly to karyotypic evolution."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper nine integrates GWAS variants for type one diabetes with single-cell multiomic data from human islets and a deep learning model called ChromBPNet to predict how specific risk variants might disrupt transcription factor binding in beta cells, nominating candidate noncoding mechanisms for beta-cell dysfunction."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten, OCTAVE, is a methods critique worth knowing about if you ever evaluate spatial gene expression prediction from histology images. Wang and colleagues show the standard correlation metric is dominated by coarse tissue structure, and their scale-resolved evaluation reveals that model rankings change substantially once you actually look at fine spatial scales."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven, RAMP, tackles cross-platform integration for proteomics, cytometry, sequencing-based and spatial imaging panels, by aligning shared proteins while preserving each marker's expression rank within a sample, avoiding the expression-order reversals that other batch correction methods can introduce."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twelve takes the newly released AlphaGenome Atlas and asks a practical question, where's the threshold on its variant impact score that actually separates ClinVar pathogenic from benign variants. They land on a cutoff around zero point nine nine three eight, and find it flags a big chunk of currently uncertain-significance variants as functionally comparable to known pathogenic ones."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper thirteen is a conceptual one on virtual cell models, Huang and colleagues argue that accurate-looking perturbation predictions can hide a failure to capture context-specific responses, a phenomenon they call context geometry compression, and they propose matching model evaluation to the resolution the data can actually support rather than always scoring at the gene level."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fourteen is an agricultural genomics story but a clean example of variant-to-mechanism work, fine-mapping a growth and fatness locus in pigs down to a single enhancer variant that affects FOXL1 binding and PMAIP1 expression."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And paper fifteen, in triple-negative breast cancer models, identifies an early interferon-stimulated gene program in neutrophils that predicts resistance to anti-PD1 checkpoint therapy, with genetic disruption of interferon signaling in neutrophils actually improving treatment durability, a candidate blood biomarker angle."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A handful of others just worth knowing exist. There's a sparse dynamic graphical model for longitudinal non-Gaussian data, a nonparametric method for identifying latent dimensionality under heavy-tailed noise, a multi-omics aging study in vervet monkey skeletal muscle, an updated Genome In A Bottle benchmark set for small and structural variants, and a systematic database for neurodevelopmental disorders called SysNDD."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Also on the list today: a paper on NF-kappa-B rewiring by viral proteins in adult T-cell leukemia, a Smac-mimetic drug sensitizing triple-negative breast cancer to radiotherapy, a graph neural network reliability study using effective resistance on tissue-specific interactomes, a paper on ion imbalances enhancing ferroptosis, and, if you want a taste of where genomics computing might be heading, a quantum-hardware formulation of genotype imputation called QuImputer."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the roundup. If you only remember one thing from today, maybe let it be the marker gene paper, it's a direct challenge to defaults a lot of us use without a second thought."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Agreed. That's it for Preprint Morning, back tomorrow with whatever the archive and bio-archive send our way."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.09.21.753263",
+      "title": "A Metacell Model of Single Cell RNA-seq Counts Yields a Gaussian Mixture Model in PCA Space",
+      "authors": [
+        "Leviyang, S."
+      ],
+      "abstract": "Single cell RNA sequencing (scRNAseq) has revolutionized cellular biology over the past decade. At its most basic, a scRNAseq dataset is a cell by gene matrix with entries giving the transcription count of a particular gene in a particular cell. A common workflow applies log-normalization and z-scoring to the count matrix and then embeds the cells in a lower dimensional space using principal component analysis (PCA). A large number of computational tools use the PCA embedding as a starting point, but statistical models for the distribution of cells in the PCA space are lacking. As a result, many tools depend on ad-hoc assumptions that likely lead to signal loss. In this work, we address this gap using the metacell model, a statistical model of count matrices introduced by previous authors. We show that application of the workflow to count matrices generated under a metacell model yields PCA embeddings distributed as a Gaussian mixture model (GMM). To our knowledge, this is the first result connecting a statistical model of counts to the distribution of cells in PCA space. Our derivation depends on methods from random matrix theory (RMT) and we extend and establish connections between RMT and scRNAseq count matrices. We then use the predicted GMM to test the metacell model on 11 datasets. The predictions are accurate for counts generated by the metacell model but underestimate the variance of real cells for most of our datasets. We show that this error largely arises from gene correlations within metacells, which the metacell model does not capture. Some of our datasets are fit relatively well by the metacell model, suggesting that the fit of the metacell model to true datasets depends on sufficiently dense sampling. Finally, we show that the strength of noise in the PCA space varies significantly across metacells, suggesting that statistical modeling of PCA embeddings can improve existing downstream workflows. Our results provide a framework for deriving and testing statistical models of PCA embeddings from statistical models of counts and identify a limitation of the metacell description for scRNAseq datasets.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.21.753263v1",
+      "tier": "deep",
+      "why": "Provides the first theoretical link between a generative count model (metacells) and the ubiquitous PCA-embedding workflow in scRNA-seq, showing it yields a Gaussian mixture and exposing where real data deviate from this prediction."
+    },
+    {
+      "id": "10.64898/2026.09.25.754486",
+      "title": "Limitations of differential expression for cell-type marker discovery in single-cell RNA sequencing atlases",
+      "authors": [
+        "Doggett, K.",
+        "Pintard, D.",
+        "Scheuermann, R. H.",
+        "Zhang, Y."
+      ],
+      "abstract": "Cell-type marker genes are definitional characteristics of a cell type, and in single-cell RNA sequencing atlases they are commonly nominated through differential expression (DE) testing. The Wilcoxon rank-sum test is the default method for marker gene discovery in Seurat and a recommended method in Scanpy, two widely used computational software packages for scRNA-seq analysis. Structurally, Wilcoxon's standardized statistic grows with sample size at a fixed underlying effect, meaning computed rankings across clusters of unequal size are incomparable. We quantified this effect across three atlas datasets - lung, kidney, and brain. Mean Wilcoxon score scaled with log cluster size at Pearson correlation r = 0.90-0.95 in each organ. In contrast, a classification-based comparator, NS-Forest, showed low correlation with cluster size (r = 0.10-0.28). This DE-cluster size relationship remained essentially unchanged after controlling for classification performance through partial correlation, decayed monotonically under cluster size downsampling, and was reproduced in simulation with marker quality fixed. The Wilcoxon rank-sum test can be transformed into a rank-based effect size by normalizing by the target-background pair count, removing the positive size dependence. However, this effect size nominates an identical set of candidate genes as the original statistic, indicating the cluster size dependence and poor specificity of DE nominated genes are separate problems. Genes nominated under default settings were substantially less specific to their target clusters, with median on-target fractions of 0.204 (lung), 0.166 (kidney), and 0.083 (brain), compared to NS-Forest's marker genes (0.580, 0.687, 0.364), revealing the relatively poor specificity that highly scoring DE genes exhibit.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754486v1",
+      "tier": "deep",
+      "why": "A rigorous critique showing that the Wilcoxon test routinely used in Seurat/Scanpy for marker gene discovery is confounded by cluster size, with major implications for how atlas-scale cell-type annotation is done."
+    },
+    {
+      "id": "10.64898/2026.09.30.755794",
+      "title": "Scalable saturation mutagenesis reveals gene regulatory architecture and rare variant effects",
+      "authors": [
+        "Yuan, H.",
+        "Huang, X.",
+        "Auerbach, B.",
+        "Linder, J.",
+        "Srivastava, D.",
+        "Kelley, D. R."
+      ],
+      "abstract": "Long-context sequence-to-function models enable nucleotide-resolution prediction of regulatory variant effects, motivating comprehensive mutational interrogation across broad genomic contexts. Yet conventional in silico saturation mutagenesis (ISM) scores mutations one at a time, requiring millions of model evaluations for a single gene and billions to trillions at genome scales. Here, we introduce Multi-ISM, a scalable framework that reformulates ISM as a sparse recovery problem. Multi-ISM generates mutational maps using 45-fold fewer model evaluations than exhaustive single-variant ISM and matches or exceeds its accuracy on variant-effect benchmarks. Multi-ISM is architecture-agnostic and transfers across large-scale sequence-to-function models. We applied Multi-ISM to 5,000 protein-coding genes, including 3,317 OMIM disease genes, generating base-pair-resolution, tissue-resolved attribution maps across 500-kb windows. These maps supported enhancer–gene prioritization and identification of cell-type-specific regulatory elements. Gene-level summaries of the maps captured regulatory complexity and showed that more constrained genes had smaller predicted mutational effects. Aggregating Multi-ISM predictions into gene-level rare-variant burdens improved personalized expression prediction over a common-variant elastic net, with the largest gains at expression outliers. Multi-ISM makes nucleotide-resolution interpretation of long-context sequence models a routine computation rather than a dedicated effort, so that new architectures, functional readouts, and cellular contexts can be mapped as they appear.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755794v1",
+      "tier": "deep",
+      "why": "Multi-ISM makes nucleotide-resolution in-silico saturation mutagenesis 45x cheaper, enabling genome-scale regulatory attribution maps and rare-variant burden scores directly relevant to gene regulatory inference."
+    },
+    {
+      "id": "10.64898/2026.09.30.755644",
+      "title": "Dynamical stability and accuracy of moment closure approximations for bursty gene expression with nonlinear degradation",
+      "authors": [
+        "Zhou, M.",
+        "Jia, C."
+      ],
+      "abstract": "Moment-closure methods provide a widely used approach for approximating low-order statistics of stochastic biochemical reaction networks, but the resulting closed equations may exhibit physically meaningless dynamics. Here, we systematically investigate the stability of second-order moment-closure approximations for a bursty gene expression model with nonlinear protein degradation. We consider the Gaussian, log-normal, and negative-binomial closures. By analyzing the resulting dynamical systems, we show that the Gaussian closure fails the proposed stability criterion for all parameter values, whereas both the log-normal and negative-binomial closures possess a unique physically accessible fixed point and are stable if and only if kB(1 + 2B) [&ge;] 1, where B is the mean burst size and k is the dimensionless protein synthesis rate. Moreover, this condition is automatically satisfied when the steady-state mean protein copy number is at least one, suggesting that it is mild in biologically relevant regimes. Numerical comparisons over a broad parameter range further show that the negative-binomial closure is the most accurate, while the Gaussian closure is the least accurate. We further develop higher-order negative-binomial moment-closure schemes and demonstrate that increasing the closure order substantially improves predictive accuracy. These results highlight the importance of considering dynamical stability, in addition to numerical accuracy, when assessing moment-closure approximations.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755644v1",
+      "tier": "deep",
+      "why": "A careful dynamical-systems analysis of moment-closure approximations for stochastic bursty gene expression, showing Gaussian closures are always unstable while negative-binomial closures are both stable and most accurate — core systems biology modeling."
+    },
+    {
+      "id": "10.64898/2026.09.30.729488",
+      "title": "Cerebral organoids recapitulate interneuron chain migration in the human cortex",
+      "authors": [
+        "Nagumo Wong, S.",
+        "Noble, M. A.",
+        "Fischer, M.",
+        "Meyer, L.",
+        "Novatchkova, M.",
+        "Novakova, E.",
+        "van der Heijden, D.",
+        "Moya, L. B.",
+        "Gonzalez-Granero, S.",
+        "Garcia-Verdugo, J. M.",
+        "Merino-Aceituno, S.",
+        "Corsini, N. S.",
+        "Knoblich, J. A."
+      ],
+      "abstract": "The human brain is incomplete at birth, with streams of late-born interneurons migrating into the postnatal cortex. This process is absent in rodents, limiting mechanistic investigation to post-mortem tissue. Here, we show that human cerebral organoids cultured for over six months recapitulate postnatal interneuron migration, enabling its mechanistic and genetic dissection. Live imaging and mathematical modeling revealed that interneurons intrinsically migrate in chains, while astrocyte interactions promote stream organization. Spatial and single-cell transcriptomics identified a distinct molecular signature of human postnatal migratory streams enriched for neurodevelopmental disorder-associated genes. Perturbation of the autism-associated genes CNTN5 and FGF14 differentially disrupted chain organization and migration. Thus, long-term cerebral organoids enable mechanistic analysis of previously inaccessible aspects of postnatal human brain development and their contributions to neurodevelopmental disease.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.729488v1",
+      "tier": "deep",
+      "why": "Long-term cerebral organoids recapitulate a human-specific postnatal interneuron migration process invisible in rodents, combining live imaging, mathematical modeling, and perturbation of autism genes — a striking developmental biology result with broad interest."
+    },
+    {
+      "id": "10.64898/2026.09.25.754409",
+      "title": "SFUMATO: Bayesian probabilistic clustering for uncertainty-aware spatialtranscriptomics analysis and mapping",
+      "authors": [
+        "Giustolisi, A.",
+        "Avenel, C.",
+        "Wählby, C."
+      ],
+      "abstract": "In situ sequencing methods provide subcellular-resolution gene expression data while preserving spatial context, enabling the integrated analysis of genomics and tissue morphology. However, many clustering workflows represent spatial transcriptomic structure through hard labels, imposing sharp boundaries between transcriptional domains and limiting the visualisation of gradual transitions, mixed signals, and uncertainty in cluster assignment, resulting in potentially misleading interpretations of tissue organisation. Here we present SFUMATO (Segmentation-Free Uncertainty Mapping and Analysis of Transcriptomic Organisation), a GPU-accelerated Bayesian probabilistic clustering and visualisation framework for spatial transcriptomics. SFUMATO builds on segmentation-free, multi-scale transcript binning and applies a Bayesian Gaussian mixture model to infer posterior probabilities over transcriptional components at each spatial location. These posterior probabilities provide a unified representation for hierarchical clustering, uncertainty-aware visualisation, and quantitative estimation of transcript-defined area fractions. SFUMATO assigns related colours to transcriptionally related components and blends colours according to posterior probabilities, producing maps in which sharp boundaries, gradual transitions, and ambiguous regions are represented directly in the visualisation. Classical hard labels remain recoverable from the same posterior distributions, preserving compatibility with downstream analyses that require discrete clusters. We evaluate SFUMATO on public 10x Genomics Xenium mouse brain and human breast cancer datasets. In mouse brain, SFUMATO preserves local transcriptional similarity in its colour encoding, maintains hierarchically consistent visualisations across different numbers of clusters, and recovers cell-associated spatial organisation without requiring prior cell segmentation. In breast cancer, SFUMATO-derived posterior maps can be converted into semantic masks concordant with pathology-associated regions, particularly invasive carcinoma, while highlighting the greater heterogeneity of DCIS-associated tissue. Together, these results show that SFUMATO provides an interpretable probabilistic representation of spatial transcriptomics that connects clustering, visualisation, and semantic segmentation across cell-associated and niche-level scales. More broadly, SFUMATO also provides a compact and continuous representation of highly multiplexed spatial transcriptomic information, offering a flexible input for future downstream analyses and multimodal integration.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754409v1",
+      "tier": "brief",
+      "why": "SFUMATO introduces a Bayesian probabilistic clustering framework for spatial transcriptomics that represents transcriptional uncertainty and gradual tissue transitions instead of hard cluster boundaries."
+    },
+    {
+      "id": "10.64898/2026.09.25.754380",
+      "title": "Rank-based integration identifies convergent disease mechanisms across omics",
+      "authors": [
+        "Qiu, Z.",
+        "Palmer, D.",
+        "Jostins-Dean, L.",
+        "Lewis, A. J.",
+        "Bull, K.",
+        "Nanchahal, J.",
+        "Luo, Y."
+      ],
+      "abstract": "The rapid growth of omics studies offers new opportunities to uncover disease mechanisms, yet findings from individual studies or single omics may be influenced by cohort-, platform- and layer-specific variation. Integrating evidence across studies and omics layers can reveal robust biological signals that are reproducible across molecular layers, but differences in assay platforms, sample sizes and feature coverage complicate direct combination of summary statistics. Here we present the Omics Rank-Based Integration Tool (ORBIT), a direction-aware framework for prioritizing concordant signals across omics layers using only within-dataset feature ranks and effect directions. ORBIT tests directional rank consistency across omics layers against a closed-form variance-gamma null distribution while accounting for inter-dataset correlation and incomplete feature overlap. Simulations show that ORBIT maintains well-calibrated false-positive rates under inter-omics correlation, increasing numbers of omics layers and missingness, while detecting concordant signals with increasing power as the number of layers grows. We applied ORBIT to tubulointerstitial transcriptomic data from patients with chronic kidney disease in the C-PROBE cohort and proteomic data from the Kidney Precision Medicine Project, identifying a concordant injury programme marked by inflammatory and fibrotic remodeling together with impaired energy metabolism. We also used ORBIT to integrate ten transcriptomic, four proteomic and one translatomic datasets in dilated cardiomyopathy heart tissue, identifying extracellular matrix remodeling and mitochondrial energy failure as the dominant concordant biological programmes. In both diseases, ORBIT prioritized concordant genes and identified pathways that were not significant in any single omics layer alone. These results show that directional rank integration can be used for integrating heterogeneous omics summary data and prioritizing robust molecular mechanisms.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754380v1",
+      "tier": "brief",
+      "why": "ORBIT offers a rank-based, direction-aware statistical framework for integrating disparate omics layers to find concordant disease mechanisms missed by any single dataset."
+    },
+    {
+      "id": "10.64898/2026.09.27.754858",
+      "title": "TET loss of function selects for aneuploidies that confer a proliferative advantage",
+      "authors": [
+        "Lopez-Moyado, I. F.",
+        "Suzuki, K.",
+        "Hernandez-Espinosa, L.",
+        "Li, X.",
+        "Koot, D.",
+        "Wardenaar, R.",
+        "Foijer, F.",
+        "Rao, A."
+      ],
+      "abstract": "Mutations in the Ten-Eleven Translocation (TET) family of DNA dioxygenases are among the most common epigenetic alterations in clonal hematopoiesis and hematologic malignancies, yet how TET loss of function reshapes genome evolution during cellular expansion remains to be fully understood. Here we show that loss of Tet2/3 in invariant natural killer T (iNKT) cells drives aggressive lymphoid expansion that is consistently associated with recurrent chromosome 17 trisomy, a dominant aneuploid state observed across more than ten independently derived tumors following transplantation into immunocompetent recipient mice. Single-cell whole-genome sequencing of TET-deficient iNKT cells induced to proliferate in culture with antigen and IL-2 stimulation revealed that rare pre-existing cells with chromosome 17 trisomy appeared soon after Tet gene deletion in the thymus, together with cells harboring other copy number alterations, but only the cells with chromosome 17 trisomy were progressively enriched during further expansion. Similarly, inducibly Tet-deficient mouse embryonic stem cells (mESCs) showed selection for aneuploid states that were present prior to Tet gene deletion, including trisomy of chromosome 6. Reanalysis of independent datasets from Dnmt3a-deficient mouse lymphomas identified recurrent chromosome gains, including chromosome 17 trisomy. Our results establish TET and DNMT3A deficiency as drivers of karyotypic evolution, and suggest that disruption of DNA methylation/ demethylation pathways through either TET or DNMT3A deletion promotes chromosomal instability, in part by facilitating the emergence and selection of cryptic aneuploid subclones during clonal expansion.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754858v1",
+      "tier": "brief",
+      "why": "Shows that TET (and DNMT3A) loss of function drives selection of specific aneuploidies during clonal expansion, linking epigenetic regulators to karyotypic evolution in hematologic malignancy."
+    },
+    {
+      "id": "10.64898/2026.09.25.753922",
+      "title": "Genetic risk and inflammatory signaling converge on cell type-specific regulatory programs in type 1 diabetes",
+      "authors": [
+        "Wang, L.",
+        "Wei, Z."
+      ],
+      "abstract": "Type 1 diabetes (T1D) is a complex autoimmune disease characterized by the destruction of insulin-producing pancreatic beta cells. Both genetic susceptibility and epigenetic dysregulation contribute to T1D risk. Recent studies have reported beta-cell dysfunction before disease onset, suggesting that beta-cell-intrinsic mechanisms contribute to pathogenesis. However, the mechanistic link between disease-associated variants and beta-cell dysfunction remains poorly understood. We hypothesized that a subset of T1D-associated variants directly influences cell type-specific candidate cis-regulatory elements (cCREs) by disrupting transcription factor (TF) binding and altering gene expression. To define cell type-specific cCREs in human islets, we integrated publicly available epigenomic datasets, including bulk histone modification profiles and single-cell multiomic data from human pancreatic islets. We combined these data with T1D genome-wide association study (GWAS) variants to identify disease-associated SNPs located within enhancer regions. Using multiomic datasets from PANC-DB, we characterized cell type-specific chromatin accessibility in nondiabetic and T1D islets and identified regulatory regions that may control gene expression in beta cells and other islet cell types. We then applied ChromBPNet, a deep learning model that predicts base-pair-resolution chromatin accessibility from scATAC-seq data, to evaluate how specific variants may alter local regulatory activity. In parallel, we used TF footprinting to nominate TFs likely to bind these variant-containing regions. These analyses identified several T1D-associated SNPs predicted to alter chromatin accessibility at candidate TF binding sites, suggesting mechanisms by which noncoding variants may contribute to beta-cell dysfunction and T1D susceptibility. Our findings link T1D-associated variants to cell type-specific enhancer activity and regulatory pathways and provide candidates for future mechanistic studies.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.753922v1",
+      "tier": "brief",
+      "why": "Integrates T1D GWAS variants with single-cell multiomic islet data and deep learning (ChromBPNet) to nominate causal regulatory variants disrupting beta-cell-specific enhancer activity."
+    },
+    {
+      "id": "10.64898/2026.09.25.754484",
+      "title": "Octave: Scale-resolved Evaluation of Spatial Gene Expression Prediction from Histology",
+      "authors": [
+        "Wang, Q.",
+        "Gu, S.",
+        "Lan, Q.",
+        "Jiang, X.",
+        "Chen, Y.",
+        "Song, Q."
+      ],
+      "abstract": "Spatial gene expression prediction from histology is typically evaluated by the mean per-gene Pearson correlation (PCC). PCC does not distinguish spatial scales: coarse tissue organization alone can earn most of the score. A domain oracle makes this precise: given an image-derived partition of the tissue, the predictor that assigns each domain its measured mean expression is the best that any predictor constant on that partition can do. On a widely used benchmark with a ~100 um pitch, a learnable version that estimates each domain mean from training data reaches 82% of the PCC of a trained model, and a partition of the spot coordinates alone, given measured means, reaches 123%. At that pitch the score rewards coarse spatial structure whatever its source. We introduce OCTAVE, a scale-resolved evaluation that filters prediction and measurement into spatial bands with widths in micrometers and scores their agreement in each band. On 16 um Xenium data, differences that look modest under PCC grow at finer scales: at ~20 um the oracle shortfall relative to the trained model is 2.4 times its PCC shortfall at the median and exceeds it in all 13 specimens. Across 57 image encoders the finest band reorders 261 of the 1596 encoder pairs relative to PCC. The benchmark own finest band is 50 um wide, coarser than the scale at which these differences appear, so no score on that pitch can directly validate finer structure. OCTAVE reports how well a model predicts spatial expression at each spatial scale.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754484v1",
+      "tier": "brief",
+      "why": "OCTAVE reveals that standard Pearson-correlation benchmarks for histology-to-spatial-expression prediction are dominated by coarse tissue structure, proposing a scale-resolved evaluation that changes model rankings at fine resolution."
+    },
+    {
+      "id": "10.64898/2026.09.25.754510",
+      "title": "Rank-Preserving Alignment Enables Cross-platform Learning and Phenotyping for Single-Cell and Spatial Proteomics",
+      "authors": [
+        "Xu, Q.",
+        "Le, T.",
+        "Luo, Z.",
+        "Ly, C.",
+        "Yan, Y.",
+        "Zheng, Y."
+      ],
+      "abstract": "Decades of antibody-based protein profiling have generated valuable cohorts across evolving cytometry, sequencing and spatial imaging platforms. Differences in marker coverage, signal scale and antibody performance hinder joint analysis and reuse of cohorts with long-term clinical follow-up. Widely used RNA-based integration methods prioritize shared embeddings rather than directly comparable protein measurements. To fill in the gap, we developed RAMP (Rank-preserving Alignment of Multi-platform Proteomics), an unsupervised framework that aligns shared proteins without cell-type annotations. It combines sample-specific anchoring and cross-platform cell matching with bounded monotone transformations. The corrected values retain each protein marker's expression order across cells within a sample. Across seven integration tasks, RAMP achieved the strongest overall balance of batch correction and cell-type preservation. RAMP also improved marker-threshold transfer while preventing expression-order reversals observed with some comparison methods. These reversals made cell types with originally high marker expression appear lower-expressing than other populations. Such overcorrection can mislead cell identification and protein comparisons, even when the integrated embedding shows improved dataset mixing. By preserving each marker's expression order within a sample, RAMP protects the relationships needed to interpret normalized protein measurements. To investigate whether better harmonized inputs improve downstream learning, we used linear, nearest-neighbor and small neural-network models as a controlled, small-scale testbed. This approach tests an input quality question relevant to proteomic foundation models without undertaking large-scale pretraining. Under matched supervision, RAMP improved cross-platform annotation across all three model families and improved missing-marker prediction over unaligned inputs. These gains demonstrate the value of harmonized inputs for predictive learning and motivate evaluating RAMP as preprocessing for proteomic foundation models. In bone marrow, we used high-quality single-cell protein measurements to impute the failed CODEX CD19 channel, recovering B-cell spatial distributions. The completed panel improved B-cell separation from natural killer cells in the joint embedding. In melanoma, a proliferating CD8 T-cell state near tumor cells was associated with longer survival. Transfer such a spatial information to CITE-seq connected tumor proliferation and infiltration state to an adhesion and activation program involving PD-1, LFA-1 and CD2. In lung cancer, we used single-cell CyTOF measurements to predict unmeasured HLA-ABC states in vascular cancer-associated fibroblasts profiled by spatial imaging mass cytometry (IMC). Higher predicted scores were associated with lower immune-cell fractions and worse disease-free survival in the IMC cohort. In head and neck cancer, transferring a fibroblast/macrophage spatial niche score to CITE-seq identified a CD39/TIGIT-associated CD8 T-cell phenotype. Protein and RNA profiles supported checkpoint-associated features, and transfer back to CODEX showed correspondence with measured LAG3. RAMP enables existing single-cell and spatial cohorts to support new discoveries by connecting molecular programs, tissue organization and clinical outcomes across platforms.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754510v1",
+      "tier": "brief",
+      "why": "RAMP enables rank-preserving cross-platform alignment of single-cell and spatial proteomics data, letting cohorts across cytometry/spatial platforms be jointly analyzed without distorting marker expression order."
+    },
+    {
+      "id": "10.64898/2026.09.26.754650",
+      "title": "Applying AlphaGenome Variant Impact for SNV Prioritization",
+      "authors": [
+        "Qu, H.-Q.",
+        "Hakonarson, H."
+      ],
+      "abstract": "AlphaGenome Atlas, released in September 2026, provides functional predictions for nearly all possible human single-nucleotide variants using the AlphaGenome Variant Impact (AVI) score. However, empirical thresholds relating AVI quantile rank (AVIQUANTILE) to clinical variant classifications have not been established. We derived AVIQUANTILE thresholds distinguishing ClinVar pathogenic, likely pathogenic, uncertain, conflicting, likely benign, and benign SNVs using receiver operating characteristic analyses. Pathogenic/likely pathogenic variants were strongly enriched at the upper end of the AVIQUANTILE distribution, yielding a Youden-optimal ClinVar-derived cutoff of 0.9938. Optimal cutoffs were generally consistent across several major molecular consequence classes, although lower thresholds were observed for selected noncoding categories. Similarly, most well-powered gene-disease groups showed cutoffs close to the global threshold, with modest gene-specific variation. Among 24,989 variants of uncertain significance, 11,357 (45.45%) exceeded the global cutoff, identifying a substantial subset with AlphaGenome-predicted functional effects comparable to those observed among pathogenic/likely pathogenic variants and potentially warranting further evaluation. In a steroid-dependent asthma fine-mapping analysis, AVIQUANTILE showed little correspondence with SuSiE posterior inclusion probabilities, indicating that AlphaGenome functional predictions capture information distinct from statistical fine-mapping.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754650v1",
+      "tier": "brief",
+      "why": "Derives empirical ClinVar-based thresholds for the new AlphaGenome variant-impact score, finding it captures information distinct from statistical fine-mapping for noncoding variant prioritization."
+    },
+    {
+      "id": "10.64898/2026.09.30.755756",
+      "title": "The recoverable resolution of cellular perturbation-response prediction",
+      "authors": [
+        "Huang, Y.",
+        "Wang, H.",
+        "Li, C.",
+        "Wilson, P. C."
+      ],
+      "abstract": "Virtual cell models aim to predict how cells respond to perturbations, yet accurate prediction of post-perturbation gene expression can conceal failures to recover context-specific responses. Here we identify context geometry compression (CGC), in which models preserve cellular identity and shared perturbation effects while collapsing differences in how the same perturbation acts across contexts. Across biological systems, reproducible context-specific responses remained difficult to recover; in a large drug-response matrix, this persisted even with nearly complete perturbation coverage. The same drug-response predictions achieved higher normalized recovery in predefined pathway summaries than in gene-level response profiles, while coarse response programs were more predictable in human lymphoblastoid cell lines. Compact baseline transcriptomic representations retained most full-RNA predictive performance for patient-specific ex vivo drug responses. Together, these findings establish recoverable biological resolution, rather than measurement dimensionality, as a criterion for evaluating virtual cell predictions and matching model outputs to the biological detail supported by evidence.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755756v1",
+      "tier": "brief",
+      "why": "Identifies 'context geometry compression' as a failure mode in virtual cell perturbation models, proposing recoverable biological resolution as a more meaningful evaluation criterion than raw accuracy."
+    },
+    {
+      "id": "10.64898/2026.09.26.754598",
+      "title": "Multi-omics fine-mapping uncovers a pleiotropic intestinal enhancer variant linking PMAIP1 regulation to pig growth and fatness",
+      "authors": [
+        "Yang, H.",
+        "Hu, M.",
+        "Xu, Y.",
+        "Zhang, J.",
+        "Zhang, Y.",
+        "Gou, Y.",
+        "Du, X.",
+        "Wang, H.",
+        "Li, X.",
+        "Zhao, Y.",
+        "Xiang, T."
+      ],
+      "abstract": "Genetic loci influencing multiple complex traits often remain difficult to interpret because the underlying functional variants, target genes and tissue contexts are unresolved. Here, we investigated the regulatory basis of a shared signal for average daily gain (ADG) and backfat thickness (BF) in Yorkshire pigs. By integrating GWAS in 7,972 pigs, targeted capture sequencing, LD-based fine-mapping, porcine epigenomic annotations, three-dimensional chromatin interaction maps and functional assays, we narrowed the shared SSC1 signal to a 1.59-Mb interval and functionally prioritized rs334769214 (T>G) as the leading candidate variant. The T>G substitution produced marked allele-specific differences in enhancer activity and nuclear-protein binding, while transcription-factor co-transfection assays identified FOXL1-responsive, allele-dependent regulatory activity. Chromatin interaction and CRISPRa analyses supported a regulatory connection between the rs334769214-containing enhancer and PMAIP1, and PMAIP1 overexpression promoted apoptosis in porcine intestinal epithelial cells. In the capture-sequenced subset, the G allele was associated with higher ADG and BF, consistent with a relative loss-of-activation model. Together, these findings delineate a candidate FOXL1-enhancer-PMAIP1 regulatory pathway and demonstrate how multi-omics fine-mapping can advance a shared quantitative-trait locus toward a testable molecular mechanism underlying variation in growth and fatness.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754598v1",
+      "tier": "brief",
+      "why": "Multi-omics fine-mapping in pigs pinpoints a single enhancer variant disrupting FOXL1 binding that regulates PMAIP1 and pleiotropically affects growth and fatness traits."
+    },
+    {
+      "id": "10.64898/2026.09.30.755684",
+      "title": "Early dynamics of a neutrophil interferon program drive immunotherapy resistance and limit durable anti-tumor immunity",
+      "authors": [
+        "Gao, Y.",
+        "Anning, E.",
+        "Wang, L.",
+        "CHENG, Y.",
+        "Wu, L.",
+        "Wang, J.",
+        "Liu, F.",
+        "Xu, Z.",
+        "Hao, X.",
+        "Liu, J.",
+        "Yu, L.",
+        "Ding, Y.",
+        "Zhang, W.",
+        "Edwards, D. G.",
+        "Wu, Y.-H.",
+        "Chan, H. L.",
+        "Hoffman, D.",
+        "Wang, S.",
+        "Lee, T. D.",
+        "Dominguez, L. B.",
+        "Peled, N.",
+        "Li, X.",
+        "Chen, X.",
+        "Rivas, C. H.",
+        "Zhao, N.",
+        "Calderon, S. J.",
+        "Pedroza, D. A.",
+        "Smith, A.",
+        "Guan, N.",
+        "Liu, Z.",
+        "Rosen, J.",
+        "Zhang, X."
+      ],
+      "abstract": "Despite the remarkable success of immune checkpoint blockade (ICB), durable clinical benefit remains limited to a subset of patients, highlighting the need for predictive biomarkers and new therapeutic targets. Here, we investigated the early immune dynamics associated with anti-PD1 responsiveness using longitudinal single-cell transcriptomics, spatial transcriptomics, and neutrophil-specific genetic perturbations in preclinical models of triple-negative breast cancer. We identified a conserved neutrophil interferon-stimulated gene (ISG) program that emerges before overt tumor divergence and predicts resistance to anti-PD1 therapy. Successful treatment was associated with an early reduction of IFN-responsive neutrophils in both blood and tumor tissues, whereas persistent neutrophil IFN signaling correlated with therapeutic resistance. Mechanistically, genetic disruption of either type I or type II interferon signaling in neutrophils enhanced anti-PD1 efficacy and promoted durable anti-tumor immune memory. Spatial analyses further revealed an inverse association between IFN-responsive neutrophils and tertiary lymphoid structure-enriched regions during effective therapy. Together, these findings identify IFN-responsive neutrophils as early determinants of immunotherapy outcome and establish dynamic neutrophil interferon programs as candidate blood-based biomarkers and therapeutic targets for cancer immunotherapy.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755684v1",
+      "tier": "brief",
+      "why": "Longitudinal single-cell and spatial transcriptomics identifies an early neutrophil interferon program that predicts and causally drives resistance to anti-PD1 immunotherapy in breast cancer models."
+    },
+    {
+      "id": "10.64898/2026.09.25.754276",
+      "title": "Sparse dynamic graphical models for longitudinal non-Gaussian data",
+      "authors": [
+        "Zheng, Y.",
+        "Solis-Lemus, C."
+      ],
+      "abstract": "Longitudinal non-Gaussian data are common in biomedical and microbiome studies, where responses may not be normally distributed. However, many existing dynamic graphical models are developed for Gaussian responses, while many non-Gaussian graphical models focus on cross-sectional dependence and do not explicitly estimate temporal transition effects. We propose a latent Gaussian dynamic graphical model for longitudinal non-Gaussian responses, including binary, count, and compositional outcomes. The proposed framework jointly estimates the contemporaneous conditional dependence network and the lag-one temporal dependence structure. We further develop a penalized Monte Carlo expectation maximization procedure for estimation. Simulation studies across multiple graph structures and outcome types show that the proposed method can recover both dependence structures, with more stable recovery for the lag-one temporal dependence structure and more structure-dependent recovery for the contemporaneous conditional dependence network. We apply the proposed method to longitudinal data from the Integrative Human Microbiome Project (HMP2) using a multinomial observation model. The results reveal persistent lag-one temporal dependence and contemporaneous conditional dependence among dominant microbial taxa, demonstrating the utility of the proposed framework for dynamic network analysis of longitudinal non-Gaussian biomedical data.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754276v1",
+      "tier": "mention",
+      "why": "Proposes a latent Gaussian dynamic graphical model for longitudinal non-Gaussian (e.g., microbiome) data, jointly estimating contemporaneous and lag-one dependence networks."
+    },
+    {
+      "id": "2610.00588",
+      "title": "Nonparametric Identification of Latent Dimension under Heavy-Tailed and Mixed-Signals",
+      "authors": [
+        "Chetkar Jha"
+      ],
+      "abstract": "Principal component analysis and factor analysis are foundational to the study of high-dimensional data, yet their efficacy depends entirely on correctly identifying the latent dimension r. While parallel analysis (PA) is widely regarded as the gold standard for this task, its performance suffers in high-dimensional regimes consisting of mixed signals and/or heavy-tailed error distributions. This arises because under the preceding conditions, column-wise permutation mechanism (or any modern variations) applied to the data matrix \\textbfX fails to destroy the signal, leading to an inflated null spectrum. To address this, we propose a nonparametric solution. We show that the latent dimension is uniquely preserved in the degree of order within the rank-transformed data matrix, which restores spectral exchangeability under permutation. We prove the consistency of Rank PA under relaxed conditions, requiring neither the pervasiveness of factors nor restrictive fourth moment assumptions. We establish that Rank PA can consistently estimate the number of factors up to the maximum of O(n1/3 - \\tau) where \\tau >0. The robust performance of our remedy is demonstrated through numerical simulations and an analysis of the FRED-MD dataset.",
+      "categories": [
+        "stat.ME",
+        "stat.AP"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.00588",
+      "tier": "mention",
+      "why": "A rank-transform fix to parallel analysis restores consistent latent-dimension estimation for PCA/factor models under heavy-tailed or mixed-signal high-dimensional data."
+    },
+    {
+      "id": "10.64898/2026.09.25.754162",
+      "title": "Integrative Multi-Omics Analysis Reveals Molecular Signatures of Age-Related Decline in Vervet Leg Skeletal Muscle",
+      "authors": [
+        "Patel, M. S.",
+        "Frye, B.",
+        "Negrey, J. D.",
+        "Cox, L. A.",
+        "Li, G.",
+        "Jorgensen, M. J.",
+        "Register, T.",
+        "Kavanagh, K.",
+        "Shively, C. A.",
+        "Quillen, E. E."
+      ],
+      "abstract": "Age-related decline in skeletal muscle function, often manifesting as slower gait speed, contributes significantly to frailty and loss of independence. To uncover the molecular basis of this decline, we investigated coordinated changes across the transcriptome, miRNome, and methylome in vastus lateralis muscle from female vervet monkeys (Chlorocebus aethiops sabaeus), contrasting middle-aged animals with normal gait speed versus older animals with declining gait speed. Through multi-omics integration, we identified a molecular signature that sharply distinguishes these two groups. This signature involves key regulatory molecules, including miR-181a-5p, miR-320b and miR-425 control of SYNCRIP, miR-193b-3p regulation of MCL1 and PLAU, as well as a multi-omic regulatory network governing ZNF274 and ANP32E gene expression, and altered levels of mRNAs such as VEZT. Functional annotation implicates miRNA signatures with inverse expression of their mRNA targets operating within systems of skeletal muscle biology, metabolism, and potential immune-inflammation mechanisms. Collectively, these findings reveal an interconnected network of epigenetic, post-transcriptional, and transcriptional alterations associated with impaired muscle function during aging. This molecular signature provides novel insights into potential mechanisms driving sarcopenia and highlights specific molecules as potential targets for interventions aimed at preserving muscle health.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754162v1",
+      "tier": "mention",
+      "why": "Multi-omics integration (transcriptome, miRNome, methylome) in aging vervet muscle identifies specific miRNA-mRNA regulatory networks associated with declining gait speed."
+    },
+    {
+      "id": "10.64898/2026.09.23.752440",
+      "title": "The Genome In A Bottle HG002 assembly-based variant benchmark set enables comprehensive benchmarking of small and structural variants.",
+      "authors": [
+        "Olson, N. D.",
+        "Dwarshuis, N.",
+        "Hansen, N. F.",
+        "Koren, S.",
+        "Rhie, A.",
+        "McDaniel, J. H.",
+        "Wagner, J.",
+        "Berry, G.",
+        "Shafin, K.",
+        "English, A.",
+        "Saunders, C. T.",
+        "Kundu, R.",
+        "Holt, J. M.",
+        "Freed, D.",
+        "Abdulkadir, A. A.",
+        "Daniels, C.",
+        "Majidian, S.",
+        "Paulin, L. F.",
+        "Sedlazeck, F. J.",
+        "Fleharty, M.",
+        "Gao, Y.",
+        "Denti, L.",
+        "Brambrink, L.",
+        "Carroll, A.",
+        "Chang, P.-C.",
+        "Cook, D. E.",
+        "Kolesnikov, A.",
+        "Catreux, S.",
+        "Edlund, C.",
+        "Han, J.",
+        "Murray, L.",
+        "Qiu, Y.",
+        "Rossi, M.",
+        "Scheffler, K.",
+        "Truong, S.",
+        "Wang, Y.",
+        "Chikhi, R.",
+        "Flores, C.",
+        "Jaspez, D.",
+        "Lorenzo-Salazar, J. M.",
+        "Munoz-Barrera, A.",
+        "Rubio-Rodriguez, L. A.",
+        "Lin, M.-J.",
+        "Vaddadi, K.",
+        "Lan"
+      ],
+      "abstract": "High-accuracy, high-resolution benchmark data are fundamental to improving the accuracy and generalizability of sequencing technologies and associated algorithms. Most existing benchmarks for DNA sequencing rely on mapping to a single linear reference, omitting inaccessible and highly repetitive complex genomic regions. Here, we present the Genome in a Bottle (GIAB) Consortium's HG002 v5.0q benchmark set, a more comprehensive variant benchmark derived from a fully phased, highly curated, and accurate diploid assembly of HG002. Our approach leverages recent advances in long-read sequencing and assembly to provide confident small- and structural-variant calls across previously inaccessible regions, including segmental duplications, homopolymers, tandem repeats, and complex immune loci. The v5.0 benchmark significantly expands the callable genome relative to v4.2.1, adding x200 Mbp of sequence and increasing variant detection by 18 % for small variants and 3-fold for structural variants compared to previous benchmarks. The benchmark regions include more variants in repetitive regions, including 1.2 x segmental duplications, 1.8 x tandem repeats, and 2.0 x homopolymers, compared to v4.2.1. Separate and combined small- and structural-variant benchmarks are available for three versions of the human reference genome (GRCh37, GRCh38, and CHM13). We validate the reliability of this benchmark set by comparing multiple sequencing technologies and variant calling pipelines and curating differences. The v5.0q benchmark provides a critical resource for the development and validation of next-generation sequencing technologies and analysis methods.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.23.752440v1",
+      "tier": "mention",
+      "why": "GIAB's new HG002 assembly-based benchmark substantially expands confident small- and structural-variant calls into previously inaccessible repetitive genomic regions."
+    },
+    {
+      "id": "10.64898/2026.09.29.755401",
+      "title": "SysNDD: A Systematic Database for Neurodevelopmental Disorders",
+      "authors": [
+        "Popp, B.",
+        "Frueh, S.",
+        "Altay, M. F.",
+        "Van Esch, H.",
+        "Caliebe, A.",
+        "Bramswig, N. C.",
+        "Hummel, F.",
+        "Gverdtsiteli, S.",
+        "Kleefstra, T.",
+        "Schenck, A.",
+        "Tuemer, Z.",
+        "Verloes, A.",
+        "Zweier, C."
+      ],
+      "abstract": "Neurodevelopmental disorders (NDDs) are clinically and genetically heterogeneous, and evidence linking additional genes to disease evolves rapidly. We developed SysNDD, an open-access, expert-curated resource that represents distinct gene-inheritance-disease associations as entities with standardized confidence, phenotype, and variant annotations. Each entity retains its curation history, so its evidence category can change as evidence accumulates. Currently, SysNDD contains 4,275 entities curated from 4,932 publications. Of these, 3,758 entities involving 3,271 genes describe NDDs; the remainder record non-NDD disorders, nearly all linked to NDD-associated genes, included for completeness. Regarding NDD evidence categories, 1,838 genes are Definitive, 179 Moderate, 1,248 Limited, and 6 Refuted. The entity model captures inheritance-specific disorders, including 220 genes with both autosomal dominant and autosomal recessive NDD associations. Comparison with seven other NDD gene resources showed complementary coverage, and evidence categories largely agreed with those of ClinGen, Gene2Phenotype, and PanelApp for shared gene-disease pairs. NDD genes formed distinct molecular modules, whereas associated disorders formed broad, overlapping phenotype groups that corresponded to those modules only selectively. SysNDD provides a continuously maintained, programmatically accessible framework for gene-disease evidence assessment, inheritance-aware interpretation, and systematic NDD research.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755401v1",
+      "tier": "mention",
+      "why": "SysNDD is an expert-curated, continuously updated database of 3,758 gene-disease entities for neurodevelopmental disorders with standardized evidence categories."
+    },
+    {
+      "id": "10.64898/2026.09.30.755641",
+      "title": "Transcriptional rewiring of NF-κB by HBZ and Fra-2 drives inflammatory chemoresistance in Tax-negative adult T-cell leukemia/lymphoma",
+      "authors": [
+        "Tram, J.",
+        "Marty, L.",
+        "Mourouvin, c.",
+        "Abrantes, M.",
+        "Cesaire, R.",
+        "Helias, P.",
+        "Baccini, V.",
+        "Mesnard, J.-M.",
+        "PELOPONESE, J.-M."
+      ],
+      "abstract": "Adult T-cell leukemia/lymphoma (ATL) is an aggressive HTLV-1-associated malignancy with poor responses to chemotherapy. Although constitutive NF-kB activation is a hallmark of ATL, its persistence in tax-negative (Type I) ATL, where Tax is irreversibly silenced, remains unresolved. Here, we identify Fra-2 as a coactivator of NF-kB p65 that redirects p65's transcriptional activity toward inflammatory genes. Mechanistically, Fra-2 interacts with the Rel homology domain of p65 via its bZIP domain, enhancing p65 DNA-binding activity without altering nuclear localization. The HTLV-1 antisense protein HBZ disrupts Fra-2/JunD AP-1 complexes while stabilizing Fra-2/p65, as shown by co-immunoprecipitation, BiFC, and PICO assays. This rewiring selectively enhances NF-kB-dependent transcription of IL-1b, which is elevated in ATL patient sera and cells independently of proviral load. Chromatin immunoprecipitation revealed Fra-2 recruitment to NF-kB response elements in the IL1b promoter, an effect amplified by HBZ. Pharmacological inhibition of IL-1 signaling with anakinra or anti-IL-1b antibodies restored doxorubicin sensitivity in primary ATL cells. Together, these findings establish the Fra-2-NF-kB-IL-1b axis as a driver of chemoresistance in tax-negative ATL and a therapeutically targetable vulnerability.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755641v1",
+      "tier": "mention",
+      "why": "Identifies a Fra-2–NF-κB–IL-1β transcriptional axis driving chemoresistance in Tax-negative adult T-cell leukemia, suggesting IL-1 blockade as a therapeutic strategy."
+    },
+    {
+      "id": "10.64898/2026.09.29.755558",
+      "title": "The Smac mimetic drug Xevinapant sensitizes triple negative breast cancer to radiotherapy-induced cell death in a TNFα dependent manner",
+      "authors": [
+        "Faye, M. D.",
+        "Lafontaine, J.",
+        "Wong, P.",
+        "Menard, C."
+      ],
+      "abstract": "Purpose: There is an unmet need in the treatment of triple-negative breast cancer (TNBC), as recurrence rates remain high; thus, novel treatment strategies are warranted to improve outcomes for patients. Smac mimetics (SMs) are small molecules that inhibit the inhibitors of apoptosis. In this study, we investigated the properties of the SM Xevinapant (AT406) as a radiosensitizer in TNBC. Methods: TNBC cell lines were treated with Xevinapant (AT406) in the presence or absence of ionizing RT and cell viability and apoptosis measured in vitro. Clonogenic assays were performed to confirm radiosensitization. We also assessed xevinapant radiosensitization in the presence of the Tumor Necrosis Factor (TNF) cytokine, which has been shown to enhance SM-induced apoptosis. Radiosensitization mechanisms were further validated by western blotting, flow cytometry and cell cycle analysis. Results: We show that Xevinapant increased cell death in a panel of irradiated TNBC cell lines. In clonogenic assays, Xevinapant sensitized MDA-MB-231 cells to RT-induced cell death, and this was significantly enhanced in the presence of TNF, with a dose-enhancing factor (DEF) of 1.57. We also show that Xevinapant radiosensitization is mediated by TNF-dependent apoptosis. Conclusions: Xevinapant is a radiosensitizer that enhances RT-induced cell death in TNBC cells, and TNF is central to this process through activation of apoptosis. These results are promising for combining RT with Xevinapant to improve local control in TNBC.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755558v1",
+      "tier": "mention",
+      "why": "The Smac mimetic Xevinapant radiosensitizes triple-negative breast cancer cells in a TNF-alpha-dependent manner, offering a potential combination therapy strategy."
+    },
+    {
+      "id": "2610.02175",
+      "title": "Effective Resistance and Graph Neural Network Reliability in Tissue-Specific Interactomes",
+      "authors": [
+        "Jianru Shen"
+      ],
+      "abstract": "Protein function annotation needs to know which predictions to distrust, not only what a model predicts. We ask whether tissue-specific interaction structure carries that information. Our candidate signal is effective resistance, used previously to relieve over-squashing by rewiring. Across 24 tissue-specific interactomes it is dominated by inverse degree, and the degeneration deepens as the co-expression filtered network grows, with a Spearman correlation of -0.955. The residual departure from that limit exceeds degree-preserving null graphs in all 24 networks. Controlling for predictive entropy, degree, annotation cardinality, local structure and feature-only difficulty, the residual explains additional per-node loss in 19 of 24 held-out networks once a permutation floor is subtracted, at every depth, and the effect strengthens monotonically with depth. The increment reaches 0.37% of the variance the controls leave unexplained, 5.6 times a permutation floor, against 1.5 times when the model is retrained in a degree-preserving null world. Selective prediction improves negligibly. The signal is reproducible; degree degeneration bounds it.",
+      "categories": [
+        "cs.LG",
+        "q-bio.MN"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.02175",
+      "tier": "mention",
+      "why": "Finds that effective resistance in tissue-specific interactomes is almost entirely explained by node degree, with only a small residual signal useful for flagging unreliable GNN protein-function predictions."
+    },
+    {
+      "id": "10.64898/2026.09.30.755323",
+      "title": "Sustained Ion Imbalances Enhance Ferroptosis",
+      "authors": [
+        "Sonay, A. Y.",
+        "Apfelbaum, E. N.",
+        "Mustafa, N.",
+        "Grimm, J."
+      ],
+      "abstract": "Ferroptosis has attracted significant attention for its potential to treat drug resistant tumors, along with its role in neurodegeneration and ischemia. Several ferroptosis targets were identified in the past decade, yet it is also highly affected by cellular metabolism and epithelial or mesenchymal phenotypes which limits the utility of these targets across diverse cell and tissue types. To address this, we utilized chemo-resistant cancer cell lines with different metastatic potential and tissue origins and discovered a common role of cytoplasmic ion changes during ferroptosis. We observed significant changes in intracellular potassium, sodium and chloride levels upon induction of ferroptosis. Therefore, we screened several ion channel inhibitors and activators (i.e. modulators) and identified Kv7.2 and CFTR modulators influence ferroptosis execution despite the fact that these cell lines do not express these proteins. We demonstrated that clinically approved modulators of CFTR and Kv7.2 can inhibit ferroptosis which indicates that these inhibitors could be repurposed as treatments in ferroptosis-associated diseases such as neurodegeneration and kidney diseases independent of ion channel expression. These modulators also influenced potassium and chloride levels in different contexts indicating off-target effects may also lead to changes in ion levels and may serve as a ferroptosis target. Further, we demonstrated that sustained imbalance of sodium, potassium and chloride ions with ferroptosis inducer salinomycin and digoxin, a Na+/K+ ATPase inhibitor, enhanced ferroptosis. The combination of salinomycin and digoxin successfully enhanced ferroptotic cell death across both cell lines with different metabolic signatures in vitro, offering a novel ferroptosis target. This combination significantly reduced tumor growth in vivo compared with the single agent alone, offering a new therapeutic modality against drug resistant tumors.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755323v1",
+      "tier": "mention",
+      "why": "Reports that sustained ionic imbalance via combined Na+/K+-ATPase inhibition and ferroptosis induction enhances tumor cell death across chemo-resistant cancer lines, independent of ion channel expression."
+    },
+    {
+      "id": "10.64898/2026.09.26.754587",
+      "title": "QuImputer: an LD-informed QUBO/Ising formulation of genotype imputation with quantum-hardware execution",
+      "authors": [
+        "Kim, M.",
+        "Lee, T.-H."
+      ],
+      "abstract": "Genotype imputation offers a biological application for optimization methods that may eventually run on larger quantum computers. We developed QuImputer to encode allele-frequency priors and signed linkage disequilibrium (LD) in a reduced Ising/QUBO objective, with only missing genotypes represented as optimization variables. The same objective can be passed to exhaustive classical search, quantum approximate optimization algorithm simulation, or quantum hardware. We evaluated the formulation on 100 rice accessions across 12 chromosomes, estimating LD and allele frequency from the same post-masking observed matrix supplied to Beagle 5.4. Evaluation was restricted to known truth at sites with exact dosage coding and an alternate allele that was not the major allele, with MAF below 0.50, yielding 1.88 billion scored genotypes. Beagle achieved higher rare-ALT sensitivity (2.52% versus 0.54%), F1 (0.047 versus 0.011), Matthews correlation coefficient (0.088 versus 0.044), and pooled hard-call dosage R-squared (0.231 versus 0.014). QuImputer produced fewer false ALT calls, with Type I error of 0.038% versus 0.223%. Analyses of a chromosome-1 subset showed limited local LD support for many masked rare-ALT carriers. In five small IBM Fez validation problems, the selected minimum-energy outputs matched unique all-reference exact optima; the pooled frequency of those optima was 1.21-2.63%. Separate component-wise analysis of 12 sparse instances, 11 of which have a recorded hardware result, found all-reference exact optima, delimiting the interpretation of their hardware concordance. QuImputer provides an LD-informed formulation and a route to quantum-hardware execution, together with an empirical assessment of the limitations of the evaluated configuration. These results establish a basis for studying richer information models and alternative classical or quantum solvers.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754587v1",
+      "tier": "mention",
+      "why": "An offbeat attempt to formulate LD-informed genotype imputation as a QUBO/Ising problem runnable on quantum hardware, though it currently underperforms classical imputation (Beagle) substantially."
+    }
+  ]
+}
