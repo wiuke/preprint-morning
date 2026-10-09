@@ -1,0 +1,868 @@
+{
+  "date": "2026-10-07",
+  "format": "dialogue",
+  "n_papers": 92,
+  "episode_title": "Sparse model discovery for gene oscillators, identifiable optimal transport for cell transitions, and why spatial RNA and protein disagree on checkpoint markers",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Good morning. It's October seventh, and the listings brought about ninety-two new papers across archive and bio-archive overnight."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Busy one. We picked five for deep dives today: a fix for collinearity in sparse regression of gene oscillators, an identifiability result for optimal transport on single-cell state transitions, a head-to-head of RNA versus protein in spatial multi-omics, a pooled genetic screen read out by imaging in intact liver tissue, and a guide to handling circular quantities like circadian phase and cell cycle position in spatial data."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Plus ten briefs and a round-up of mentions at the end. Let's start with the maths-heavy one, since you'll like this."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper one in the show notes, from Lucenti and Bani-Yaghoub. It's about recovering the actual differential equations behind oscillating gene circuits, things like Hes1, circadian clocks, or N-F-kappa-B pulsing, directly from time series."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the SINDy family, sparse identification of nonlinear dynamics. You build a big library of candidate terms, polynomials, Hill functions, whatever you think might appear, and use sparse regression to pick out the few that actually matter."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, and the problem they flag is that Hill-type regulatory terms, the saturating switches describing transcription factor binding, become nearly collinear with polynomial terms over most of an oscillating trajectory. Ridge regularization or orthogonalizing the library only patches this a little, because the multicollinearity is structural, not numerical noise you can regularize away."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So what's the actual fix?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They pull the known regulatory nonlinearity out of the shared regression entirely, and solve for its coefficient separately using what they call an asymptotic drift-balance condition. Basically, for a bounded oscillating trajectory, the time-averaged derivative has to approach zero, so whatever the regulatory term contributes on average must exactly cancel the rest of the equation. That gives you a second, independent equation to pin down the regulatory coefficient without it ever sitting in the same ill-conditioned regression as the polynomial terms."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Clever. Does it actually help?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They report condition number improvements of three to forty-five fold depending on the system. They test it on real Hes1 oscillation data, plus synthetic Goodwin and N-F-kappa-B models, benchmarked against traditional SINDy, SR3, and a nullcline reconstruction method. RI-SINDy gets the lowest trajectory error on the real Hes1 data, and on the synthetic systems it recovers the correct sparse structure, the right handful of active terms, more reliably than the alternatives. In a noise sweep on the Goodwin model it keeps recovering all the correct terms up to fifteen percent noise, where plain SINDy and ensemble SINDy both break down."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The catch, though, is that you need to already know which terms are the regulatory ones to pull them out. This isn't a method that discovers Hill-type regulation from scratch, it's a method that discovers everything else cleanly once you've told it where the switches are."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Exactly, so it's semi-parametric rather than fully data-driven, and it's validated on one real dataset, Hes1, plus two synthetic systems. Whether the drift-balance trick generalizes to circuits with multiple interacting oscillators or stochastic bursting is still open. But if you're trying to fit interpretable ODEs to noisy qPCR or reporter time series of a known regulatory motif, this looks like a genuinely useful conditioning trick rather than a new black box."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper two, from Dong, Gong, and Liu, tackles a subtler identifiability problem, this time in single-cell state transitions. You've used optimal transport to map cells across time points or conditions, Waddington-OT style."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, you treat cell states as mass and find the cheapest way to move the source distribution onto the target distribution. The issue they raise is that in balanced optimal transport, where both endpoint distributions are fixed, the signed contribution of any particular target-state program becomes mathematically unidentifiable. Because the target marginal is fixed, every feasible transport plan has to match it regardless of which direction a given gene program pushes cells, so that program's effect size is constant across all feasible plans and can't be estimated."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So fixing both ends is exactly what destroys the information you want."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the core point. Their fix, UOT-IOT, is a semi-relaxed inverse transport framework, they relax the target-side constraint and derive a rank condition that tells you when a given direction actually is locally identifiable from the data. On a ground-truth benchmark where they know the real coefficients, they recover them with a correlation of zero point nine nine seven, versus zero point zero eight one for standard balanced transport. That's not a subtle improvement, balanced transport is essentially recovering noise."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What do they do with it biologically?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They transfer learned transition directions to six unseen samples with specificity controls, and beat seven competing methods on transition error under matched conditions. A second module, GH-IOT, separates a shared transition direction from sample-specific context and lineage-history offsets, and finds that interferon and H-L-A programs associate with patient treatment response while epithelial-to-mesenchymal transition relates to drug sensitivity and perturbation-induced state changes. A third module, PERSIST-IOT, improves prediction of future population composition in an independent experiment."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The thing I'd press on is how much of that zero point nine nine seven depends on the synthetic benchmark matching their model's assumptions. Identifiability proofs are only as convincing as the gap between the toy case and messy real single-cell data, with its dropout and batch effects. Still, if the rank condition genuinely tells you in advance which directions are estimable, that's valuable, because it stops people quoting confident numbers for transitions that the data structurally cannot support."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper three is one I think you'll want to send to anyone doing spatial biomarker work. Cervilla and colleagues directly tested whether spatial RNA and spatial protein measurements are interchangeable, using paired Xenium imaging of twenty-one matched targets across about one point eight million cells, from primary lung adenocarcinoma and metastatic castration-resistant prostate cancer."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Xenium does targeted in situ RNA detection, and here they ran a matched protein panel on the same tissue, so you get a direct single-cell comparison rather than inferring protein from public databases."
+    },
+    {
+      "speaker": "Leo",
+      "text": "After correcting for marker- and dataset-specific protein background, which matters a lot for imaging-based protein assays, they compared concordance at several levels: single-cell detection, expression magnitude, cell-type assignment, patient-level abundance, and spatial organization. Canonical lineage markers, the ones you'd use to call a cell type, were generally concordant between RNA and protein. But several immune checkpoint molecules, specifically P-D-one, P-D-L-one, and L-A-G-three, showed little concordance at all."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's uncomfortable, since those three are exactly the markers people want to read out spatially to predict checkpoint blockade response."
+    },
+    {
+      "speaker": "Leo",
+      "text": "It gets worse before it gets better. Spatial organization, where things sit relative to each other in the tissue, was substantially more discordant between modalities than overall abundance. So even for markers where the average level roughly agrees between RNA and protein, the spatial pattern, who's next to whom, can disagree. The abstract doesn't give a mechanism, so take this as description rather than explanation, but plausible candidates are post-transcriptional regulation, protein secretion and diffusion away from the producing cell, and differential antibody or probe sensitivity."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The practical message is narrow but important: lineage markers and bulk abundance, RNA is probably a fine proxy for protein. For functional checkpoint markers and for any higher-order spatial feature you plan to build a biomarker on, you need orthogonal protein validation, the RNA signal alone won't tell you what the protein is doing. Worth remembering before trusting a spatial transcriptomic checkpoint signature from a panel that never measured protein."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four, from Jin and colleagues, pushes pooled genetic screening into intact tissue using MERFISH, the multiplexed error-robust imaging method that reads out many RNA species in situ by sequential hybridization."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Pooled screens usually need single-cell dissociation to read out which perturbation each cell got, which throws away the tissue context, exactly the thing you'd want to study non-autonomous effects, how one cell's perturbation affects its neighbors."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, so the point of this method is to detect both the perturbation barcode and endogenous transcripts in place, by direct hybridization, with no enzymatic amplification step. Compared to their previous enzymatic-amplification workflow, that gets them roughly tenfold more perturbation barcode recovery and two and a half fold more endogenous transcript recovery, which in turn improves how confidently you can assign a perturbation identity to a cell and profile its neighbors."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What did they screen?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "A genetic mosaic mouse liver screen targeting around two hundred genes in hepatocytes, profiling one point five million cells in intact tissue. They map cell-autonomous responses in the perturbed hepatocytes themselves, but also cell non-autonomous changes in neighboring immune and vascular cells. Two specific findings: plasmacytoid dendritic cell-like cells accumulate locally near hepatocytes with impaired V-ATPase function, and vascular cells near hepatocytes with Vhl perturbation, which triggers a hypoxia response, show angiogenic changes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Vhl loss mimicking hypoxia and triggering angiogenesis next door is exactly what you'd predict from the biology, which is reassuring as a positive control for the method. The limitation is scale, two hundred genes is a meaningful screen but nowhere near genome-wide, and amplification-free detection trades some sensitivity for simplicity, so rarer transcripts might still be missed. But methodologically, removing the enzymatic amplification step is the kind of simplification that makes these screens more scalable across labs, which matters if non-autonomous phenotypes turn out to be common rather than exceptional."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Last deep dive, paper five, is more of a methods guide than a single result. Shin, Yoo, and colleagues write about circular data analysis for spatial omics, meaning quantities that wrap around, circadian phase, cell cycle position, or orientation within tissue."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The problem being that if you treat a twenty-three-hour and a one-hour circadian phase as far apart on a line, because you're using ordinary linear statistics, you create an artificial discontinuity that doesn't exist biologically."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Exactly, and circular statistics as a field has existed for decades, but the paper argues the guidance for applying it specifically to single-cell and spatial omics has been thin. They lay out considerations: where the circular quantity actually comes from and what unit it's measured on, what question you're asking, whether you're looking at tissue composition versus residual spatial dependence after accounting for composition, and which family of circular models, for representation, clustering, regression, or spatial analysis, actually fits."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Light on new algorithms, then, more a curated toolkit with R implementations."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's fair, it's a perspective piece rather than a benchmarked new method. But they ground it in two real case studies: derived circadian peak phase in a spatial transcriptomic mouse model of Alzheimer's disease, and latent cell cycle position in human ovarian cancer spatial data. The examples show how the definition of the angle and the heterogeneity of the tissue change which analysis is appropriate, and in some cases, that spatial modeling of the circular variable isn't warranted at all."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That last point is the one worth remembering if you ever derive a circular pseudotime or phase variable from spatial transcriptomics and reach straight for a standard spatial regression. Check first whether you actually have residual spatial structure once you've accounted for which cell types sit where, otherwise you might be modeling composition and calling it clock biology."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Let's move to the briefs. Paper six, from Schlicke, is a theory piece asking what a single spatial snapshot can tell you about directed cell-cell interactions, using the wavenumber-dependence of the spatial structure factor rather than mean density or covariance."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The headline result is that the directed interaction matrix and diffusivity are generically identifiable from one snapshot, up to a single unknown time rescaling, so for tumor-immune tissue sections you could in principle recover who's signaling to whom from one slide, just not the absolute rate."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper seven compares gene co-expression networks between mouse and human frontal cortex at single-cell resolution, across two hundred forty-six thousand two hundred eleven nuclei. Single-gene partner similarity was only modestly conserved, median zero point one six nine, rising to at most zero point three four nine after correcting for measurement noise, but whole co-expression modules were strongly preserved across species."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And disease genes weren't more conserved than properly matched control genes, which is a useful caution against assuming a mouse model's wiring around a psychiatric risk gene mirrors the human one just because the module looks similar."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight is an in vivo screen of D-N-A damage response genes in MSS colorectal cancer, the immunotherapy-refractory majority of cases. Losing B-R-C-A-one, B-R-C-A-two, A-T-M, or F-A-N-C-A improved response to anti-P-D-one, while losing A-T-R or M-S-H-six did not, and pharmacologic A-T-M inhibition before anti-P-D-one treatment boosted antitumor activity in vivo."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A nice example of DNA repair deficiency not being a single biomarker category, different pathways, different immunologic consequences. Paper nine, from Lee and Terhorst, models how linkage disequilibrium couples a variant's evolutionary fate to its genetic background under stabilizing selection, and shows that the well-known ancestry gap between effect size and allele frequency can be explained by demographic history alone, without assuming selection is three times stronger in one population than another."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Which matters for anyone doing cross-population GWAS, because it means you can't read off selection strength from frequency-effect size patterns without also modeling demography, the two are confounded."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten builds a proteomic aging clock from longitudinal, not just cross-sectional, plasma mass spectrometry in the KORA cohort, nine thousand one hundred five samples from four thousand one hundred people. Within individuals, dyslipidemia and worsening kidney function tracked increases in biological age acceleration, and mediation analysis suggests risk factors raise mortality indirectly through that acceleration, with extracellular matrix remodeling and complement pathways among the implicated programs."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven integrates genetic data linking Fragile X syndrome to idiopathic autism risk, naming X-R-N-two as the strongest cross-tissue association with population autism risk and P-P-P-three-C-A with circulating F-M-R-P abundance, while finding no shared common-variant architecture between population risk and symptom discordance in twins, suggesting these capture at least partly different genetic signals."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twelve describes a new bone-metastasis-derived prostate cancer cell line, LNCaP-TR-BoM, sitting transcriptionally between hormone-sensitive and androgen-refractory states, with E-P-H-A-three emerging as the top differentially expressed gene and a plausible driver of the more aggressive multicellular behavior seen in this intermediate stage."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper thirteen is developmental biology in zebrafish: the yolk syncytial layer, an extra-embryonic multinucleate tissue, expresses bmp16 in a spatially restricted ventral domain, downstream of mxtx2 and restrained by hhex, and bmp16 synergizes with bmp2b to push embryos toward ventral fates."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A nice case of a shared cytoplasm still achieving fine-grained spatial control of gene expression across nuclei. Paper fourteen introduces ASTRA, a pretrained model for zero-shot super-resolution of spatial transcriptomics that works across different capture geometries, dense Visium HD bins or separated spots, without refitting per section, and it improved tumor boundary recovery in colorectal cancer and generalized across triple-negative breast and lobular carcinoma cohorts."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Useful if you're tired of retraining a super-resolution model for every new slide. And paper fifteen applies Genomic SEM, structural equation modeling on GWAS summary statistics, to locomotor activity across nine thousand three hundred forty-one heterogeneous stock rats from eight studies, finding thirty-one loci via the shared genetic factor model versus only eight and thirteen for simpler pooled or fixed-effect meta-analyses, a good demonstration of what you gain by modeling shared genetic architecture explicitly rather than just pooling phenotypes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick mentions to round out the day. A near-ubiquitous plasmid characterizing Second Pandemic Yersinia pestis genomes, ancient DNA work on plague strains. A genomic and immune classification of mucosal melanoma. E-P-H-A-four regulating mesenchymal versus hybrid states in triple-negative breast cancer."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A type-one RAF inhibitor whose binding kinetics give it tumor-selective MAPK pathway and growth suppression. S-L-C-two-five-A-two-eight as a synthetic lethal target in nucleotide excision repair-deficient cancers. H-M-G-A-two shaping the immunosuppressive microenvironment in pancreatic cancer through interleukin-one-alpha."
+    },
+    {
+      "speaker": "Ava",
+      "text": "KRAS-driven upregulation of M-F-S-D-two-A-mediated lipid scavenging supporting pancreatic cancer survival. A new map of RNA-binding protein and microRNA regulatory connections in cancer transcriptome remodeling. A machine-learning architecture called neural Petri flows for modeling chemical reaction networks, from the archive side rather than bio-archive. And CRISPR editing of myeloid lectins showing target-dependent transcriptional remodeling in tumor-associated macrophages."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the lineup for October seventh. The throughline today is really about identifiability, in dynamical systems, in optimal transport, in spatial snapshots, and about where RNA quietly stops being a good stand-in for protein."
+    },
+    {
+      "speaker": "Ava",
+      "text": "See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.10.04.756519",
+      "title": "RI-SINDy: Regulation-Informed Sparse Model Discovery in Biological Gene Networks",
+      "authors": [
+        "Lucenti, N. J.",
+        "Bani-Yaghoub, M."
+      ],
+      "abstract": "Oscillatory and saturating dynamics in regulatory gene networks govern processes such as cell cycle timing, circadian rhythms, and inflammatory signaling, and sparse regression methods such as SINDy offer an interpretable method for recovering their governing equations from time-series data. However, these networks are typically governed by Hill-type nonlinearities that become nearly collinear with polynomial candidates over most bounds of an oscillating curve, and placing them in a shared library produces ill-conditioned regressions and unreliable coefficient estimates. Standard approaches such as ridge regularization, library normalization, and orthogonalization can marginally improve conditioning but cannot remove the structural multicollinearity of these systems, in turn limiting our ability to produce accurate parameter estimates. To address this issue, we propose the Regulation-Informed Sparse Identification of Nonlinear Dynamics (RI-SINDy) method, which removes known regulatory terms from the regression and recovers their coefficients directly from an asymptotic drift-balance condition. Because the time averaged derivative of a bounded trajectory approaches zero, the coefficients of regulatory nonlinearities can be computed independently by constraining them to offset the mean contribution of the remaining terms. We demonstrate that this method effectively reduces library collinearity and improves conditioning numbers by 3-45x, substantially improving coefficient recovery and regression accuracy. We test the RI-SINDy method on experimental Hes1 data and on synthetic Goodwin and NF-kappaB models. On Hes1, it achieves the lowest trajectory error among the compared methods (Traditional SINDy, SR3, and Nullcline Reconstruction). On the synthetic systems, it recovers the correct sparse structure with lower trajectory error than SR3 and Nullcline Reconstruction, and in a Goodwin noise sweep it recovers all active terms at noise levels up to 15%, where Traditional SINDy and E-SINDy fail to. In conclusion, the RI-SINDy method provides a robust framework to overcome the issue of multicollinearity for system identification in biological systems.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.04.756519v1",
+      "tier": "deep",
+      "why": "Introduces RI-SINDy, a sparse model-discovery method that removes collinear Hill-type regulatory terms before regression, substantially improving recovery of gene regulatory network dynamics from oscillatory time-series data like Hes1 and NF-kB."
+    },
+    {
+      "id": "10.64898/2026.10.01.756056",
+      "title": "Identifiable inverse optimal transport for single-cell state transitions",
+      "authors": [
+        "Dong, H.",
+        "Gong, Y.",
+        "Liu, Y."
+      ],
+      "abstract": "Signed effects of target-state programmes are unidentifiable in balanced optimal transport because fixed endpoint distributions make their contributions constant across feasible plans. We introduce UOT-IOT, a semi-relaxed inverse transport framework that restores measurable targetmass responses and provides a rank condition for local identifiability. It recovers coefficients inground-truth benchmarks (correlation 0.997 versus 0.081 for balanced transport), transfers frozen directions to six unseen samples with specificity controls, and achieves the lowest transition error against seven methods under matched evaluation conditions. GH-IOT separates shared directions from context and lineage-history offsets, revealing opposing history-associated effects. IFN/HLA is associated with patient treatment response, whereas EMT relates to drug sensitivity and perturbation-induced state changes. PERSIST-IOT improves future population-composition prediction in an independent experiment. Together, these modules distinguish current state,transition propensity and future population outcomes while supporting testable biological interpretations.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.756056v1",
+      "tier": "deep",
+      "why": "Proposes a semi-relaxed inverse optimal transport framework (UOT-IOT) that restores identifiability of target-state programme effects in single-cell state transitions, with strong gains over balanced OT on real perturbation and lineage data."
+    },
+    {
+      "id": "10.64898/2026.10.05.756660",
+      "title": "RNA and protein are not interchangeable in single-cell spatial multi-omics",
+      "authors": [
+        "Cervilla, S.",
+        "Grases, D.",
+        "Montesdeoca, N.",
+        "Font, A.",
+        "Fernandez-Saorin, M.",
+        "Etxaniz, O.",
+        "Pardo, J. C.",
+        "Ochoa-de-Olza, M.",
+        "Figols, M.",
+        "Sala-Gonzalez, N.",
+        "Fina, C.",
+        "Rodriguez, M.",
+        "de Torres, J. P.",
+        "Lozano, M. D.",
+        "Montuenga, L. M.",
+        "de Andrea, C.",
+        "Pio, R.",
+        "Ruiz de Porras, V.",
+        "Porta-Pardo, E."
+      ],
+      "abstract": "Spatial transcriptomics is increasingly used to infer cellular phenotypes, molecular interactions, and functional tissue organization from RNA, although most of these biological processes are ultimately mediated by proteins. Here, we directly tested the interchangeability of spatial RNA and protein measurements using paired Xenium profiling of 21 matched targets across ~1.8 million cells from primary lung adenocarcinoma and metastatic castration-resistant prostate cancer. After accounting for marker- and dataset-specific protein background, we quantified concordance at multiple levels, including single-cell detection, expression magnitude, cell-type distribution, patient-level abundance, and spatial organization. Agreement at single-cell level was strongly marker-dependent. Canonical lineage markers generally showed concordant RNA and protein patterns, whereas several molecules, including in our study PD-1, PD-L1, and LAG-3, showed little concordance across modalities. Importantly, spatial organization remained substantially more discordant between modalities than overall abundance, indicating that spatial biomarkers are not directly transferable across modalities. Together, our results show that spatial RNA and protein measurements provide largely overlapping information for lineage markers and overall abundance, but can diverse for specific molecules and for higher-order spatial features, where the two layers provide complementary rather than equivalent readouts. These findings provide practical guidance on when spatial transcriptomic readouts can be interpreted as proxies for protein and when orthogonal protein validation is advisable.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756660v1",
+      "tier": "deep",
+      "why": "A rigorous paired Xenium RNA/protein comparison across ~1.8M cells showing spatial organization is far more discordant between modalities than abundance, a cautionary result for anyone treating spatial transcriptomics as a protein proxy."
+    },
+    {
+      "id": "10.64898/2026.10.06.756924",
+      "title": "MERFISH-based pooled genetic screening reveals cell non-autonomous phenotypes in intact tissue",
+      "authors": [
+        "Jin, K.",
+        "Saunders, R. A.",
+        "Zhang, J.",
+        "Lu, J.",
+        "Halpern, A. A.",
+        "Sandhu, J.",
+        "Pan, X.",
+        "Wang, C. Y.",
+        "Li, A. M.",
+        "Allen, W. E.",
+        "Weissman, J. S.",
+        "Zhuang, X."
+      ],
+      "abstract": "Genetic perturbations can reshape both the state of a targeted cell and the behavior of neighboring cells. Measuring these effects systematically in intact tissues requires pooled screening methods that jointly identify perturbations, molecular phenotypes, and spatial context of individual cells. Here, we report an imaging-based pooled screening method that detects perturbation identities and endogenous RNAs without enzymatic amplification. Relative to our previous enzymatic-amplification-based workflow, amplification-free MERFISH detection with direct hybridization increased recovery of perturbation barcodes by ~10-fold and endogenous transcripts by 2.5-fold, improving perturbation assignment as well as molecular profiling of both perturbed and neighboring cells. Applying this method to a genetic mosaic mouse liver screen targeting ~200 genes in hepatocytes, we profiled 1.5 million cells in intact tissues and mapped both cell-autonomous responses of perturbed hepatocytes and cell non-autonomous changes in neighboring immune and vascular populations. These included localized accumulation of pDC-like cells near hepatocytes with impaired V-ATPase function and angiogenic responses in vascular cells near Vhl-perturbed hepatocytes with hypoxia activation. Our method provides a simplified, scalable approach to linking genetic perturbations with cell state, multicellular response, and tissue organization.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.756924v1",
+      "tier": "deep",
+      "why": "An amplification-free MERFISH pooled screening method that jointly reads perturbation identity, transcriptome, and spatial neighborhood in intact tissue, revealing cell-non-autonomous effects of hepatocyte perturbations on immune and vascular niches."
+    },
+    {
+      "id": "10.64898/2026.09.29.755467",
+      "title": "Circular Data Analysis for Spatial Omics",
+      "authors": [
+        "Shin, J.",
+        "Yoo, J.",
+        "Cho, Y.",
+        "Gupta, A.",
+        "Mao, P.-H.",
+        "Thakkar, K.",
+        "Eddy, T. A.",
+        "Chung, K. J.",
+        "Kim, J.",
+        "Jeon, H.",
+        "Xie, J.",
+        "Chung, D."
+      ],
+      "abstract": "Many biological quantities in omics are inherently periodic or directional, including circadian phase, cell-cycle position, and cellular orientation. Treating such quantities as ordinary linear variables can introduce artificial discontinuities and obscure biological interpretation. Circular methods are well developed across directional statistics, bioinformatics, and spatial statistics, but practical guidance for omics applications remains limited. We present key considerations for circular data analysis in single-cell and spatial omics, including the provenance and observational unit of the circular quantity, the inferential or predictive objective, the distinction between tissue composition and residual spatial dependence, and the choice of appropriate models. We describe relevant approaches for circular representation, inference, clustering, regression, machine learning, and spatial analysis, together with representative R software. Their practical use is illustrated through spatial transcriptomic case studies of derived circadian peak phase in a mouse model of Alzheimer's disease and latent cell-cycle position in human ovarian cancer. These examples demonstrate how the definition of the angle, its observational unit, and tissue heterogeneity shape appropriate analysis and interpretation, including when spatial modeling is not warranted. We conclude with practical recommendations and directions for future methodological development.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755467v1",
+      "tier": "deep",
+      "why": "A practical methods guide for handling circular/periodic quantities (circadian phase, cell-cycle position) in single-cell and spatial omics, with worked examples showing when standard linear or spatial models mislead."
+    },
+    {
+      "id": "2610.07341",
+      "title": "Identifiability of a linear dynamical reaction-diffusion system with directed interactions from the second-order statistics of a single snapshot",
+      "authors": [
+        "Pirmin Schlicke"
+      ],
+      "abstract": "A single spatial snapshot of a system with multiple interacting populations captures positions but not the underlying dynamics that have led to the observation. This work asks what the stationary second-order spatial statistics of a snapshot can reveal about the structure of the linear reaction-diffusion dynamical model, and in particular about the pairwise directed entries of its interaction operator. The observation is the matrix-valued structure factor S(k) as a one-parameter family in the diffusion-inherited dependence on the wavenumber \\kappa=|k|2. The main result is that the directed interaction operator A and the diffusivity matrix D are generically identifiable for any number of interacting populations from \\S(\\kappa)\\ up to a single global time rescaling. The findings do not contradict known bounds and the recent result that spatial observational data only determine the Markov equivalence class of the underlying graph. In this work, we identify physical assumptions that lift this barrier. The absolute time scale is not identifiable from a single snapshot of any sample size and requires an external clock. For tumor-immune tissue, the results imply that directed cell-cell interactions are in principle recoverable from one section, that the direction cannot be inferred from the mean densities or a covariance matrix, but from the wavenumber dependence of the cross and autospectra, and that a baseline section determines the interaction structure but not the absolute rates.",
+      "categories": [
+        "q-bio.QM",
+        "math.PR"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.07341",
+      "tier": "brief",
+      "why": "Shows that directed cell-cell interaction structure in reaction-diffusion models (e.g., tumor-immune tissue) is recoverable from the wavenumber-dependence of a single spatial snapshot's second-order statistics, not from means or simple covariance."
+    },
+    {
+      "id": "10.64898/2026.10.05.756860",
+      "title": "Conservation of gene co-expression networks and neuropsychiatric-neurological disease gene programs between mouse and human frontal cortex at single-cell resolution",
+      "authors": [
+        "Sun, Q.-Q.",
+        "Cao, T.",
+        "Zhang, C."
+      ],
+      "abstract": "Mouse models are widely used in translational neuroscience, but whether a gene has the same partners in mouse and human prefrontal cortex (PFC) is unknown. The genes whose expression rises and falls with a given gene across samples (its co-expression partners) indicate the molecular program to which it belongs. We compared the co-expression of 13,214 genes between mouse medial PFC and human dorsolateral PFC in 246,211 single-nucleus RNA-sequencing profiles. These two regions are not homologous, so part of any measured difference may reflect region and not species. The study has five main findings. First, the similarity of partners for single genes was modest (median 0.169; 0, unrelated; 1, identical). This median was below that of every comparison among human datasets but within the range of comparisons among mouse datasets, and correction for measurement noise raised it to 0.349 at most. Second, groups of co-expressed genes (modules) were strongly preserved. Third, neuropsychiatric disease genes were modestly more conserved than other genes, but no more than control genes matched for mutational constraint and expression, consistent with general gene properties and with how these genes are discovered. Fourth, no disease gene was shown to have different partners in the two species. Fifth, four of five human modules recurred in an independent human dataset. We also identified two sources of error: analyzing only the most variable genes excludes most disease genes, and networks built from few samples, as for glial cells, underestimate the similarity between species. Scores and code are released for cross-species studies.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756860v1",
+      "tier": "brief",
+      "why": "Large-scale single-cell comparison of gene co-expression networks between mouse and human prefrontal cortex finds only modest single-gene partner conservation but strong module-level preservation, with implications for translating GRN findings across species."
+    },
+    {
+      "id": "10.64898/2026.10.03.756428",
+      "title": "Genetic dissection of DNA damage response pathways reveals divergent modulation of PD-1 blockade response in colorectal cancer",
+      "authors": [
+        "Fece de la Cruz, F.",
+        "Wong, E.",
+        "Barnes, H.",
+        "Fella, K.",
+        "Curtis, J.",
+        "Phat, S.",
+        "Myers, D. T.",
+        "Patel, P. S.",
+        "Braverman, J.",
+        "Yilmaz, O. H.",
+        "Corcoran, R. B."
+      ],
+      "abstract": "Although MSI-H/dMMR colorectal cancers and the rarer subset with pathogenic POLE exonuclease domain mutations can benefit from immune checkpoint blockade, MSS colorectal cancer remains largely refractory, raising the question of whether other DNA damage response defects may also confer sensitivity to immunotherapy. Here, we performed a systematic in vivo screen of recurrently altered DNA damage response (DDR) genes to determine whether distinct repair defects modulate response to PD-1 blockade in MSS colorectal cancer. Using a genome-edited murine model in immunocompetent mice, we found that DDR perturbations produced heterogeneous outcomes, indicating that the immunologic consequences of DNA repair deficiency may be pathway-specific. Loss of Brca1, Brca2, Atm, and Fanca enhanced response to anti-PD-1 therapy, whereas Atr and Msh6 deficiency were associated with poor benefit. Brca1/2-deficient tumors showed the strongest regressions, supporting a link between core homologous recombination deficiency and increased immune sensitivity. In an independent cohort of colorectal cancer patients treated with ICB from the MSK-IMPACT Clinical Sequencing Cohort, BRCA1 alterations were associated with improved survival status, while FANCA alterations showed a similar trend. Because ATM is therapeutically targetable, we evaluated pharmacologic ATM inhibition in MSS colorectal cancer. Sustained ATM inhibition induced immune-related transcriptional programs in vitro and, when administered as a pre-treatment in vivo, enhanced the antitumor activity of PD-1 blockade. Together, these findings suggest that selected DDR alterations may represent candidate biomarkers of immunotherapy sensitivity, while ATM inhibition may provide a rational combination strategy to enhance PD-1 blockade in MSS colorectal cancer.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756428v1",
+      "tier": "brief",
+      "why": "A systematic in vivo DDR gene screen shows pathway-specific (not uniform) effects on anti-PD-1 response in MSS colorectal cancer, identifying ATM inhibition as a rational immunotherapy-sensitizing combination."
+    },
+    {
+      "id": "10.64898/2026.10.01.756092",
+      "title": "Linkage disequilibrium moderates how evolving genetic background shapes variant-level architecture",
+      "authors": [
+        "Lee, H.",
+        "Terhorst, J."
+      ],
+      "abstract": "Evolutionary theory offers a unifying explanation for the genetics of complex traits and diseases by modeling how a trait and its genetic basis are maintained by evolutionary forces. A growing body of evidence suggests that linkage disequilibrium (LD) couples a variant's evolution to that of the genetic background it resides on. However, widely used single-variant theories omit this coupling between variants and the background, or hold the background fixed. We close this gap by developing a model of linkage LD evolution accounting for stabilizing selection, recombination, and genetic drift. The model deduces the genetic architecture of individual variants subject to the co-evolving genetic background. More efficient selection in larger populations is partially offset by slower decay of existing LD and increased generation of new LD. Conversely, noisier LD in smaller populations exposes the variants to episodes of stronger selection. We ask whether ancestry differences in the relationship between effect-size magnitude and minor allele frequency require different selection strengths or can arise from differences in demographic history alone. Stabilizing selection needs to be more than three times stronger in Africans than in Europeans under the constant-size demography, whereas an Out-of-Africa demography alone can explain most of the observed frequency-dependence gap. As this example indicates, selection strength is in general not identifiable from the frequency–effect-size relationship alone, because different combinations of selection and demographic history can produce the same pattern in data with further redundancy added by LD.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.756092v1",
+      "tier": "brief",
+      "why": "A population-genetic model coupling variant evolution to linkage-disequilibrium background shows that frequency-dependent effect-size patterns can arise from demographic history alone, without invoking differential selection strength across populations."
+    },
+    {
+      "id": "10.64898/2026.10.01.755909",
+      "title": "Intraindividual longitudinal changes of the proteome reveal dynamic markers of biological aging",
+      "authors": [
+        "Lermer, R.",
+        "Qian, X.",
+        "Pusch, S. T.",
+        "Schaefer, T.",
+        "Adam, J.",
+        "Li, L.",
+        "von Scheidt, M.",
+        "Linkohr, B.",
+        "Peters, A.",
+        "Mann, M.",
+        "Schunkert, H.",
+        "Heinig, M."
+      ],
+      "abstract": "Proteomic aging clocks have emerged as biomarkers of aging, but most rely on cross-sectional data. Here, we present a proteomic aging clock based on longitudinal measurements of liquid chromatography-mass spectrometry plasma proteomics at up to three time points in the population-based KORA cohort, comprising 9,105 samples from 4,100 individuals in the final dataset aged 25-88 years. The model predicts chronological age and yields a measure of proteomic age acceleration associated with lifestyle and clinical risk factors. Risk factor-stratified analyses reveal shared proteomic signatures among cardiometabolic exposures and distinct signatures for smoking and physical activity. Within individuals, dyslipidemia and impaired kidney function track transitions to increases in age acceleration, while higher age acceleration is associated with increased all-cause mortality. Mediation analysis suggests that risk factors are linked to mortality indirectly through age acceleration. Affected proteins and pathways highlight extracellular matrix remodeling, complement and coagulation pathways, and liver-derived plasma proteins as key contributors to aging. Mendelian randomization identifies proteins with evidence consistent with a causal role in aging-related traits. Together, these findings are consistent with biological aging being dynamically responsive to changes in modifiable risk factors.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.755909v1",
+      "tier": "brief",
+      "why": "A longitudinal (not just cross-sectional) plasma proteomic aging clock in >4,000 individuals links within-person risk-factor changes to age-acceleration transitions and mortality, with Mendelian randomization support for causal aging proteins."
+    },
+    {
+      "id": "10.64898/2026.10.03.756403",
+      "title": "Integrative genetic and transcriptomic analysis identifies candidate genes and compounds for Fragile X syndrome and autism spectrum disorder",
+      "authors": [
+        "Zhang, W.",
+        "Yan, J.",
+        "DeGiorgio, M."
+      ],
+      "abstract": "Fragile X syndrome (FXS) is the most commonly known monogenic cause of autism spectrum disorder (ASD), yet how FXS biology relates to polygenic architecture of idiopathic ASD remains poorly defined. We integrated publicly available genetic data relevant to ASD and FXS, including population case-control risk, symptom discordance within monozygotic twin pairs, contrasts between ASD and other psychiatric disorders, and genetic variation associated with circulating plasma fragile X messenger ribonucleoprotein (FMRP) abundance. These data were used to identify associated genes and pathways across tissues and prioritize small molecules predicted to reverse genetically associated transcriptional signatures. Cross-tissue analysis identified XRN2 as the strongest association for population ASD risk and PPP3CA as the strongest association with FMRP abundance, providing distinct candidate links to ASD and FXS biology. We found no evidence that population ASD risk and symptom discordance within monozygotic twin pairs share common-variant architecture after accounting for linkage disequilibrium, suggesting that these phenotypes capture at least partially distinct sources of genetic signal. Connectivity mapping identified candidate compounds across eight genetic signatures, including several with biologically plausible mechanisms. Together, these findings provide a genetics-anchored framework for connecting FXS and ASD biology and for prioritizing candidate therapeutic mechanisms and compounds, while highlighting methodological safeguards needed for reliable integrative genomic drug repurposing.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756403v1",
+      "tier": "brief",
+      "why": "Integrates population genetics, twin discordance, and FMRP-QTL data to link Fragile X syndrome biology to idiopathic autism's polygenic architecture and prioritize repurposable compounds."
+    },
+    {
+      "id": "10.64898/2026.10.03.756361",
+      "title": "Establishment and characterization of LNCaP-TR-BoM, a bone metastasis-derived prostate cancer cell line with an intermediate AR-attenuated phenotype",
+      "authors": [
+        "Chao, A.",
+        "Lu, X."
+      ],
+      "abstract": "Background. Progression of prostate cancer under androgen receptor (AR) pathway-targeted therapy spans a phenotypic spectrum, from tumors that sustain AR pathway output to tumors that become independent of AR signaling. Experimental models that occupy the intermediate portion of this spectrum, in which AR is still expressed but pathway output is reduced, are comparatively scarce. Methods. LNCaP cells expressing a triple-modality reporter (LNCaP-TR) were injected into nude mice by the intracardiac route, and a bone lesion that arose in the middle spine of one animal was recovered and propagated as LNCaP-TR-BoM. The subline and its parental line were compared by two-dimensional and three-dimensional culture assays, RNA-seq, qRT-PCR, and immunoblotting. AR pathway output was assessed using KLK3 expression under AR antagonist treatment. Public prostate cancer datasets provided clinical context. A CRISPR-Cas9 EPHA3-edited derivative was evaluated in aggregation and spheroid assays. Results. Relative to parental LNCaP-TR, LNCaP-TR-BoM formed more numerous and larger cell aggregates in monolayer culture and larger, less circular spheroids in both suspension and Matrigel three-dimensional culture. AR mRNA was modestly reduced and AR protein remained readily detectable, whereas KLK3 mRNA and protein were reduced disproportionately more than those of AR. Residual KLK3 expression remained suppressible by AR inhibitors enzalutamide and darolutamide. Transcriptome-based pseudotime placed LNCaP-TR-BoM between the parental line and the androgen-refractory LNCaP-RF variant. Subsequent differential gene expression (DGE) and pathway enrichment analysis revealed that LNCaP-TR-BoM exhibits transcriptomic rewiring concordant with that of clinical mCRPC, thus evidencing LNCaP-TR-BoM as a potentially clinically relevant model cell line. Finally, EPHA3 showed the largest fold change among the most significant differentially expressed genes in LNCaP-TR-BoM compared with the parental line. Therefore, EPHA3 was explored to demonstrate the utility of the LNCaP-TR-BoM cell line as a discovery system for genes that potentially drive the malignancy of bone-metastatic prostate cancer at the intermediate AR-attenuated progression stage. An EPHA3-silenced derivative of LNCaP-TR-BoM lacking detectable EPHA3 protein formed smaller aggregates and smaller, more circular spheroids, suggesting EPHA3 may play a role in driving the malignancy of AR-intermediate bone-metastatic prostate cancer. This finding provides support for the potential utility of the LNCaP-TR-BoM cell line as a discovery system for genes relevant to driving AR-intermediate bone-metastatic prostate cancer. Conclusions. LNCaP-TR-BoM is a bone lesion-derived prostate cancer cell line in which AR expression is retained but AR pathway output is attenuated, accompanied by an mCRPC-concordant transcriptomic shift and altered multicellular organization. It provides a paired discovery system for candidate genes such as EPHA3.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756361v1",
+      "tier": "brief",
+      "why": "scRNA-seq and RNAi screening in regenerating planarian eyes identifies DDR collagen receptors and TMEM132 adhesion factors as controllers of progenitor migration and self-organized organ assembly, a nice model for cell fate/differentiation trajectories."
+    },
+    {
+      "id": "10.64898/2026.10.05.756835",
+      "title": "Spatially restricted bmp16 in an extra-embryonic syncytium promotes dorsoventral patterning",
+      "authors": [
+        "Couturier, H.",
+        "Greenfeld, H.",
+        "Zussman, J. W.",
+        "Wagner, D. E."
+      ],
+      "abstract": "How nuclei within a shared cytoplasm organize gene expression programs to direct developmental signaling remains incompletely understood. Here, we combine single-nucleus RNA sequencing, spatial transcriptomic mapping, and functional perturbations to characterize the zebrafish yolk syncytial layer (YSL), an extra-embryonic syncytium that supports embryonic development and patterning. We identify extensive transcriptional covariation among YSL nuclei, revealing coordinated multigene programs organized along dorsoventral and animal-vegetal axes. Within the YSL, we identify an animal-ventral subdomain expressing several BMP ligand transcripts including bmp16, a member of the BMP2/4 subfamily. We found bmp16 expression to be exclusively extra-embryonic during gastrulation, and functional perturbations reveal that bmp16 is sufficient to ventralize embryos upon overexpression and acts synergistically with bmp2b to promote ventral fates. Ventral YSL expression of Bmp transcripts depends on a transcriptional program downstream of mxtx2 and is maintained independently of BMP pathway autoregulation, while negative regulation by hhex restricts bmp16 expression to the ventral YSL. Together, these findings establish the YSL as a spatially organized syncytium in which coordinated nuclear gene expression programs support localized sources of embryonic patterning signals.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756835v1",
+      "tier": "brief",
+      "why": "Single-nucleus and spatial transcriptomics of the zebrafish yolk syncytial layer uncovers a spatially restricted bmp16 program that patterns the dorsoventral axis from an extra-embryonic compartment, illuminating multinucleate signaling organization."
+    },
+    {
+      "id": "10.64898/2026.09.30.755663",
+      "title": "ASTRA enables zero-shot super-resolution of spatial transcriptomics across capture geometries",
+      "authors": [
+        "Ye, J.",
+        "Cui, Q."
+      ],
+      "abstract": "Spatial transcriptomic super-resolution recovers tissue organization obscured by coarse sampling, but fitting a model to each section greatly increases computational cost and reduces practicality. We introduce ASTRA, a cross-platform pretrained model that reconstructs expression from histology and measured RNA by zero-shot inference. Training with arbitrarily shaped count-bearing regions, termed parents, enables one frozen model to accommodate dense bins and separated spots. Across six held-out Visium HD sections, ASTRA achieved higher correlations under dense-bin and pseudo-Visium sampling, lower dense-bin errors and substantially shorter processing times than existing methods. It improved colorectal tissue segmentation and tumor-boundary recovery. In real colorectal Visium, reconstruction spatially resolved a stromal transcriptional state supported by measured RNA. The same checkpoint supported regional and nucleus-associated analyses across 43 invasive lobular carcinoma sections and within-spot interpretation across 92 triple-negative breast cancer sections. ASTRA establishes a reusable framework for practical, cohort-scale spatial transcriptomic super-resolution across platforms.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755663v1",
+      "tier": "brief",
+      "why": "ASTRA is a cross-platform, zero-shot pretrained model for spatial transcriptomics super-resolution that generalizes across capture geometries (Visium HD, pseudo-Visium) without per-section retraining."
+    },
+    {
+      "id": "10.64898/2026.10.01.756043",
+      "title": "Genomic SEM reveals shared genetic architecture and expands locus discovery for locomotor activity in heterogeneous stock rats",
+      "authors": [
+        "Chitre, A. S.",
+        "Sanches, T. M.",
+        "Ang, G.",
+        "Amissah, N. K.",
+        "Avila, R.",
+        "Bimschleger, H.",
+        "Campo, P.",
+        "Cannella, N.",
+        "Chen, D.",
+        "Cheng, R.",
+        "Cohen, K. A.",
+        "Crow, A. D.",
+        "Dereschewitz, E.",
+        "Doyle, M. R.",
+        "Eid, M.",
+        "George, A. M.",
+        "Horvath, A. P.",
+        "Ishiwari, K.",
+        "Johnson, B. B.",
+        "Keung, E.",
+        "King, C.",
+        "Martin, C. D.",
+        "Garcia Martinez, A.",
+        "Munro, D.",
+        "Netzley, A. H.",
+        "Nguyen, K.-M.",
+        "Peng, B.",
+        "Pullmann, D.",
+        "Rahman, S. R. M. U.",
+        "Roberts, A. T.",
+        "Sadegi, M.",
+        "Sevigny-Resetco, D.",
+        "Soverchia, L.",
+        "St. Pierre, C. L.",
+        "Suzuki, N.",
+        "Thompson, B. M.",
+        "Tyagi, S.",
+        "Ubaldi, M.",
+        "Vogel, R. M.",
+        "Wang, T.",
+        "Wang, Y.",
+        "Chen, H.",
+        "Ciccocioppo, R.",
+        "d"
+      ],
+      "abstract": "Locomotor response to a novel environment is a heritable, addiction-relevant behavioral phenotype in rodents. We characterized its genetic basis in 9,341 male and female heterogeneous stock (HS) rats from eight studies. Locomotor activity was heritable across studies, while pairwise genetic correlations were positive but variable, indicating shared yet nonidentical genetic influences. Given nonuniform genetic architecture, we compared three complementary approaches to locus discovery that analyzed SNP effects 1) on a pooled locomotor phenotype (MEGA), 2) across studies under a fixed-effect model (METAL), or 3) on a shared genetic factor (Genomic SEM). To ensure comparability, all three locus-discovery approaches were applied to a common subset of seven studies. Together, these approaches identified 38 loci, with both convergence and method-specific discovery across analyses. Genomic SEM identified 31 loci, compared to 8 for MEGA and 13 for METAL. To interpret the loci, we integrated brain molecular QTLs, predicted coding and splice consequences, and open-field locomotor phenotypes from knockouts of orthologous mouse genes. Our results highlighted established neurobehavioral candidates spanning locomotor and reward-related biology (Negr1 and Lmo4), serotonergic signaling (Htr1b), and GABAergic signaling (Gabrg2), as well as relatively novel genes including Tcerg1l, Pcdh10, and Tmem132e. Our results illustrate how Genomic SEM can integrate genetically correlated yet heterogeneous behavioral measures and enable discovery of loci underlying their shared genetic architecture, highlighting its utility for complex-trait studies in rodents.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.756043v1",
+      "tier": "brief",
+      "why": "Compares Genomic SEM against standard meta-analysis for locus discovery of a heritable behavioral trait across heterogeneous rat cohorts, nearly quadrupling loci found versus pooled GWAS—a methods lesson applicable to multi-cohort omics integration."
+    },
+    {
+      "id": "10.64898/2026.10.03.756212",
+      "title": "A near-ubiquitous plasmid characterises Second Pandemic Yersinia pestis",
+      "authors": [
+        "Seersholm, F. V.",
+        "Scorrano, G.",
+        "Ploug, J. B.",
+        "McLeod, R.",
+        "Williams, S. E.",
+        "Jorkov, M. L. S.",
+        "Klassen, L.",
+        "Moller, S. B.",
+        "Hadjouis, D.",
+        "Hansen, E. K.",
+        "Siebken, M. B.",
+        "Clausen, J. J.",
+        "Winther, S. D.",
+        "Ravn, M.",
+        "Arcini, C. A.",
+        "Iversen, A. K. N.",
+        "Willerslev, E.",
+        "Sikora, M."
+      ],
+      "abstract": "Yersinia pestis, the causative agent of plague, crippled population across Eurasia in three well-described historical pandemics: The Justinianic plague (541-780), the Second Pandemic (1346-1840) and the Third Pandemic (1894-). The Second Pandemic was the deadliest, with the Black Death (1346-1351) killing up to 60% of Europe's population, far exceeding the population mortality of the Third pandemic, despite few genomic differences between their plague strains. To identify unique genetic variation that could help explain the high death toll of the Second Plague pandemic, we used variation-graph based pan-genomics on a large dataset of 110 new and 12 published shotgun sequenced ancient plague genomes to comprehensively characterise the pangenome diversity of the Second Pandemic plague. Our pangenomic approach revealed the presence of a cryptic 34kb plasmid, pTP33, in almost all strains from the Second Pandemic, but undetectable in all other ancient strains. We find that pTP33 is a phage-plasmid-like derived element with homologues in Enterobacterales bacteria with established insect- or invertebrate-associated lifestyle phases. Our results suggest that pTP33 widened the range and infectivity of vector species available for plague transmission, consistent with reported effects on biofilm formation and bacterial retention. We hypothesise that pTP33 broadened the vector range of Y. pestis beyond the classical rat/flea cycle, facilitating the establishment of new rodent-ectoparasite plague reservoirs, which, critically, increased the risk of flea- or lice-mediated plague transmission between humans. Taken together, our findings offer a biological explanation for differences in transmission dynamics and population mortality between the Second and Third plague pandemics.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756212v1",
+      "tier": "mention",
+      "why": "Pangenomic analysis of ancient Yersinia pestis genomes finds a near-ubiquitous cryptic plasmid unique to the Black Death-era Second Pandemic, potentially explaining its outsized mortality via expanded vector range."
+    },
+    {
+      "id": "10.64898/2026.10.02.756347",
+      "title": "Genomic classification and immune profiling define mucosal melanoma",
+      "authors": [
+        "Shi, Y.",
+        "Sharma, P.",
+        "Lin, J.-r.",
+        "Dedeilia, A.",
+        "Taratino, G.",
+        "Pelletier, R.",
+        "Lopez, M. L.",
+        "Aygun, N.",
+        "Manos, M. P.",
+        "Lawless, A. R.",
+        "Cohen, S.",
+        "Lu, Y. D.",
+        "Roelofs, M. K.",
+        "Pant, S. M.",
+        "Chen, J.",
+        "Fisher, D. E.",
+        "Beroukhim, R.",
+        "Lian, C. G.",
+        "Buchbinder, E. I.",
+        "Sorger, P. K.",
+        "Insco, M.",
+        "Liu, D.",
+        "Boland, G."
+      ],
+      "abstract": "Mucosal melanoma is a rare, lethal melanoma subtype with distinct genetics and limited benefit from immunotherapy. To define features associated with mucosal melanoma clinical outcomes, we assembled a large, multimodally profiled cohort spanning primary and metastatic disease. Compared with cutaneous melanoma, primary mucosal melanoma showed greater genomic heterogeneity, ploidy and aneuploidy, and a more dedifferentiated, proliferative transcriptional state. Analysis of genomic sequencing of 339 patients with mucosal melanoma identified four mutually exclusive genomic subtypes: CDK4/MDM2/CCND1, SF3B1-mutated, TP53/ATRX, and mucosal melanoma Triple WT, associated with distinct anatomic sites but similar outcomes. In the tumor microenvironment, we observed reduced T cell infiltration and increased CD163+ tumor-associated macrophages in mucosal melanoma relative to cutaneous melanoma. In matched longitudinal samples, CD163+ tumor-associated macrophages increased with disease progression and immunotherapy resistance. CD163+ tumor-associated macrophages engaged non-regulatory T cells through GAL9-TIM-3 interactions, nominating TIM-3 blockade as a therapeutic strategy for mucosal melanoma. These findings define the distinct aggressive biology of mucosal melanoma and highlight potential therapeutic targets and mechanisms of immune resistance.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756347v1",
+      "tier": "mention",
+      "why": "Multimodal profiling of 339 mucosal melanoma patients defines four genomic subtypes and implicates CD163+ macrophage-TIM3 signaling as an immunotherapy resistance mechanism."
+    },
+    {
+      "id": "10.64898/2026.10.04.756472",
+      "title": "EPHA4 Regulates the Transition between Mesenchymal and Hybrid States in TNBC",
+      "authors": [
+        "Liu, W.",
+        "Lee, H. W.",
+        "Bungert, M. H.",
+        "Nguyen, L. C.",
+        "Kurowska, A.",
+        "Lee, T. J.",
+        "Yerradoddi, G. P.",
+        "Suarez, E.",
+        "Rosner, M. R."
+      ],
+      "abstract": "Metastatic progression in triple-negative breast cancer (TNBC) is strongly influenced by epithelial-mesenchymal plasticity (EMP), which enables transitions between epithelial, hybrid epithelial/mesenchymal (E/M), and mesenchymal cell states. While mesenchymal cells are highly invasive and resistant to therapy, hybrid E/M states confer advantages during metastatic colonization. Both mesenchymal and hybrid states therefore contribute to tumor aggressiveness through distinct mechanisms. However, the molecular regulation governing transitions between mesenchymal and hybrid E/M states remains poorly understood. Here, we identify EPHA4 as a regulator of this transition in TNBC. EPHA4 expression is enriched in mesenchymal TNBC cells, and genetic knockout of EPHA4 in MDA-MB-231 xenograft and 4T1 syngeneic models induces a shift toward hybrid E/M phenotypes. This transition reduces cellular invasion while enhancing metastatic colonization, consistent with the clinical observations of decreased EPHA4 expression in secondary metastases compared to primary tumors. Despite compensatory changes in other Eph/ephrin family members following EPHA4 loss, EPHA4 deficiency is sufficient to drive this phenotypic shift. These findings identify EPHA4 as a regulator of cancer cell plasticity in TNBC and highlight the therapeutic complexity of targeting pathways that govern metastatic state transitions.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.04.756472v1",
+      "tier": "mention",
+      "why": "EPHA4 loss shifts triple-negative breast cancer cells from mesenchymal to hybrid E/M states, trading invasiveness for enhanced metastatic colonization capacity."
+    },
+    {
+      "id": "10.64898/2026.10.05.756774",
+      "title": "Binding kinetics enable tumor-selective MAPK and growth suppression by a Type 1 RAF Inhibitor",
+      "authors": [
+        "Desaunay, M.",
+        "Peters, T.",
+        "Matenoglou, E.",
+        "Baars, B.",
+        "Gaire, B.",
+        "Orive-Ramos, A.",
+        "ren, L.",
+        "Lyssikatos, J. P.",
+        "Burkard, M. R.",
+        "Dacus, D.",
+        "Sale, M. J.",
+        "Aaronson, S. A.",
+        "McCormick, F.",
+        "Gavathiotis, E.",
+        "Gross, S.",
+        "Poulikakos, P. I."
+      ],
+      "abstract": "Therapeutic inhibition of the RAS/MAPK cascade, an oncogenic driver in over one-third of human cancers, has been limited by a core trade-off: effective pathway blockade in tumors versus dose-limiting toxicity in normal tissues. Although Type 1.5 RAF inhibitors successfully mitigated this trade-off in BRAF-monomer-driven tumors, an equivalent strategy has been lacking for RAF-dimer-driven cancers, including those with RAS mutations. Here, we characterize ELV-3111, a next-generation, potent, and selective Type 1 RAF inhibitor that overcomes this limitation via a distinct mechanism of action. ELV-3111 induces paradoxical MAPK hyperactivation in normal tissues by binding RAF and promoting the active conformation (priming) followed by rapid dissociation (fast off-rate), a biochemical feature that spares RAS-mutant tumors, where RAF is already primed. In these and other RAF dimer-driven tumor models, ELV-3111 achieves potent and selective MAPK and growth suppression. When combined with a MEK inhibitor, ELV-3111 enables complementary pharmacology: additive inhibition in tumors and compensatory effects in normal tissues. The combination produced durable regressions across RAS-mutant and BRAF-mutant models, including a RAS-mutant model refractory to current therapies, while maintaining favorable tolerability. Thus, we uncover a generalizable mechanism that enables Type 1 RAF inhibitor plus MEK inhibitor combinations to achieve tumor-selective MAPK suppression, with the potential to inform targeted therapy design.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756774v1",
+      "tier": "mention",
+      "why": "A Type 1 RAF inhibitor exploits fast on/off binding kinetics to achieve tumor-selective MAPK suppression in RAS/RAF-dimer-driven cancers while sparing normal tissue."
+    },
+    {
+      "id": "10.64898/2026.10.05.756638",
+      "title": "SLC25A28 is a synthetic lethal vulnerability in nucleotide excision repair-deficient cancers",
+      "authors": [
+        "Yang, N.",
+        "Hoeg, L.",
+        "Bai, X.",
+        "Gao, S.",
+        "de Stanchina, E.",
+        "Solit, D.",
+        "Topka, S.",
+        "Belhadj, S.",
+        "Carrot-Zhang, J.",
+        "Iyer, G.",
+        "Durocher, D.",
+        "Mouw, K. W.",
+        "JOSEPH, V.",
+        "Offit, K.",
+        "Lipkin, S."
+      ],
+      "abstract": "Approximately 10% of bladder, upper urinary tract, and endometrial cancers harbor deleterious somatic alterations in nucleotide excision repair (NER) pathway genes. Although platinum-based chemotherapy is the standard treatment for NER-deficient tumors, its utility is limited by nephrotoxicity, motivating alternative strategies that avoid direct DNA targeting. Here, we employed a genome-wide CRISPR-Cas9 screen to identify synthetic lethal vulnerabilities in NER-deficient cancer cells. An ERCC4-null RT112/84 bladder cancer cell line was generated and validated by Sanger sequencing and Western blotting, and functional NER deficiency was confirmed using a host cell reactivation assay. Parallel screens in ERCC4-deficient and isogenic wild-type cells. nominated SLC25A28 as the top-ranked synthetic lethal candidate in ERCC4-deficient cells, an interaction further supported by DepMap dependency. Clonogenic assays confirmed that loss of SLC25A28 selectively impaired cell viability in cells deficient for ERCC2, ERCC3, ERCC4, or ERCC5 and inducible knockout selectively suppressed ERCC4-deficient xenograft growth in-vivo. Mechanistically, RNA sequencing followed by gene set enrichment analysis revealed enrichment of oxidative stress-related pathways, including cellular responses to reactive oxygen species (ROS) and DNA damage signatures, upon SLC25A28 loss. These transcriptional changes are consistent with increased oxidative stress and DNA damage, placing heightened demand on NER-mediated repair. Direct measurement confirmed increased intracellular ROS. Collectively, our nominates SLC25A28 as a previously unrecognized synthetic lethal vulnerability in NER-deficient cancers and implicate mitochondrial iron homeostasis as a candidate metabolic dependency that may be targeted independently of platinum-based chemotherapy.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756638v1",
+      "tier": "mention",
+      "why": "CRISPR screening identifies SLC25A28 (mitochondrial iron transport) as a synthetic lethal target in nucleotide excision repair-deficient cancers, offering a non-platinum therapeutic avenue."
+    },
+    {
+      "id": "10.64898/2026.10.02.754697",
+      "title": "HMGA2 Expression in Pancreatic Ductal Adenocarcinoma Controls Tumor Microenvironment and Immunosuppression via IL1α",
+      "authors": [
+        "Yamamoto, N.",
+        "Dobersch, S.",
+        "Robertson, T. M.",
+        "Sim, J. H.",
+        "Wallace-Povirk, A.",
+        "Chew, N.",
+        "Orellana, A. E.",
+        "Aggrey-Fynn, J.",
+        "Boila, L.",
+        "Schutter, A.",
+        "Loveless, I. M.",
+        "Jang, G. H.",
+        "Avanessian, S.",
+        "Beatty, G. L.",
+        "Hingorani, S. R.",
+        "Rydberg Millrud, C.",
+        "Steele, N. G.",
+        "Barbosa Vendramini Costa, D.",
+        "Francescone, R.",
+        "Crawford, H. C.",
+        "Notta, F.",
+        "Barry, K.",
+        "Kugel, S."
+      ],
+      "abstract": "The basal-like subtype of pancreatic ductal adenocarcinoma (PDAC) is associated with poor outcomes and increased chemoresistance. Expression of high mobility group AT-hook 2 (HMGA2), a chromatin architectural protein, marks basal PDAC cells and associates with specific features of the tumor microenvironment (TME), including more immunosuppressive cancer associated fibroblasts (CAFs) and fewer cytotoxic CD8+ T cells. Expression of HMGA2 by tumor cells leads to upregulation of the immunosuppressive markers interleukin 6 (IL6) and leucine-rich repeat containing protein 15 (LRRC15) in associated fibroblasts. Mechanistically, HMGA2 in the tumor cell binds the interleukin 1 alpha (IL1) promoter and upregulates transcription, increasing IL1 in the TME, in turn inducing immunosuppressive fibroblast polarization, increasing regulatory T cells, and decreasing CD8+ T cells. Blockade of the IL1 signaling axis disrupts this tumor-driven microenvironment phenotype and combines with inhibitors of oncogenic KRAS to improve tumor control.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.754697v1",
+      "tier": "mention",
+      "why": "HMGA2 in basal pancreatic cancer cells drives an IL1a-mediated immunosuppressive fibroblast program, and blocking IL1 signaling improves tumor control with KRAS inhibitors."
+    },
+    {
+      "id": "10.64898/2026.10.05.756824",
+      "title": "KRAS-driven metabolic reprogramming of enhanced MFSD2A-mediated lysophosphatidylcholine scavenging promotes survival and progression of pancreatic ductal adenocarcinoma",
+      "authors": [
+        "chen, y.",
+        "Haffner, C.",
+        "Chellakkan Selvanesan, B.",
+        "Wu, R.",
+        "Ballaro, R.",
+        "Vilchis Celis, A.",
+        "Zuo, M.",
+        "Patterson, L.",
+        "Adofo, M.",
+        "Vykoukal, J.",
+        "Leon-Letelier, R.",
+        "Dou, R.",
+        "Park, S.",
+        "Cai, Y.",
+        "Rodriguez-Perera, D.",
+        "Irajizad, E.",
+        "McAllister, F.",
+        "Kim, M.",
+        "Koay, E.",
+        "Wolpin, B.",
+        "Hsiao, F. C.",
+        "Dennison, J.",
+        "Katayama, H.",
+        "Bernard Pagan, V.",
+        "Maitra, A.",
+        "Hanash, S.",
+        "Fahrmann, J."
+      ],
+      "abstract": "Oncogenic KRAS drives lipid reprogramming in pancreatic ductal adenocarcinoma (PDAC) to promote disease progression, and these changes are manifest in circulation. Using mass spectrometry, we performed lipidomic analyses on plasmas from a cohort of 93 newly-diagnosed resectable PDAC cases, 43 patients with chronic pancreatitis, and 93 age- and sex-matched healthy controls, the results of which revealed pronounced reductions in circulating lysophosphatidylcholines (LysoPC) as a prominent feature associated with PDAC. Using stable-isotope resolved lipidomics, we further found that PDAC cells exhibit a lipid scavenging phenotype characterized by preferential uptake of extracellular unsaturated LysoPCs to sustain pro-growth signals. Restricting bioavailability of extracellular unsaturated LysoPCs shifted the metabolic phenotype of PDAC cells towards enhanced de novo lipogenesis and autophagy, which was accompanied by suppression of AKT signaling activities and increased susceptibility to apoptosis. Using bulk, single-cell, and spatial transcriptomic datasets together with functional experiments, we identified oncogenic KRAS-mediated upregulation of major facilitator superfamily domain-containing protein 2a (MFSD2A) as a key mediator that facilitates extracellular uptake of LysoPCs in PDAC cells. Loss of MFSD2A expression mimicked LysoPC restriction and resulted in inhibition of AKT signaling and increased propensity of PDAC cells to undergo apoptosis in vitro and suppressed tumor growth in vivo. Therapeutic targeting of the KRAS-MFSD2A-LysoPC axis via repurposing of the synthetic alkyl-lysophospholipid edelfosine promoted potent anti-cancer effects in vitro that were mechanistically attributed to reduced extracellular uptake of LysoPCs, and attenuation of AKT signaling. Collectively, our findings describe a previously unrecognized onco-metabolic program of enhanced LysoPC scavenging mediated by MFSD2A that promotes PDAC progression and that is therapeutically targetable via repurposing edelfosine.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756824v1",
+      "tier": "mention",
+      "why": "KRAS-driven upregulation of the lipid transporter MFSD2A enables pancreatic cancer cells to scavenge extracellular lysophosphatidylcholines, a targetable metabolic dependency."
+    },
+    {
+      "id": "10.64898/2026.09.29.755492",
+      "title": "A map of RBP-miRNA regulatory connections for deciphering the mechanisms of transcriptome remodeling in cancer",
+      "authors": [
+        "Perron, G.",
+        "Amaravadi, M.",
+        "Tseng, H.-W.",
+        "Jandaghi, P.",
+        "Moslemi, E.",
+        "Nishimura, T.",
+        "Rajaee, M.",
+        "Alkallas, R.",
+        "Culbertson, B.",
+        "Garcia, K.",
+        "Watson, I. R.",
+        "Goodarzi, H.",
+        "Duchaine, T.",
+        "Riazalhosseini, Y.",
+        "Najafabadi, H. S."
+      ],
+      "abstract": "Micro-RNAs (miRNAs) are key post-transcriptional regulators of gene expression that influence cancer progression and outcome. Whereas transcriptional dysregulation of miRNA abundance underlies abnormal functionality of some miRNAs in cancer, emerging data points to RNA-binding proteins (RBPs) as prominent post-transcriptional regulators of miRNA activity. Here, by modelling the regulon activities of well-characterized miRNA families in RNA-seq data of a comprehensive collection of RBP inhibition experiments, human cell lines and tissues, we report a map of regulatory connections between 34 RBPs and 28 miRNAs. Furthermore, through a global analysis of the abundance as well as the activity of miRNAs in thousands of tumor and control samples from 17 human cancers, we show that RBP-driven regulation of miRNA activity is common in tumors and contributes to the heterogeneity in miRNA activity profiles. We uncover a set of RBPs that regulate the activity of tumor-suppressor and oncogenic miRNAs, including miR-29-3p, miR-17-5p and miR-19-3p. Of particular interest, we describe a pan-cancer negative regulatory role for DDX55 on the activity of the miR-29-3p family, a critical miRNA family with tumor suppressor functions that is involved in most human cancers. Our functional studies confirm that DDX55 inhibition restores the gene-silencing activity of miR-29-3p and reduces cancer cell viability. Overall, our study provides the first pan-cancer investigation of functional regulatory connections between RBPs and miRNAs, and highlights RBPs whose interventional modulation may serve as a new approach to reprogram abnormal miRNA activities in cancer.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755492v1",
+      "tier": "mention",
+      "why": "A pan-cancer map of RNA-binding protein regulation of miRNA activity identifies DDX55 as a suppressor of tumor-suppressive miR-29-3p function across many cancer types."
+    },
+    {
+      "id": "2610.08750",
+      "title": "Neural Petri flows for chemical reactions",
+      "authors": [
+        "Jose Eduardo Escrig Molina",
+        "Daniel Probst"
+      ],
+      "abstract": "Petri nets have been used to describe chemical processes such as reactions.They map well to chemistry: Places are the bonds between atoms and the free valence of each atom, a token is a unit of bond order, a transition forms or breaks a bond, the conserved quantities are the valence budgets of the atoms, and the enabling rule is the valence rule. These semantics are not guaranteed by learned models of reactions or neural networks that are built on Petri nets that use the net as a scaffold for message passing. Here, we ask what architecture remains a Petri net for every value of its weights. We find the answer in the theory, where all semantics of a net share the firing form m^\\prime=m+C\\sigma, locality, as enabling reads only the inputs of a transition, and the enabling rule, and we prove that conservation forces the firing form and that non-negativity forces the enabling rule on local rate laws. This leaves free the rate law, which is the propensity of each transition to fire. We introduce Neural Petri Flow, which learns this rate law, or a readout for classification, and hard-wires the rest as parameter-free layers. On what we denote a valence net, atom mapping, reaction classification, and forward prediction become three tasks on one firing vector. Without training, the minimum firing vector maps 88.8% of the curated Golden set against 85.6% for RXNMapper, and 88.7 against 77.9% of the enzymatic reactions of EnzymeMap. On USPTO-480K, NPF trained on these firing vectors predicts 87.7% of the products and 67.4% when trained on a 1% subset of the training reactions. EC numbers of ECREACT are predicted at the third level for 90.2% of reactions, 5.6 points ahead of the best published method. With electrons as tokens, the same token game predicts 90.5% of the elementary steps of FlowER first, ahead of the published baseline, and every top-1 prediction is a valid molecule without a filter.",
+      "categories": [
+        "cs.LG",
+        "physics.chem-ph",
+        "q-bio.QM"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.08750",
+      "tier": "mention",
+      "why": "Neural Petri Flow hard-wires conservation laws into a learnable chemical reaction model, achieving strong atom-mapping and reaction-outcome prediction without training data in some settings."
+    },
+    {
+      "id": "10.64898/2026.10.02.756241",
+      "title": "CRISPR-Cas9 Editing of Myeloid Lectins Reveals Target-Dependent Transcriptional Remodeling in Tumor-Associated Macrophages",
+      "authors": [
+        "Trindade, G.",
+        "Pinto, M.",
+        "Domenici, G.",
+        "Escandell, J.",
+        "Brito, C."
+      ],
+      "abstract": "Tumor-associated macrophages (TAMs) integrate multiple microenvironmental signals, including lectin-mediated recognition of tumor-associated glycans. Although several myeloid lectins have been implicated in tumor-macrophage interactions, their contributions to immunosuppressive TAM phenotypes remain poorly defined. We implemented a CRISPR-Cas9 ribonucleoprotein (RNP) workflow in primary human monocytes to enable comparative loss-of-function interrogation of five potentially immunosuppressive lectins we previously reported. CRISPR-Cas9 RNP delivery conditions were benchmarked in freshly isolated monocytes using CD14 as a technical target, followed by sgRNA editing efficiency screening for CLEC4E, CLEC6A, CD209, SELL, and SIGLEC9 in HeLa S3 cells. Selected guides were applied to primary monocytes before co-culture in a 3D model with BT474 breast cancer cells. Editing was quantified by Sanger-sequencing deconvolution, while co-culture-derived CD45+ macrophages were isolated by fluorescence-activated cell sorting and characterized by bulk RNA sequencing. All five lectins were successfully perturbed, although gene editing efficiency remained target- and donor-dependent. Transcriptomic analysis revealed target-specific reprogramming and recurrent immunometabolic responses. mTORC1 signaling was consistently enriched, together with the remodeling of cholesterol homeostasis, fatty acid metabolism, and oxidative phosphorylation. CLEC6A deletion achieved attenuation of hypoxia-, angiogenesis-, and TNF/NF-kB-associated programs. CD209 and SIGLEC9 deletion similarly reduced hypoxia- and angiogenesis-associated signatures while promoting lipid and oxidative metabolism. CLEC4E perturbation induced broad remodeling of lipid and oxidative metabolism and stress-response, despite comparatively limited editing efficiency. Comparative lectin perturbation thus identified CLEC6A as the strongest candidate for further mechanistic investigation, while CLEC4E showed broad transcriptional remodeling despite lower editing efficiency, supporting its prioritization for improved genetic interrogation. Responses to CD209 and SIGLEC9 targeting further support tumor glycan-myeloid signaling as a regulator of TAM state. Overall, lectin perturbation redirected TAM transcriptional states through distinct immunometabolic programs rather than a uniform pro-inflammatory polarization, highlighting lectin-dependent immunometabolic regulation as a promising axis for further investigation.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756241v1",
+      "tier": "mention",
+      "why": "CRISPR knockout of myeloid lectins in primary monocyte-derived TAMs reveals lectin-specific, rather than uniform, immunometabolic transcriptional reprogramming, nominating CLEC6A for further study."
+    }
+  ]
+}

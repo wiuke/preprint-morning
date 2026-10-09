@@ -1,0 +1,1015 @@
+{
+  "date": "2026-10-05",
+  "format": "dialogue",
+  "n_papers": 39,
+  "episode_title": "Flow-matching perturbation prediction, an evolvable lineage recorder, and how DNA supercoiling controls transcriptional bursting",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "It's October fifth. Roughly thirty-nine new preprints landed overnight across the archive and the bio-archive."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Good spread today. We've got a generative model for predicting perturbation responses, a prime-editing lineage recorder pushed into mouse retina, two papers on DNA topology and transcription from the same lab, a model-based dissection of how the pre-initiation complex actually assembles in yeast, and a kinetics-aware way to estimate metabolic flux from mismatched omics layers."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's start with paper one, scEGFlow. The question is basically the one everyone in the perturbation-modeling space keeps hitting: can you predict a cell's transcriptional or phenotypic response to a drug or a genetic perturbation it has never seen, without retraining the whole model every time a new condition shows up?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Most existing approaches, things like scGen or CPA-style models, learn a fixed mapping from control to perturbed during training. That's brittle the moment you step outside the training distribution."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right. So what they built is a conditional flow matching model, which just means they learn a continuous vector field that transports the distribution of control cells toward the distribution of perturbed cells, parameterized by an ordinary differential equation. On top of that they add what they call energy guidance: condition-specific energy gradients that nudge the flow at inference time, without touching the trained weights."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the energy term is doing test-time correction. What's it actually fit to, and how do they know it's not just overfitting on the benchmark?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "The abstract doesn't spell out the energy function's exact form, but the point is it's condition-specific and plugged in post hoc, so you can steer predictions for a new perturbation using only a handful of measured cells, without retraining the flow model itself. They test this across benchmarks that span both imaging phenotypes and transcriptomic profiles, both seen and unseen conditions."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the claim is it beats existing methods particularly in the few-shot regime, which is the practically important one, since you'll never have deep profiling for every new drug or guide RNA."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly. They report it preserves the geometry of the cellular manifold and population heterogeneity, rather than collapsing everything to an average response, and that the up and down regulation directions in consensus gene signatures line up better with what's observed once energy guidance is applied."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The catch, and this is me reading between the lines rather than the abstract telling me so, is that any method claiming to generalize to truly novel perturbations lives or dies on how distinct the held-out conditions really are from training. A few-cell calibration set still encodes a lot of information."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Fair. But conceptually this matters for the field because it reframes perturbation prediction as navigation on a learned landscape you can steer, rather than a fixed lookup table. If it holds up on truly orthogonal perturbation classes, it's a nice step toward in silico screening that doesn't need a full new training run per experiment."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two is a tool paper, but a genuinely clever one. It's about lineage tracing, and the limitation it's solving is real: classic approaches like retroviral barcoding, dye injection, or time-lapse imaging can establish broad lineage relationships, but they don't scale to tracking many generations of divisions across a complex tissue."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is SCRIBBLE, which stands for Sequential Combinatorial Recorder for Iterative Barcode-Based Lineage Evolution. The idea is to use prime editing to repeatedly and incrementally edit a barcode locus, and crucially, to do it in a way that preserves the order in which edits happened."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So instead of a single static barcode you get something like tree rings, where the sequence of edits encodes genealogy, not just identity."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and that's the hard engineering problem: you need edits that keep happening over many cell divisions without saturating or losing information, which is why they ran high-throughput screens to find sequences that support a high level of iterative editing and information content."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Where did they validate it?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Embryonic mouse retina. It's a nice test case because retinal progenitor cells are known to generate the roughly one hundred thirty retinal cell types through biased, not purely stochastic, division patterns, and that's been hard to resolve at scale with older tools."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And it recapitulated known retinal lineage relationships, which is the sanity check you want before trusting it on an open question."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the result reported. The abstract is appropriately modest, it's a proof that the recorder works in a complex tissue, not yet a new biological claim about retinal fate rules. But for anyone doing lineage or fate-mapping work, a continually evolvable, high-information recorder is exactly the missing piece between short-term clonal assays and true multigenerational trees."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth flagging for anyone building CRISPR-based recorders generally: the design-optimization step, finding edit sequences that don't saturate, is usually the unglamorous part that actually determines whether a recorder is useful past a few divisions."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three takes us into chromatin and transcription mechanics, and it pairs with a companion paper from the same lab, which we'll fold into the round-up. The question here is how DNA supercoiling generated by transcription itself feeds back onto RNA polymerase II dynamics in human cells."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Supercoiling as in, transcription twists the DNA ahead of and behind the polymerase, positive supercoils ahead, negative ones behind, and topoisomerases are supposed to relax that strain."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly. They acutely perturb topoisomerase activity and show negative supercoiling piles up around transcription start sites, and the more it piles up, the more transcription drops. Behind the elongating polymerase, negative supercoiling specifically correlates with slower elongation, while positive supercoiling ahead doesn't show the same effect."
+    },
+    {
+      "speaker": "Leo",
+      "text": "How do they get single-cell resolution on burst dynamics rather than just bulk changes?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They use something called NOTE-seq2, which profiles newly synthesized and total RNA simultaneously in single cells. With TOP1 depletion, they see increased expression noise, and they can decompose that into reduced transcriptional burst size and reduced burst frequency."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Mechanistically that maps nicely onto two separate things: more negative supercoiling at the promoter increases RNA polymerase occupancy and pausing there, which would hit burst size, while Micro-C shows TOP1 loss weakens short-range loops, including enhancer-promoter contacts, which would hit how often a burst gets triggered at all."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Compartments and TADs stay largely intact, so this isn't a wholesale genome reorganization, it's specifically the fine-scale looping that suffers. And they tie it to a physiological readout: during T cell activation, impaired resolution of negative supercoiling blunts the rapid transcriptional upregulation program needed for activation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the part that should matter to anyone modeling gene regulatory dynamics. Burst frequency and size are usually treated as free parameters fit from scRNA-seq snapshots. This gives a physical, topological handle on what sets those parameters, at least for topoisomerase-sensitive genes, and it's a reminder that enhancer-promoter looping isn't just a static architecture question, it's actively maintained against a mechanical load generated by transcription itself."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper four is deep in yeast transcription initiation, but it's a nice example of model-based inference from ChIP-seq that's relevant beyond this specific system. The biological question is how the pre-initiation complex, Pol II plus the general transcription factors plus the Mediator coactivator, actually assembles in living cells."
+    },
+    {
+      "speaker": "Leo",
+      "text": "In vitro work already gave a linear assembly order for the general transcription factors and Pol Two. The problem is whether that order holds genome-wide in vivo, and what role Mediator plays in setting it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and the usual experimental handle is to look at how ChIP-seq occupancy of each factor changes in Mediator subunit mutants, here Med17 and Med10. But comparing occupancy shifts across factors doesn't by itself tell you the assembly order, you need a model that translates a proposed order into predicted occupancy changes and then checks which order fits best."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So this is a formal inference framework, not just descriptive genomics."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They build a system of differential equations representing candidate assembly paths, fit it with a penalized optimization criterion against the occupancy alteration data, and score paths by how well they explain what's observed."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the in vivo paths don't match the in vitro linear order."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Not exactly. One concrete finding is that you need to split the TFIIH general transcription factor into its core module and its separate TFIIK kinase module, treating them as one unit doesn't fit the data. They also find that paths starting from Mediator binding versus starting from TBP binding get different levels of support depending on the gene."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So there isn't one universal assembly order, it can be gene-dependent, and multiple paths can fit the data about equally well for a given gene, which they read as evidence that more than one assembly route might operate simultaneously in the cell population."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the honest, slightly unsatisfying but believable conclusion. For anyone building mechanistic or stochastic models of transcription initiation, it's a caution against assuming a single canonical pathway, and a demonstration of how far you can push ChIP-seq perturbation data with an explicit kinetic model instead of just eyeballing peak changes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper five moves to metabolism. The problem is a familiar one in multi-omics: you want metabolic flux, which is a rate, but you only ever measure static snapshots of transcript, protein, or metabolite abundance, often from different samples entirely."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is mmFEA, Michaelis-Menten model-based Flux Estimation Analysis. Instead of treating flux inference as a black-box regression from expression to flux, they explicitly decompose each reaction's rate change into an enzyme-associated component and a substrate-associated component, combined through the actual Michaelis-Menten kinetics equation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "How do they handle the fact that you often don't have paired enzyme and substrate measurements from the same sample?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the clever bit. They introduce a baseline metabolite saturation term using kinetic parameters predicted by a protein language model, combined with known human baseline metabolite concentrations. That baseline lets them plug in unpaired substrate and enzyme measurements and still get a kinetically sensible estimate, rather than just correlating fold changes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And then uncertainty comes from where?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Monte Carlo sampling, specifically MCMC, where the Michaelis-Menten-derived flux distribution is the prior and consistency with flux balance across the metabolic network is the likelihood. So you get a posterior over flux changes per reaction, not a point estimate."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What did they benchmark it against?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "An in-house multi-omics dataset in pancreatic cancer cell lines treated with APEX1 inhibitors, combining transcriptomics, metabolomics, a metabolic activity functional assay, and CRISPR screening data as ground truth. They report mmFEA captures the experimentally observed metabolic changes better than baseline methods, and that using both substrate and enzyme information together with the kinetic model, rather than either alone or a non-kinetic approach, is what actually helps."
+    },
+    {
+      "speaker": "Leo",
+      "text": "They also apparently validate on independent pancreatic cancer cohorts and push it into pan-cancer and spatial multi-omic settings."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Which is the real selling point for us. A lot of flux balance analysis work assumes a clean, matched, steady-state dataset. This is aimed at the messier reality of heterogeneous public cohorts and spatial transcriptomics, where you'll never have paired measurements, and it gives you calibrated uncertainty instead of false precision on a number you can't directly measure anyway."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick round-up now. Paper six is a companion piece from the same lab as the supercoiling story. They developed pDAIP-seq, a sensitive method for mapping topoisomerase cleavage complexes genome-wide under normal conditions, without needing to stabilize them with topoisomerase poisons like camptothecin."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And camptothecin itself turns out to distort the very distribution you're trying to measure, which is a nice methodological warning for anyone using poison-stabilized topoisomerase mapping as ground truth. They also extend the method to meiotic SPO11 breaks in mouse testis, and flag endogenous TOP1 cleavage complexes as a likely major source of spontaneous DNA breaks in human cells."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven looks at cancer stem cells in high-grade serous ovarian cancer using patient-derived cultures. The headline is that stemness, chemoresistance, and metastatic programs are conserved phenotypes across patients, but the underlying gene and isoform programs driving them are largely patient-specific, and isoform-level analysis catches regulatory changes that gene-level counting misses entirely."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight is a careful single-cell versus single-nucleus comparison in a photosymbiotic marine worm, an acoel that carries symbiotic algae. Single-nucleus sequencing recovers more neural transcripts and fewer algal reads, mirroring biases already known from mammals, which is useful practical guidance if you're building a cell atlas for a non-model, symbiont-carrying organism."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nine is a methods-critique worth remembering next time you build a mediator-ranking pipeline. Using a PLP1-mutant mouse brain dataset, the authors show that whether a rescued transcript looks like it's moving back toward the control state can flip dramatically depending on your normalization scheme, and that shared-control coupling between conditions can manufacture an apparent mediator signal that isn't robust to simply dropping one sample."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Basically: rescue transcriptomics can show you that something state-level got restored, without reliably telling you which transcript did the mediating. Good one to keep in mind before trusting a ranked hit list from a drug-rescue RNA-seq experiment."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten is further from our core focus but has a strong computational angle. ImmuneAgent combines multimodal reasoning with meta-learning and wet-lab feedback in a closed loop to screen human B cell repertoires for broadly neutralizing antibodies, and reports a notably higher hit rate than sequence-based predictors at the same cloning budget, plus identification of a specific atypical memory B cell population as a recurring bnAb source."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven combines live-cell imaging with dynamical modeling in osteosarcoma lung metastases, showing that when MCL1 inhibition kills tumor cells, the dying cells trigger FGFR-driven ERK signaling in surviving neighbors, creating a spatially localized drug-resistant state that can be blocked by adding an FGFR or broad RTK inhibitor."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twelve is a mouse knockout study: deleting Steap2, the mouse ortholog of a human type two diabetes risk gene, in pancreatic beta cells impairs glucose-stimulated insulin secretion, traced to disrupted mitochondrial cristae and impaired oxygen consumption, giving a mechanistic anchor for a GWAS hit."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper thirteen, GGE, is a meta-learning framework trained across more than five thousand classification tasks pulled from human transcriptomic datasets, designed specifically to generalize to new, small, label-scarce RNA-seq datasets, including ones from different platforms and preprocessing pipelines."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And paper fourteen profiles HPV16 versus HPV18 cervical cancers across two cohorts, finding genotype-specific host transcriptional programs, including an unexpected lineage-identity transcription factor active in HPV16 tumors, and a continuum of early-to-late viral gene expression that tracks with distinct host pathway signatures in each genotype."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A fast final sweep through the rest of today's list. There's a paper on prompt-conditioned, language-guided control of cells, organoids, and biobots using offline learning. One on divergent evolutionary trajectories of house fly proto-sex chromosomes despite sharing a genome. A finding that clonally expanded CD8 T cells in acute myeloid leukemia adopt an NK-like program rather than classic exhaustion."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Also a study showing post-transcriptional changes precede visible morphological transformation in chemically induced liver cancer. A sparse-autoencoder-based audit of what protein-protein interaction predictors are actually picking up on. And a proteomics paper integrating cerebrospinal fluid and extracellular vesicle proteomes to boost biomarker discovery by using shared variation across both compartments."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Rounding out: the Earth BioGenome Project published updated quality standards and recommendations for reference genome assemblies. There's a global analysis of microbiome resilience signatures under climate stress. A coupled geometric and reaction-diffusion model of nuclear mechanics during confined cell migration. And a ribosome profiling study arguing that downstream mRNA secondary structure, rather than codon-level elongation supply, is what coordinates co-translational protein folding through the exit tunnel."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's today's briefing. Good start to the week for anyone tracking chromatin dynamics and generative perturbation models in particular."
+    },
+    {
+      "speaker": "Leo",
+      "text": "See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "2610.02232",
+      "title": "Generalizable single-cell perturbation response prediction using energy-guided flow matching",
+      "authors": [
+        "Jianan Wei",
+        "Jiajun Hong",
+        "Guikun Chen",
+        "Ning Yang",
+        "Lifeng Fan",
+        "Wenguan Wang"
+      ],
+      "abstract": "Predicting phenotypic and transcriptional responses to perturbations at single-cell resolution provides a powerful tool for probing biological systems. However, existing methods typically rely on fixed mappings learned during training, making it challenging to calibrate distribution shifts or adapt to novel perturbation conditions during inference. Here, we present scEGFlow, an energy-guided flow matching framework that dynamically bridges control and perturbed cellular states. scEGFlow models continuous transitions from control cell populations to perturbed states using conditional flow matching. It then applies condition-specific energy gradients to correct and steer these predictions, enabling flexible adjustments without retraining the flow model. Evaluations across benchmarks spanning imaging phenotypes and transcriptomic profiles show that scEGFlow outperforms existing methods in reconstructing response distributions under both seen and unseen perturbation conditions, faithfully preserving cellular manifold geometry and population heterogeneity. This advantage is notable when adapting to new conditions with only a few measured cells, consistently improving prediction accuracy. Furthermore, scEGFlow accurately recapitulates perturbation-induced up- and down-regulation patterns across consensus gene expression signatures, where energy guidance improves the agreement between predicted and observed regulatory directions. Ultimately, these findings demonstrate that scEGFlow provides a modular, generalizable, and steerable solution for single-cell perturbation modeling. By grounding generative flows in learned biological landscapes, this architecture establishes a new computational paradigm for navigating and manipulating cellular behavior in silico.",
+      "categories": [
+        "q-bio.GN",
+        "cs.LG",
+        "q-bio.CB"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.02232",
+      "tier": "deep",
+      "why": "scEGFlow introduces an energy-guided flow matching framework for single-cell perturbation prediction that generalizes to unseen conditions, directly advancing the core methodology of modeling perturbation responses at single-cell resolution."
+    },
+    {
+      "id": "10.64898/2026.09.30.754670",
+      "title": "Creation of a High-Resolution, Continually Evolvable Lineage Tracer",
+      "authors": [
+        "Delgado, R. N.",
+        "Si, Y.",
+        "Andersen, R. E.",
+        "Lee, C.",
+        "Bushnell, H. L.",
+        "Doman, J. L.",
+        "Pandey, S.",
+        "Sousa, A. A.",
+        "West, E. R.",
+        "Dagotto, C. E.",
+        "Liu, D. R.",
+        "Cepko, C. L."
+      ],
+      "abstract": "Cellular diversity is required for the proper function of many tissues, including the retina, with its ~130 cell types.1-3 Previous lineage studies suggested that retinal progenitor cells (RPCs) generate cell diversity through biased cell divisions.4-9 However, the extent to which each progenitor cell contributes to diversity, and the overarching rules governing the lineages of the collection of progenitor cells, are unknown. While classic lineage tracing approaches including retroviral labeling4,6,10, dye injection11,12, and time-lapse microscopy13,14 were used to make the foundational insights regarding retinal lineages, they cannot be used to interrogate multigenerational lineages at scale. Here we describe the creation of an evolvable lineage tracing tool, \"SCRIBBLE\" for Sequential Combinatorial Recorder for Iterative Barcode-Based Lineage Evolution. SCRIBBLE uses prime editor to iteratively edit a barcode sequence while preserving the order of genesis of clonally related progeny. Through a series of rationally designed high-throughput screens and design optimizations, we identified novel sequences that support a high level of barcode editing and information content. Evaluation of SCRIBBLE in embryonic mouse retina recapitulated known lineages in retinal development, demonstrating that SCRIBBLE is capable of high-resolution lineage tracing in a complex tissue.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.754670v1",
+      "tier": "deep",
+      "why": "SCRIBBLE is a prime-editing-based, continually evolvable lineage recorder that enables high-resolution multigenerational lineage tracing in complex tissue, a major advance for studying cell fate and differentiation trajectories."
+    },
+    {
+      "id": "10.64898/2026.09.30.755832",
+      "title": "Topoisomerase-mediated resolution of negative DNA supercoiling sustains human transcription and gene activation",
+      "authors": [
+        "Lyu, J.",
+        "Ahmed, A.",
+        "Biswas, I.",
+        "Li, S.",
+        "Chen, C."
+      ],
+      "abstract": "Transcription generates DNA supercoiling that can influence gene expression, but how transcription-associated supercoiling shapes RNA polymerase II (RNAPII) dynamics in human cells remain poorly understood. Here, we show that topoisomerase-mediated resolution of negative DNA supercoiling is required for productive transcription. Acute topoisomerase perturbation causes negative supercoiling to accumulate around transcription start sites (TSS), with greater negative supercoiling accumulation associated with stronger transcription reduction. Elevated negative supercoiling behind the elongating RNAPII, but not positive supercoiling ahead, is associated with reduced RNAPII elongation rates. Using NOTE-seq2 to simultaneously profile newly synthesized and total RNA in single cells, we further demonstrate that acute TOP1 depletion increases gene expression noise by reducing both transcriptional burst size and frequency. Mechanistically, negative supercoiling accumulation at TSS increases RNAPII promoter occupancy and promoter-proximal pausing, providing a potential basis for reduced burst size. Micro-C analysis shows that TOP1 depletion largely preserves chromatin compartments and TADs but weakens short-range chromatin loops, including enhancer-promoter interactions, likely contributing to reduced burst frequency. Finally, during T-cell activation, impaired resolution of negative supercoiling compromises rapid gene upregulation and attenuates the transcriptional activation program. Together, these findings establish topoisomerase-mediated resolution of negative DNA supercoiling as a key mechanism linking DNA topological homeostasis to RNAPII dynamics, chromatin looping, and rapid gene activation.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755832v1",
+      "tier": "deep",
+      "why": "Using single-cell NOTE-seq2 and genomic perturbation, this study mechanistically links topoisomerase-mediated DNA supercoiling resolution to RNAPII pausing, transcriptional bursting, and enhancer-promoter looping dynamics."
+    },
+    {
+      "id": "10.64898/2026.09.30.755594",
+      "title": "Inference on paths of yeast transcription pre-initiation complex assembly by model-based analysis of altered occupancy profiles",
+      "authors": [
+        "Novikova, E. A.",
+        "Goldar, A.",
+        "Nicolas, P.",
+        "Soutourina, J."
+      ],
+      "abstract": "Dysfunctions in transcription cause severe human diseases. In eukaryotes, transcription initiation by RNA polymerase (Pol) II requires the formation of the pre-initiation complex (PIC) composed of general transcription factors (GTFs), Pol II, and an essential multiprotein coactivator, Mediator. In vitro experiments with GTFs and Pol II have depicted a linear sequence of PIC assembly. However, PIC assembly paths in vivo at the genomic scale and Mediator's role in these paths remain poorly understood. One strategy characterizes ChIP-seq occupancy alterations in Mediator mutants, but analysis of these data still lacks a formalized interpretation framework. In this study, we address this need by developing a quantitative framework that scores candidate assembly paths according to their ability to explain these alterations. This framework combines a model of PIC assembly based on a system of differential equations with parameter optimization based on a penalized criterion. We applied this new framework to datasets from two yeast Mediator mutants, in the Med17 and Med10 subunits. Our results show that the best-supported PIC assembly paths differ from those inferred in vitro. In particular, we show that it is important to distinguish the core TFIIH module from the TFIIK kinase module, and that similar paths starting with Mediator or TBP receive different levels of support. Furthermore, although multiple paths fit the data equally well, they differ markedly for specific gene groups. Taken together, the results show that the path can depend on the gene, and are also compatible with more than one path being operational in vivo for a single gene. This work improves our understanding of PIC assembly paths and transcription initiation, and opens perspectives for future modeling and experimental studies.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755594v1",
+      "tier": "deep",
+      "why": "A quantitative, differential-equation-based framework scores candidate pre-initiation complex assembly paths from ChIP-seq occupancy data in yeast Mediator mutants, offering a rigorous model-based approach to transcription initiation regulation."
+    },
+    {
+      "id": "10.64898/2026.09.27.754711",
+      "title": "A kinetic-aware approach to infer metabolic variations and flux using transcriptomics and metabolomics data",
+      "authors": [
+        "Zhu, H.",
+        "Wan, C.",
+        "Yang, M.",
+        "Fang, Y.",
+        "An, Z.",
+        "Swaminathan, P.",
+        "Dang, P.",
+        "Li, Z.",
+        "Wang, J.",
+        "Wang, Y.",
+        "Chen, Y.",
+        "Ma, A.",
+        "Ma, Q.",
+        "Kelley, M. R.",
+        "Cao, S.",
+        "Fishel, M. L.",
+        "Zhang, C."
+      ],
+      "abstract": "Assessing metabolic variations and flux quantities enable systematic understandings of metabolic shifts, reprogramming, adaptation and interactions in human diseases. However, omics-based estimation of metabolic flux and its variation remains challenging due to several fundamental limitations: the need for disease and tissue context specific metabolic model; nonlinear enzyme kinetic model that links enzyme and substrate changes to reaction flux; partial, unpaired, and snap-shot measurements across omics modalities; and uncertainty in computational prediction. Here, we present Michaelis-Menten model-based Flux Estimation Analysis (mmFEA), a Monte Carlo framework for estimating condition-specific flux changes by integrating paired or unpaired metabolomics and transcriptomics (or proteomics) data. mmFEA separates each reaction-rate change into enzyme- and substrate-associated components and assess reaction rate using Michaelis-Menten kinetics equation. A baseline metabolite saturation rate is introduced by integrating protein language model predicted kinetic parameters and human baseline level metabolic concentration to enable kinetic-aware integration of unpaired substrate and enzyme level measurements. Distribution of metabolic flux and variations between conditions are further computed using MCMC sampling by treating Michaelis-Menten-derived marginal flux distribution as prior and coherency in flux balance as likelihood. To benchmark mmFEA, we generated an in-house multi-omics data set including transcriptomics, metabolomics, metabolic activity functional assay, and CRISPR screening data using pancreatic cancer cell line system treated by APEX1 inhibitors. We demonstrated that mmFEA could accurately capture experimentally observed metabolic changes and achieved a better performance than all baseline methods. Our analysis revealed the necessity in using both substrate and enzyme modality and kinetic aware model in metabolic flux assessment. Further analysis using independent pancreatic cancer cohorts further validated the robustness of mmFEA, supporting integration of condition-linked unpaired data. Pan-cancer and spatial multi-omic applications demonstrated the use of mmFEA for resolving context-dependent metabolic variation when direct flux measurements are unavailable. Together, mmFEA provides a mechanistically grounded framework for estimating relative metabolic flux changes and their uncertainty from heterogeneous omics data.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754711v1",
+      "tier": "deep",
+      "why": "mmFEA is a Monte Carlo, Michaelis-Menten-kinetics-based framework for integrating transcriptomics and metabolomics to infer condition-specific metabolic flux changes, directly relevant to systems biology modeling of cellular processes."
+    },
+    {
+      "id": "10.64898/2026.09.30.755763",
+      "title": "Genome-wide mapping of endogenous topoisomerase cleavage complexes reveals TOP1 at the interface of DNA topological regulation and genome instability",
+      "authors": [
+        "Li, S.",
+        "Chen, C."
+      ],
+      "abstract": "Topoisomerase cleavage complexes (TOPcc) are covalent protein-DNA intermediates formed transiently during topoisomerase catalysis and constitute a major class of DNA-protein crosslinks in human cells, yet their endogenous genomic distributions remain difficult to resolve. Here, we developed protein-DNA adduct immunoprecipitation followed by sequencing (pDAIP-seq), a highly sensitive method for detecting endogenous TOPcc that enables their genome-wide profiling under normal physiological conditions without stabilization by topoisomerase poisons. Using pDAIP-seq, we found that camptothecin treatment, required by existing TOP1cc profiling methods, not only increased TOP1cc abundance but also substantially altered its genomic distribution. Endogenous TOP1cc were globally reduced upon transcriptional suppression and increased upon TOP2A depletion, supporting TOP1cc regulation by the maintenance of genome-wide DNA topological homeostasis. Interestingly, both the regional distribution and nucleotide-scale positioning of TOP1cc, including the positions of TOP1 catalytic cleavage sites, were largely specified by local DNA sequence context. By extending pDAIP-seq to capture transient covalent protein-DNA intermediates involved in DNA repair, including TDP1-, PARP1-, and KU70-DNA adducts, we further identified endogenous TOP1cc as a potential major source of spontaneous DNA breaks in human cells. Finally, pDAIP-seq also enabled genome-wide mapping of TOP2cc, TOP3cc, and SPO11-DNA covalent intermediates in mouse testis undergoing programmed meiotic DNA cleavage. Together, these findings establish pDAIP-seq as a broadly applicable method for the mapping of covalent protein-DNA intermediates and reveal endogenous TOP1cc as a key intermediate between DNA topological regulation and human genome instability.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755763v1",
+      "tier": "brief",
+      "why": "A new pDAIP-seq method maps endogenous topoisomerase cleavage complexes genome-wide without poison stabilization, revealing TOP1cc as a key source of spontaneous DNA breaks and complementing the companion supercoiling paper."
+    },
+    {
+      "id": "10.64898/2026.09.30.755773",
+      "title": "Cancer stem cell transcriptomic signatures reveal patient-to-patient heterogeneity emphasizing the need for patient-specific ovarian cancer targets",
+      "authors": [
+        "Jung, M. S.",
+        "Davis, L. J.",
+        "Birdwell, A. A.",
+        "Kang, J.",
+        "Feng, C.",
+        "Pi, A.",
+        "Lee, S. C.",
+        "Davern, S.",
+        "McCord, R. P.",
+        "Yue, J.",
+        "Zhang, W.",
+        "Choi, W.-Y.",
+        "Perkins, R. S."
+      ],
+      "abstract": "Background/Objectives: In high-grade serous ovarian cancer (HGSOC), the abilities of tumor cells to resist cytotoxic treatment and relapse are largely driven by ovarian cancer stem cells (CSCs). CSCs are a population of cells within a tumor that maintain stem-like qualities and have the capacity to produce metastasis and drive drug resistance. Based on the complexity of CSC signaling and emerging evidence of differential isoform usage in development, we hypothesize that CSCs possess a patient-specific, heterogeneous landscape which exploits isoform diversity to sustain stemness, metastasis and drug resistance. Methods: RNA-seq was generated from 3 patient-derived HGSOC (PD-HGSOC) to investigate stemness and differentiation status comparing standard culture and CSCs. The data was analyzed at both gene- and isoform-levels to identify patient-specific CSC features and define mechanisms of cancer-related stemness and plasticity. Results: CSCs exhibited higher stemness characteristics and identified differentially expressed gene sets across PD-HGSOCs. We noted that each patient had a distinct subset of genes regulating stemness phenotypes which suggested multiple mechanisms of CSC development and maintenance. Additionally, a large proportion of gene-level expression changes were driven by the differential expression of a single predominant isoform. Importantly, our isoform-level analysis enabled the identification of differential isoform usage that would not be detected with gene level expression analysis. Conclusions: CSC phenotypes such as chemoresistance, metastasis and self-renewal are conserved across patients, but arise from largely patient-specific gene and isoform programs. This CSC heterogeneity is reflective of the heterogeneity seen in patients and should be further evaluated in deriving precision-medicine approaches for HGSOC.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755773v1",
+      "tier": "brief",
+      "why": "Patient-derived ovarian cancer stem cell RNA-seq reveals that stemness/chemoresistance phenotypes are conserved but driven by largely patient-specific isoform-level programs, highlighting isoform resolution as essential for precision oncology."
+    },
+    {
+      "id": "10.64898/2026.09.27.754747",
+      "title": "Method-dependent biases in cell type detection between single-cell and single-nucleus RNA sequencing in the photosymbiotic acoel Praesagittifera naikaiensis",
+      "authors": [
+        "Nakamura, R.",
+        "Hamada, M.",
+        "Kobayashi, K.",
+        "Ansai, S.",
+        "Dindo, M.",
+        "Sakagami, T.",
+        "Luo, Y.-J.",
+        "Satou, Y.",
+        "Sekiguchi, T.",
+        "Sakamoto, T."
+      ],
+      "abstract": "Background Comparisons of single-cell and single-nucleus RNA sequencing (scRNA-seq and snRNA-seq) data have been described in some mammalian tissues and, subsequently, in Drosophila, but remain unexplored in most invertebrate lineages. The xenacoelomorphs occupy key phylogenetic positions, yet they differ anatomically from mammals. They have a reduced extracellular matrix, high-salt body fluid, and no circulatory system. Despite these differences, they possess a well-developed nervous system. One of the xenacoelomorphs, the photosymbiotic acoel (Praesagittifera naikaiensis) also harbours symbiotic Tetraselmis algae, whose RNA can be co-captured with host RNA. Results We compared scRNA-seq and snRNA-seq data from whole P. naikaiensis specimens. Both methods yielded high-quality data with comparable gene detection but a larger share of scRNA-seq reads derived from symbiotic algae. Gene-level analyses revealed that neural genes were enriched in snRNA-seq relative to non-neural genes. Cross-method label transfer and integration-based validation identified six snRNA-seq clusters, including some neural populations, that lacked a clear scRNA-seq counterpart. In contrast, three cell populations, including muscle and metabolically active clusters, were reciprocally validated as captured by both methods. Conclusions Our results show that key snRNA-seq advantages, particularly the enhanced recovery of neural transcripts, are recapitulated in our dataset, which is consistent with previous reports in mammals. Furthermore, snRNA-seq reduces symbiont-derived reads and recovers several cell populations underrepresented in scRNA-seq. These findings provide practical guidance for cell atlas construction in non-model, symbiotic invertebrates.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754747v1",
+      "tier": "brief",
+      "why": "A systematic scRNA-seq vs snRNA-seq comparison in a symbiotic acoel shows method-dependent biases in neural cell detection and symbiont read contamination, offering practical guidance for cell atlas construction in non-model organisms."
+    },
+    {
+      "id": "10.64898/2026.09.27.754762",
+      "title": "Why rescue-based transcript ranking can mislead: normalization displacement and shared-control coupling in perturbation transcriptomics",
+      "authors": [
+        "Jamil, H. M.",
+        "Gow, A."
+      ],
+      "abstract": "When a disease-associated transcript moves toward control after a phenotypically effective rescue, the pattern can be read as mediator evidence. We show why this inference can fail even when the computation is reproducible. Across normalization schemes in PLP1-mutant Jimpy brain (GSE277705), the original negative-interaction criterion classified 47.6-76.0% of all expressed genes and 77.6-86.6% of disease-eligible genes. Under total CPM, the excess was driven largely by a +1.016-SD median WT treatment response; median-of-ratios (MOR) reduced it to +0.154 SD while leaving the Jimpy median near zero. Under MOR, mirror enrichment among disease-increased (77.6%) and disease-decreased (74.0%) genes showed selection dependence but could not distinguish mechanical coupling from genuine state restoration. Slope decomposition gave a 48.7% mechanical-to-observed ratio (-0.125 of -0.256); deleting one of four untreated-Jimpy samples moved it from 37.8% to 90.1%. Candidate-local point estimates were 60.8% near TRIB3 and 38.6% near DDIT4; the TRIB3-minus-DDIT4 difference stayed positive in all four deletions (8.6–27.7 points), but its magnitude remained unstable. Oligodendrocyte-specific Perk deletion robustly suppressed TRIB3 (RJP=-0.817, 95% CI [-1.048,-0.587]) and DDIT4 (-0.292, [-0.419,-0.169]), whereas 2BAct resolved neither transcript-specific rescue. Rescue transcriptomics can therefore establish broad state restoration without identifying which downstream transcript mediates it.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754762v1",
+      "tier": "brief",
+      "why": "A sharp methodological critique shows how normalization choice and shared-control coupling can create spurious 'rescue' signals in perturbation transcriptomics, a cautionary tale for differential expression interpretation."
+    },
+    {
+      "id": "2610.03160",
+      "title": "Multimodal reasoning for broadly neutralizing antibody discovery from label-free human B cell repertoires across virus families",
+      "authors": [
+        "Hantao Lou",
+        "Jianqing Zheng",
+        "Can Yue",
+        "Meihan Zhang",
+        "Yuanchao Bao",
+        "Yu Chen",
+        "Mengting Huang",
+        "Yupeng Yang",
+        "Qianyu Pan",
+        "Nana Fu",
+        "Yansong Shi",
+        "Hongli Li",
+        "Yangyang Chai",
+        "Ruyi Chen",
+        "Wansheng Li",
+        "Zhu Liang",
+        "Rongmei Yao",
+        "Yuanhan Mo",
+        "Lei Wang",
+        "Chunmei Wang",
+        "Yun Quan",
+        "Qiong Zhang",
+        "Xiangxi Wang",
+        "Xuetao Cao"
+      ],
+      "abstract": "Discovering broadly neutralizing antibodies (bnAbs) from human natural immune repertoires remains a fundamental challenge in immunology, hindered by: the extreme rarity of bnAb, incomplete understanding of their cellular origins across pathogens, and the inability of existing computational tools to generalize across emerging viral threats. Here we present ImmuneAgent, a closed-loop AI system that integrates multimodal reasoning with continual meta-learning and wet-lab feedback to overcome these barriers. Applied to screen the natural BCR repertoires from vaccinated or infected cohorts, the system achieves a ~55% neutralization antibody discovery rate (60 of 110 cloned candidates) and a ~11% bnAb yield (12 of 110), substantially outperforming a state-of-the-art sequence-based neutralization predictor or cofolding models evaluated at the same cloning budget. Five ImmuneAgent-discovered antibodies conferred 100% in vivo protection against lethal influenza challenge, comparable to the clinical-stage therapeutic MEDI8852. The system recovered the cellular and structural determinants of bnAb activity and identified FCRL5+CD27+ atypical memory B cells as a conserved bnAb reservoir and hydrophobic interface enrichment as a cross-viral structural signature, which generalized to unseen antigens, discovering human metapneumovirus (hMPV) cross-neutralizing and human papillomavirus (HPV)-neutralizing antibodies without antigen-specific sorting. These results validate that ImmuneAgent is a generalizable framework for rapid therapeutic antibody discovery against emerging viral threats.",
+      "categories": [
+        "q-bio.QM",
+        "cs.AI",
+        "cs.CE",
+        "q-bio.CB"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.03160",
+      "tier": "brief",
+      "why": "ImmuneAgent, a closed-loop multimodal AI system, achieves striking hit rates discovering broadly neutralizing antibodies from human B cell repertoires, including cross-reactive antibodies against unseen viral targets."
+    },
+    {
+      "id": "10.64898/2026.09.30.755770",
+      "title": "Spatially coordinated RTK-ERK signaling dynamics shape osteosarcoma single-cell drug response in the lung microenvironment",
+      "authors": [
+        "Makkawi, R.",
+        "Halsey, C.",
+        "Murthy, V.",
+        "Manalo, E. C.",
+        "Cros, H.",
+        "Yi, X.",
+        "Cartier, J. M.",
+        "Chang, M.",
+        "Flory, M.",
+        "Guptell, K.",
+        "Gross, A.",
+        "Roberts, R. D.",
+        "Copperman, J.",
+        "Davies, A. E."
+      ],
+      "abstract": "Purpose: Lung metastases are the primary cause of death in osteosarcoma patients and treatment response often vary due to convergence of genetic and phenotypic influences in the context of a dynamic tumor-host tissue environment. The purpose of this study was to determine how dynamic tumor- and host-driven receptor tyrosine kinase (RTK)-ERK signaling interactions contribute to phenotypic drug response heterogeneity. Experimental Design: Live-cell time-lapse microscopy and data-driven dynamical modeling was used to resolve ERK activity, FOSL1/Fra-1 reporter expression, and spatiotemporal cell fate in living, biosensor-expressing osteosarcoma lung metastases ex vivo following MCL1 inhibitor exposure. RTK inhibitors were then evaluated for their ability to suppress adaptive signaling and enhance MCL1 inhibitor efficacy ex vivo and in vivo. Results: MCL1 inhibition induced extensive tumor-cell death; however, persistent ERKhigh/Fra-1high reporter cells emerged and were enriched at the tumor-lung interface, consistent with adaptive resistance. Experimental and computational approaches revealed that tumor-cell lysis amplified fibroblast growth factor receptor (FGFR)-mediated ERK signaling in neighboring cells, promoting a targetable drug-resistant state marked by adaptive ERK induction, FOSL1/Fra-1 expression, and correlated with upregulation of known drug resistance pathways Nrf2 and HMOX1. Combinatorial inhibition of FGFR with fexagratinib, or broad-spectrum RTK inhibitor, pazopanib, suppressed adaptive ERK activation and enhanced MCL1 inhibitor response resulting in greater efficacy ex vivo and in vivo. Conclusions: Tumor-host and tumor-cell-lysis-induced FGFR-ERK signaling contribute to spatiotemporally heterogeneous adaptive resistance in metastatic osteosarcoma. These data support combinatorial targeting of RTK signaling with cytotoxic or targeted agents as a strategy to block adaptive resistance and improve treatment efficacy.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755770v1",
+      "tier": "brief",
+      "why": "Live-cell imaging and dynamical modeling reveal spatially coordinated FGFR-ERK signaling drives adaptive drug resistance in osteosarcoma lung metastases, suggesting rational combination therapy targets."
+    },
+    {
+      "id": "10.64898/2026.09.26.754731",
+      "title": "The ortholog of the Human T2D Risk Gene STEAP2 is Required for Glucose Stimulated Insulin Secretion in Mice",
+      "authors": [
+        "Hawthorne, A.",
+        "Kelly, K.",
+        "Tigue, M.",
+        "El-Mekkoussi, H.",
+        "Waite, E.",
+        "Erhan, Y.",
+        "Manduchi, E.",
+        "Dashti, S.",
+        "Rozzo, A.",
+        "Roman, J.",
+        "Doliba, N.",
+        "Stoffers, D.",
+        "Kaestner, K. H."
+      ],
+      "abstract": "Type 2 diabetes is a complex metabolic disease with a strong genetic component, yet this genetic risk is driven by common variants in up to 600 loci with small effect sizes. Variants in the STEAP2 locus, encoding Six-transmembrane epithelial antigen of the prostate-2, are highly associated with altered glycemic traits and type 2 diabetes risk. To elucidate its function in pancreatic beta-cells, we utilized Crisp-Cas9 assisted homologous recombination to derive a conditional null allele for Steap2 (Steap2fl/fl) in mice and crossed this to the rat insulin promoter (Rip)-Cre transgene. Ablation of Steap2 induced glucose intolerance, blunted glucose-stimulated Ca2+ mobilization and stunted first phase glucose-simulated insulin secretion. In contrast, the incretin effect and second phase insulin secretion were not affected. Islet respirometry and transmission electron microscopy (TEM) identified disrupted cristate morphology and impaired glucose-stimulated oxygen consumption as causally responsible for the observed, impaired triggering pathway of insulin secretion. These findings suggest that at least part of the genetic risk for T2D conferred by Steap2 variants is likely due to its function in maintaining optimal mitochondrial respiration in pancreatic beta-cells.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754731v1",
+      "tier": "brief",
+      "why": "A conditional knockout mouse model mechanistically links the T2D risk gene STEAP2 to mitochondrial cristae morphology and glucose-stimulated insulin secretion in beta-cells, illuminating a GWAS hit's cell biology."
+    },
+    {
+      "id": "10.64898/2026.09.27.754054",
+      "title": "GGE: General-purpose deep meta-learning for classification of human transcriptomes with limited data",
+      "authors": [
+        "Yankovitz, G.",
+        "Gat-Viks, I."
+      ],
+      "abstract": "Transcriptomic classification is often hindered by the small number of samples relative to the high dimensionality of gene expression data. We introduce General Gene Expression (GGE), a deep meta-learning framework designed to support robust classification in this limited-sample setting. By training across 5,220 distinct biomedical prediction objectives drawn from 1,779 different human datasets, GGE learns a model initialization that captures biological patterns shared across heterogeneous classification tasks. This learned initialization has two key advantages. First, it enables improved performance to new datasets using only a small number of labeled samples. Second, because it is learned across diverse prediction objectives, it can be applied to a broad range of biomedical problems. We show that GGE outperforms established classifiers in data-limited settings across a wide range of applications, including datasets generated using different RNA-seq platforms and preprocessing pipelines. In addition, attention-based analysis identifies recurrent genes that contribute to performance across multiple biological objectives, providing insight into shared determinants of human biological states. Together, these results establish GGE is a general-purpose framework for human transcriptome-based classification in biomedical settings where labeled data are scarce.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754054v1",
+      "tier": "brief",
+      "why": "GGE applies deep meta-learning across thousands of transcriptomic prediction tasks to improve classification in label-scarce settings, a generalizable tool for small-sample bioinformatics problems."
+    },
+    {
+      "id": "10.64898/2026.09.30.755713",
+      "title": "Multi-scale Transcriptional Characterization of HPV16 and HPV18 in Cervical Cancer: Host Pathway Alterations and Links With Viral Gene Expression Programs",
+      "authors": [
+        "Ishihara, M. A.",
+        "M. Moro Valeriano, M.",
+        "Oliveira, N.",
+        "Mamede, I.",
+        "Cavalcanti de Morais Gama, L.",
+        "Ferreira Cunha, A.",
+        "Maia Santos de Castro, I.",
+        "Vasquez, F.",
+        "Nishiyama-Jr, M. Y.",
+        "Setubal, J. C.",
+        "de Arruda Neto, E.",
+        "Chammas, R.",
+        "Nakaya, H. I."
+      ],
+      "abstract": "High-risk HPV is central to cervical carcinogenesis, but whether individual genotypes drive distinct tumor biology or converge on a shared oncogenic state remains unclear. Profiling viral and host gene expression across two independent cohorts (n = 93; 76 HPV16, 17 HPV18), we show that HPV16- and HPV18-associated cervical cancers differ in host transcriptional programs. A 55-gene signature discriminated the two genotypes, and 293 genes were concordantly differentially expressed across cohorts. Pathway and transcription-factor activity inference organized these differences along genotype-specific axes: HPV16 tumors were enriched for epithelial polarity and RTK-RAS-MAPK signatures, with elevated inferred CDX2 regulon activity, a transcription factor not normally active in cervical epithelium, suggesting an aberrant lineage-identity program not previously linked to this genotype. HPV18 tumors instead showed metabolic reprogramming and inflammatory signaling (STAT3, HIF1A), alongside reduced CASP8 and increased FDX1 expression, a pattern consistent with sensitization to immunogenic cell death. Both genotypes also organized along a continuum of early-to-late viral gene expression correlating with distinct host pathways: extracellular-matrix and translation-related in HPV16, interferon/antiviral and cell-cycle/mitochondrial in HPV18, indicating that viral transcriptional state associates with host biology beyond genotype alone. These results point to candidate genotype-specific vulnerabilities that merit functional validation.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755713v1",
+      "tier": "brief",
+      "why": "Multi-cohort transcriptional profiling reveals HPV16 and HPV18 cervical cancers diverge along distinct host pathway axes linked to viral gene expression programs, suggesting genotype-specific therapeutic vulnerabilities."
+    },
+    {
+      "id": "2610.02247",
+      "title": "Toward Controlling Biology with Language:Offline Learning of Prompt-Conditioned Interventions for Cells, Organoids, and Biobots",
+      "authors": [
+        "Nam H. Le",
+        "Douglas Blackiston",
+        "Michael Levin",
+        "Josh Bongard"
+      ],
+      "abstract": "Artificial intelligence increasingly serves as a natural-language interface to complex technical systems, letting people accomplish sophisticated tasks by describing what they want rather than specifying how to do it. Extending this interface to living systems is harder: unlike code or images, a biological intervention has no closed-form linguistic meaning, and the paired language-intervention-outcome data needed to learn such a mapping is expensive to collect, since each example requires its own wet-lab experiment. One way around this is to treat an existing archive of interventions and their already-observed outcomes as a fixed, offline dataset, and use a vision-language model to judge, without any new experiments, whether an archived outcome matches a natural-language description. But whether that judgment is reliable enough to train a language-to-intervention mapping on – without new experiments and without human validation – has remained unclear. Here we show that a natural-language interface for a living organism – a xenobot, a synthetic multicellular construct with no nervous system – can be learned entirely offline this way, using a vision-language model's own judgment as the sole training reward: an instruction is mapped to the intervention already on record as producing the described behavior. This mapping generalizes to entirely new instructions, evaluated against archive data withheld from training (80.0% held-out accuracy vs a $66.7% chance baseline, matching a network trained directly on ground-truth labels).",
+      "categories": [
+        "q-bio.QM",
+        "cs.AI",
+        "cs.CV",
+        "cs.NE",
+        "cs.RO"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.02247",
+      "tier": "mention",
+      "why": "An offline-trained vision-language model learns to map natural-language instructions to interventions on xenobots, a surprising step toward natural-language control of living systems."
+    },
+    {
+      "id": "10.64898/2026.09.26.754726",
+      "title": "X-Y divergence of house fly (Musca domestica) proto-sex chromosomes follows distinct evolutionary trajectories despite residing in the same genome",
+      "authors": [
+        "Son, J. H.",
+        "Luecke, D.",
+        "Bista, B.",
+        "Manat, Y.",
+        "Cao, W.",
+        "Beukeboom, L.",
+        "Bopp, D.",
+        "Ellison, C. E.",
+        "Saelao, P.",
+        "Meisel, R. P."
+      ],
+      "abstract": "Sex determination systems and sex chromosomes frequently differ between species. One cause of these differences is new sex determining genes that drive evolutionary turnover of sex chromosomes. At the earliest stages of this turnover, X and Y (or Z and W) chromosomes start out as nearly identical homologs, and they can diverge via chromosomal rearrangements (e.g., inversions) that suppress X-Y recombination. However, multiple examples from across animals and plants provide exceptions to this canonical model of sex chromosome evolution. For example, some X-Y pairs remain undifferentiated for long evolutionary time periods, while other sex chromosomes become differentiated without chromosomal rearrangements. How or why these non-canonical trajectories occur remains elusive, despite increasing evidence of their pervasiveness. The house fly, Musca domestica, is a well-suited system to address this gap because all six chromosomes can be a Y, providing multiple replicates of a natural experiment within a single genomic environment. To test for canonical and non-canonical evolutionary trajectories, we generated haplotype-resolved chromosome-level assemblies from five strains of the house fly, each of which carries a different Y chromosome (IM, IIM, IIIM, VM, and YM). We identified an inversion on only one of the sex chromosomes (IIM), which was associated with elevated X-Y divergence but did not capture the male-determining locus. In contrast, there was X-Y divergence across almost the entire length of the IM, IIIM, and VM sex chromosomes, despite no detectable inversions. YM was the only sex chromosome to contain substantial Y-specific sequences, which were limited to a segment on one end of the chromosome containing the male-determining gene. This YM chromosome, and its corresponding X, were highly diverged from the X chromosome found in many other flies (Muller element F), despite a strong cytological resemblance. This study highlights how multiple different canonical and non-canonical modes of sex chromosome evolution can co-exist within a single genome.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754726v1",
+      "tier": "mention",
+      "why": "Chromosome-level assemblies of five house fly strains reveal strikingly different canonical and non-canonical modes of X-Y divergence occurring within a single genome."
+    },
+    {
+      "id": "10.64898/2026.09.30.755147",
+      "title": "Clonally expanded CD8 T cells in AML adopt an NK-like program distinct from canonical exhaustion",
+      "authors": [
+        "Chu, Y. E.",
+        "Cottam, M. A.",
+        "Potts, C. R.",
+        "Gracie, T.",
+        "Polsley, C.",
+        "Cartailler, J. A.",
+        "Savona, M. R.",
+        "Lu, R.",
+        "Lee, S. C.",
+        "Welner, R. S.",
+        "Ferrell, P. B."
+      ],
+      "abstract": "CD8 T cells are key mediators of anti-tumor immunity, yet their differentiation states and clonal architecture within the acute myeloid leukemia (AML) bone marrow microenvironment remain incompletely defined. We performed high dimensional immune profiling of bone marrow samples from 46 newly diagnosed AML patients using mass cytometry to probe the microenvironment and T cell states. We used single-cell RNA and T cell receptor (TCR) sequencing to define CD8 T cell phenotypes, transcriptional states, and clonal architecture. AML-associated CD8 T cells were skewed toward terminally differentiated effector memory cells re-expressing CD45RA (TEMRAs), while canonically exhausted T cell populations were rare. Functional studies revealed that TEMRA CD8 T cells robustly produced IFNgamma and TNF upon in vitro stimulation. Clonal expansion was concentrated within the TEMRA compartment. Comparison of TCR sequences with known viral epitopes identified a small subset of expanded viral-specific clonotypes, while the majority of highly expanded clonotypes had unknown specificity and may include AML-specific T cells. Differential gene expression analysis revealed shared cytotoxic effector programs during clonal expansion but diverging activation signatures: viral-specific clones upregulated canonical T cell receptor signaling genes, whereas expanded clones of unknown specificity exhibited enrichment of natural killer (NK) receptor-associated genes. These genes comprised the leukemia-associated NK-immune (LaNKi) score which was elevated in an independent AML dataset compared to pan cancer tumor infiltrating lymphocytes. These findings define the CD8 T cell differentiation landscape and clonal architecture in AML marrow at diagnosis and suggest that T cell dysfunction in AML diverges from classical activation and exhaustion paradigms.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755147v1",
+      "tier": "mention",
+      "why": "Single-cell RNA/TCR profiling of AML bone marrow shows clonally expanded CD8 T cells adopt an NK-like program rather than classical exhaustion, challenging standard T-cell dysfunction paradigms in cancer."
+    },
+    {
+      "id": "10.64898/2026.09.30.755803",
+      "title": "Post-transcriptional dysregulation precedes morphological transformation in chemically induced liver cancer",
+      "authors": [
+        "Izuogu, O. G.",
+        "Jackson, M."
+      ],
+      "abstract": "DNA lesions impede RNA polymerase II, yet the transcriptional consequences of that stress are less understood than the lesions themselves. We reanalysed total RNA and matched whole genomes from 438 liver lesions across four divergent mouse backgrounds, one of them the separate species M. caroli, 428 of them induced by a single dose of diethylnitrosamine (DEN) and 10 arising spontaneously, together with untreated liver and, critically, histologically normal liver from treated, tumour-bearing animals (paired normal liver). Three post-transcriptional changes accompany transformation in every background. Canonical splicing efficiency falls by 3.6 to 4.8 percentage points, and in genes that acquire them, cancer-specific junctions account for a median of 20-25% of junctions and arise at weaker splice signals. Output shifts toward circular RNA: a five-method consensus pipeline identifies 56,418 recurrent backsplice junctions, 9,718 of them detected in all four backgrounds, with ~2-fold enrichment in circRNA abundance and an expanded repertoire of distal configurations. Adenosine-to-inosine editing sites fall 2.2- to 3.8-fold, most steeply at intronic sites. Exposure changes not only these outputs but their coordination. In untreated C57BL/6J liver, splicing efficiency, mean relative backsplice span and editing co-vary positively (pairwise rho +0.78 to +0.87). That coordination is lost in exposed tissue, and paired normal liver shows the same loss as tumour. Pooling conditions obscures the effect because opposing estimates cancel. In C57BL/6J, paired normal liver already shows tumour-like splicing, circRNA abundance and editing roughly eight months after one exposure, while backsplice architecture has begun to reorganise. These samples carry a median of 337 callable somatic single-nucleotide variants against 78,843 in tumours and show no elevation of Mki67 or cell-cycle programmes. The post-transcriptional phenotype is therefore a durable property of damaged tissue established before morphological transformation.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755803v1",
+      "tier": "mention",
+      "why": "Reanalysis of liver tumor genomes across mouse backgrounds shows splicing, circRNA, and RNA editing changes precede morphological transformation, establishing a durable pre-cancerous post-transcriptional phenotype."
+    },
+    {
+      "id": "10.64898/2026.09.27.754758",
+      "title": "Auditing Protein-Protein Interaction Signals with Sparse Autoencoder Fingerprints",
+      "authors": [
+        "Zhu, W.",
+        "Wang, S.",
+        "Liu, X.",
+        "Xue, Y.",
+        "Shen, H.-B.",
+        "Chen, B.",
+        "Pan, X."
+      ],
+      "abstract": "Protein language models have become a dominant foundation for sequence-based protein-protein interaction (PPI) prediction, but their generalization remains limited under stringent evaluation, and benchmark accuracy alone cannot reveal whether a PPI predictor learns partner-specific biological signals or exploits contextual shortcuts. Here we introduce AuditPPI, an interpretable framework that transforms sparse-autoencoder (SAE) features from a frozen protein language model into order-invariant pair fingerprints, recasting PPI prediction as an auditable tabular-learning problem. AuditPPI achieves competitive predictive performance across diverse PPI benchmarks while enabling multiscale auditing of the information supporting its predictions. Protein-level audits show that partner-independent participation signals remain substantial in conventional benchmarks, including protein-disjoint benchmark, but are largely insufficient for pair-level discrimination in topology- and degree-controlled benchmark. Pair-level analyses further show that removing protein identity overlap does not eliminate contextual structure: protein-disjoint benchmarking retains strong subcellular co-localization signals and benchmark-dependent feature matching captured by SAE co-activation and absolute-difference. Structural analyses, however, provide little evidence that these predictive signals are specifically grounded in PPI interfaces: feature enrichment at interfaces for protein-disjoint benchmark was no longer detectable after controlling for surface exposure, and contact-specific enrichment was observed for only a small fraction of testable SAE feature pairs. AuditPPI therefore separates predictive success from mechanistic fidelity and provides a practical framework for evaluating whether sequence-based PPI predictors capture partner-specific biological signals instead of contextual shortcuts.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754758v1",
+      "tier": "mention",
+      "why": "AuditPPI uses sparse autoencoder fingerprints to show that many protein-protein interaction predictors rely on contextual shortcuts like co-localization rather than true interface-specific signals."
+    },
+    {
+      "id": "10.64898/2026.09.30.754912",
+      "title": "Integrating CSF and EV Proteomes Enhances Biomarker Discovery by Capturing Shared Variation Across Compartments",
+      "authors": [
+        "Brown, B. R. P.",
+        "Li, X.",
+        "Grasty, M. R.",
+        "Miranker, A. D.",
+        "Gursoy, G."
+      ],
+      "abstract": "Cerebrospinal fluid (CSF) contains brain derived proteins that can be leveraged as biomarkers for Alzheimer's disease (AD) and other neurodegenerative diseases. However, converting protein intensities to a disease signal remains a challenge because physiology driven changes to the localization of proteins across CSF subcompartments are obscured when CSF is analyzed alone. Where subcompartment data, such as that from extracellular vesicles (EVs), are also measured, separate but parallel analyses of EVs and CSF can obscure their shared disease signal. Here, we present an integrated matrix factorization approach that combines proteomic signals from matched CSF and phosphatidylserine exposed EVs and nanoparticles (EVps). In a ROS/MAP cohort of 48 participants, integrating CSF and EVps signals improved biological concordance across compartments and increased the number of candidate proteins distinguishing participants with AD from controls. Notably, the joint signal identified as many brain related biomarker candidates as studies using substantially larger cohorts. By demonstrating that integration of CSF and EVps proteomes maximizes information from limited samples, this framework offers a path toward more efficient biomarker discovery across two compartments increasingly leveraged in neurodegenerative disease research.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.754912v1",
+      "tier": "mention",
+      "why": "An integrated matrix factorization of CSF and extracellular vesicle proteomes boosts Alzheimer's biomarker discovery from a modest cohort by capturing cross-compartment shared variation."
+    },
+    {
+      "id": "2610.03075",
+      "title": "Generating eukaryotic reference genome assemblies: Earth BioGenome Project quality standards and recommendations",
+      "authors": [
+        "Kerstin Howe (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Dolores R. Agius (Botany and Mycology Unit Finnish Museum of Natural History & Department of Organismal and Evolutionary Biology Faculty of Biological and Environmental Sciences University of Helsinki",
+        "Finland)",
+        "Tyler Alioto (Centro Nacional de An\\'alisis Gen\\'omico",
+        "Universitat de Barcelona)",
+        "Jean-Marc Aury (G\\'enomique M\\'etabolique",
+        "Genoscope",
+        "Evry",
+        "France)",
+        "Roberto Biello (Globe Institute",
+        "University of Copenhagen",
+        "Copenhagen",
+        "Denmark)",
+        "Mark Blaxter (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Matthew W. Brown (Mississippi State University",
+        "Department of Biological Sciences",
+        "Starkville",
+        "USA)",
+        "Tom Brown (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Bernat Burriel-Carranza (Natural Sciences Museum of Barcelona",
+        "Barcelona",
+        "Spain)",
+        "Haoyu Cheng (Department of Biomedical Informatics and Data Science",
+        "Yale School of Medicine",
+        "New Haven",
+        "USA)",
+        "Dario Copetti (Arizona Genomics Institute",
+        "The University of Arizona",
+        "Tucson",
+        "USA)",
+        "Solenne Correard (Wise Ancestors",
+        "Scotts Valley",
+        "USA)",
+        "Fernando Cruz (Centro Nacional de An\\'alisis Gen\\'omico",
+        "Universitat de Barcelona)",
+        "Paul Davis (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Aleksandra Denisova (Vertebrate Genome Laboratory",
+        "The Rockefeller University",
+        "New York",
+        "USA",
+        "Genotek Ltd.",
+        "Moscow",
+        "Russia)",
+        "Giulio Formenti (Vertebrate Genome Laboratory",
+        "The Rockefeller University",
+        "New York",
+        "USA)",
+        "Pedro A. F. Galante (Centro de Oncologia Molecular",
+        "Hospital Sirio-Libanes",
+        "Sao Paulo",
+        "Brazil)",
+        "Caroline Howard (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Kamil S. Jaron (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Erich D. Jarvis (Vertebrate Genome Laboratory",
+        "The Rockefeller University",
+        "New York",
+        "USA)",
+        "Sergei Kliver (Globe Institute",
+        "University of Copenhagen",
+        "Copenhagen",
+        "Denmark)",
+        "Sergey Koren (National Human Genome Research Institute",
+        "National Institute of Health",
+        "Bethesda",
+        "USA)",
+        "Ilia J. Leitch (Royal Botanic Gardens",
+        "Kew",
+        "Richmond",
+        "UK)",
+        "Harris Lewin (Julie Ann Wrigley Global Futures Laboratory",
+        "Walton Center for Planetary Health",
+        "Arizona State University",
+        "Phoenix",
+        "USA)",
+        "Heng Li (Department of Data Science",
+        "Dana-Farber Cancer Institute",
+        "Department of Biomedical Informatics",
+        "Harvard Medical School",
+        "Boston",
+        "USA)",
+        "Kerstin Lindblad-Toh (Department of Medical Biochemistry and Microbiology",
+        "Uppsala University",
+        "Uppsala",
+        "Sweden",
+        "Vertebrate Genomics",
+        "Broad Institute",
+        "Cambridge",
+        "USA)",
+        "Jack A. Medico (Vertebrate Genome Laboratory",
+        "The Rockefeller University",
+        "New York",
+        "USA)",
+        "Matthieu Muffato (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Zemin Ning (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Javan Okendo (National Human Genome Research Institute",
+        "National Institute of Health",
+        "Bethesda",
+        "USA)",
+        "Shujun Ou (Department of Molecular Genetics",
+        "The Ohio State University",
+        "Columbus",
+        "USA)",
+        "Marc Palmada-Flores (Departament de Biologia",
+        "Universitat de Girona",
+        "Girona",
+        "Spain)",
+        "Brendan J. Pinto (National Human Genome Research Institute",
+        "National Institute of Health",
+        "Bethesda",
+        "USA)",
+        "Aurora Ruiz-Herrera (Departament de Biologia Cellular",
+        "Fisiologia i Immunologia",
+        "Universitat Aut\\`onoma de Barcelona",
+        "Cerdanyola del Vall\\`es",
+        "Spain)",
+        "Abdoallah Sharaf (SequAna Core Facility",
+        "Department of Biology",
+        "University of Konstanz",
+        "Konstanz",
+        "Germany)",
+        "Ying Sims (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Jeramiah J. Smith (Department of Biology",
+        "University of Kentucky",
+        "Lexington",
+        "USA)",
+        "Marco Sollitto (Vertebrate Genome Laboratory",
+        "The Rockefeller University",
+        "New York",
+        "USA",
+        "Department of Biology",
+        "University of Florence",
+        "Sesto Fiorentino",
+        "Italy)",
+        "Cibele G. Sotero-Caio (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK)",
+        "Marcela Uliano-Silva (Wellcome Sanger Institute",
+        "Wellcome Genome Campus",
+        "Hinxton",
+        "Cambridge",
+        "UK",
+        "Faculty of Biosciences and Aquaculture",
+        "Nord University",
+        "Norway)",
+        "Sibelle T. Vila\\c{c}a (Vale Institute of Technology",
+        "Bel\\'em",
+        "Brazil)",
+        "Robert M. Waterhouse (Environmental Bioinformatics Group",
+        "SIB Swiss Institute of Bioinformatics",
+        "Lausanne",
+        "Switzerland)",
+        "Melissa A. Wilson (National Human Genome Research Institute",
+        "National Institute of Health",
+        "Bethesda",
+        "USA)",
+        "Chentao Yang (State Key Laboratory of Genome and Multi-omics Technologies",
+        "BGI Research",
+        "Shenzhen",
+        "China)",
+        "Guojie Zhang (Center of Evolutionary & Organismal Biology",
+        "Zhejiang University School of Medicine",
+        "Hangzhou",
+        "China)",
+        "Chenxi Zhou (Department of Genetics",
+        "University of Cambridge",
+        "Cambridge",
+        "UK)",
+        "Yang Zhou (State Key Laboratory of Genome and Multi-omics Technologies",
+        "BGI Research",
+        "Shenzhen",
+        "China)",
+        "Richard Durbin (Department of Genetics",
+        "University of Cambridge",
+        "Cambridge",
+        "UK)"
+      ],
+      "abstract": "Reference genome assemblies are foundational resources across the biological sciences as they begin to expose the fundamental building blocks of each species and the molecular toolkits vital for adaptation and survival. High-quality genomes enable insights into evolution, facilitate ecosystem monitoring and protection and conservation of species, access to new biomaterials and biomedicine, advances in agri- and aquaculture, and support planetary health. The amount of information gathered from a species' genome assembly is directly dependent on its quality. However, different sequencing technologies and software solutions generate a wide range of quality outcomes. Here, the Earth BioGenome Project's Sequencing and Assembly committee, together with a large community of researchers performing eukaryote sequencing and assembly, outlines quality standards for a \"reference\" assembly and formulates recommendations to ensure these standards are met.",
+      "categories": [
+        "q-bio.GN"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.03075",
+      "tier": "mention",
+      "why": "The Earth BioGenome Project consortium formalizes community-wide quality standards for reference genome assembly, setting benchmarks relevant to any sequencing-based analysis."
+    },
+    {
+      "id": "10.64898/2026.09.30.755659",
+      "title": "A global signature of microbiome resilience to climate stress",
+      "authors": [
+        "Rawstern, A.",
+        "Reyes, A.",
+        "Li, V.",
+        "Fowler, J.",
+        "Hay, E.",
+        "Hernandez, D.",
+        "Katula, A.",
+        "Gebriel, A.",
+        "Afkhami, M."
+      ],
+      "abstract": "As climate change accelerates, the microbial communities sustaining organisms and ecosystems worldwide face an uncertain future, with some proving resilient to stress while others collapse, yet no generalizable framework exists to distinguish the two beforehand. Using amplicon sequencing data from ~29,000 microbiomes, we constructed over 440 matched network pairs spanning three of the most pressing stressors: drought, warming, and salinity. We show that keystone microbes with high connectivity, functional redundancy, and metabolic flexibility, are disproportionately likely to survive stress, and that baseline network and functional properties predict community-level structural and functional stability even as taxonomic composition shifts stochastically. These relationships held across the diverse hosts, ecosystems, and regions we tested. Because these properties can be derived from standard, low-cost sequencing collected before disturbance occurs, our findings turn baseline microbiome data into an early-warning system for identifying which communities are most vulnerable to climate stress.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755659v1",
+      "tier": "mention",
+      "why": "A large-scale analysis of ~29,000 microbiomes identifies network and functional properties that predict resilience to climate stressors, proposing a baseline sequencing-based early-warning framework."
+    },
+    {
+      "id": "2610.02231",
+      "title": "A coupled geometric surface and surface reaction-diffusion framework for modelling nuclear mechanics during confined cell migration",
+      "authors": [
+        "Francesca Ballatore",
+        "Silvia Comunian",
+        "Anotida Madzvamuse",
+        "Slimane Ait-Si-Ali",
+        "Rachele Allena"
+      ],
+      "abstract": "Confined cell migration is governed by nuclear and cellular deformation. In this work, we formulate a two-dimensional mathematical framework in which the cell and nuclear membranes are represented as evolving closed surfaces governed by force-balance laws incorporating surface tension, bending elasticity, and external mechanical interactions. Nuclear mechanics depends on several factors, including chromatin organization and compaction, which are regulated by epigenetic modifications. Molecular regulation at the nuclear periphery is described by a surface reaction-diffusion system posed on the evolving nuclear surface. We apply this coupled framework to an experimentally characterized lung cancer cell model in which the balance between the enzymes SETDB1 and SUV39H1 regulates the peripheral deposition of H3K9me3. Using experimentally measured mechanical parameters, we represent control (Ctrl) and SETDB1 knockout (SETDB1 KO) conditions, which display distinct H3K9me3 distributions, especially at the nuclear periphery. Numerical solutions obtained using the evolving surface finite element method qualitatively reproduce the changes in nuclear mechanics as well as part of the experimentally observed increase in the entry time in SETDB1 KO cells. The model therefore reproduces the direction of the experimental observations, while the residual difference between simulated and measured entry times indicates that the cellular response is multifactorial.",
+      "categories": [
+        "q-bio.CB",
+        "math-ph",
+        "math.MP"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.02231",
+      "tier": "mention",
+      "why": "A coupled surface mechanics and reaction-diffusion model links chromatin-regulating enzyme balance to nuclear deformation dynamics during confined cell migration."
+    },
+    {
+      "id": "10.64898/2026.09.27.753847",
+      "title": "Downstream mRNA Secondary Structure, Not Codon Elongation Supply, Coordinates Co-Translational Protein Folding Across the Human Ribosomal Exit Tunnel",
+      "authors": [
+        "Saad Ul Hassan, M.",
+        "Jabeen, I.",
+        "Kiani, Y. S."
+      ],
+      "abstract": "How ribosomes pace translation to assist nascent protein folding remains an open question in molecular biology. While synonymous codon selection is widely hypothesized to regulate elongation rates to facilitate domain organization, distinguishing genuine translational kinetics from baseline amino acid preferences has proven technically difficult. Here, we analyze a non-redundant cohort of 1,270 high-resolution human crystal structures (410,151 residues) mapped to their native mRNA transcripts. When we mathematically isolate synonymous codon choices from amino acid identity using orthogonal linear projection, standard codon-supply metrics i.e. the tRNA Adaptation Index (tAI) and the Codon Adaptation Index (CAI), show negligible independent spatial coupling with downstream protein structure. Their uncorrected correlations predominantly reflect local amino acid chemistry rather than physical translation pacing. In contrast, downstream mRNA secondary structure stability (minimum free energy, MFE) displays a subtle but consistent correlation that survives amino acid control. Across 100,000 whole-proteome permutations per pair, this MFE signal centers at an offset of +15 to +16 codons across multiple independent physical properties, including residue packing density (r = -0.0699, Z = -23.64, p < 10-5), crystallographic rigidity (B-factor, r = +0.0614, Z = +13.74, p < 10-5), and solvent burial (SASA, r = +0.0492, Z = +18.98, p < 10-5). This +15 codon offset corresponds directly to the physical dimensions of the eukaryotic 80S ribosome: the path from the peptidyl transferase center to the internal uL4/uL22 constriction neck (~10 amino acids) plus the downstream mRNA helicase entry channel (~5 codons). While the overall effect size is modest, accounting for approximately 0.49% of local packing variance, its spatial specificity and consistency across independent structural metrics suggest that downstream mRNA stability acts as a localized mechanical brake during early chain compaction.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.753847v1",
+      "tier": "mention",
+      "why": "Structural proteome analysis suggests downstream mRNA secondary structure, not codon-supply kinetics, subtly paces co-translational protein folding at a ribosome-geometry-matched offset."
+    }
+  ]
+}
