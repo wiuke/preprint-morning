@@ -1,0 +1,844 @@
+{
+  "date": "2026-09-30",
+  "format": "dialogue",
+  "n_papers": 98,
+  "episode_title": "Untangling GRN circularity, timing whole-genome duplication bursts, and why deep learning still can't predict disease expression",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Morning. It's September thirtieth, and the archive and bio-archive together dropped about ninety-eight new papers overnight. We've pulled out five for deep dives and a good stack of briefs and quick mentions."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Today's got a nice throughline actually. Two papers on timing cancer genome evolution down to the mutation, one on splicing quietly controlling expression levels, one methods paper that couples gene regulatory networks to interpretable machine learning, and one that's basically a reality check on deep learning hype in genomics. Let's get into it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Starting with paper one, from the Fan and Liu labs, on gene regulatory networks and cell fate decisions. This is a methods problem a lot of us run into: you build a GRN, you want to know which transcription factors actually matter for a cell state transition, and every existing way of prioritizing them uses some topological metric computed from the same network you're trying to interpret."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, so you're using the network's own assumptions to validate itself. Circular by construction."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly the problem they name. Their fix is a method called FOCAL, for Factor-Outcome Coupling for Assessment of Linkages. The idea is to keep the GRN, but pair it with latent factors learned by interpretable machine learning that are supervised on an actual outcome, like a cell state label, with formal statistical guarantees, and crucially learned without ever looking at network topology."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the latent factor discriminates cell states purely from expression, independent of any graph, and then afterward you ask which edges in the GRN line up with that factor."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the coupling step. It shifts the unit of interest away from a transcription factor as a big topological hub, and down to specific state-specific and dynamic transcription factor to gene linkages, what they call GIFs, GRNs coupled to interpretable latent factors. They ran this in B and T cell differentiation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And did it recover known biology, or find something new?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Both. It recapitulated established regulatory states and also picked up transient regulatory episodes that precede the overt state change, so a kind of early warning signature in the network. Then, by coupling in latent factors learned from perturbation experiments of lineage-defining transcription factors, they could detect transcriptional predisposition toward one fate or another inside progenitor populations before differentiation is visibly underway."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the part I'd want to see validated carefully, predisposition before commitment is a strong claim."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They did follow up. In activated B cells they found a new interaction between NFATC2 and IRF8, cooperating to restrain extrafollicular plasmablast differentiation while promoting germinal center B cell fate. That's not just a computational prediction, they backed it with in-vitro and in-vivo genetic perturbations."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth flagging for anyone doing GRN inference from single-cell data, this is a concrete argument for decoupling the statistical model that finds discriminative signal from the causal graph you're trying to interpret, rather than folding both jobs into one network centrality score."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper one in the show notes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two is from the Park lab, on timing copy number amplification histories in cancer genomes, and it's a nice mathematical companion piece. The starting fact is one you'll remember from population genetics: if a mutation occurs before a copy number gain, it gets copied along with that gain, so its multiplicity, how many copies carry it, tells you when in the gain history it arose."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Molecular clock, but for chromosome doublings instead of point mutation accumulation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, and people have used this to time individual gains or whole-genome duplication before, but the number of possible gain histories explodes combinatorially as copy number goes up, so existing methods were stuck at low copy states or had to assume a fixed scenario. This paper builds a framework called Tau that enumerates every allele-specific route to a given copy number state and derives an analytical timing for each possible gain."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So it's solving a combinatorial enumeration problem exactly rather than approximating it. What did applying that pan-cancer turn up?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Punctuated, multichromosomal events account for roughly three-quarters of clonal gains. Most of those are whole-genome duplication events, acquired early in the tumor's history, and there's a subset of tumors that are doubling-prone and repeat this. But there's also a separate, mostly monoallelic class of gains, recurring on chromosomes specific to a given tumor type, that's a distinct coordinated mode, not doubling."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the oncogene angle?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the headline. The highest copy number states aren't reached by gradual accumulation, they show up in abrupt bursts clustered right around the whole-genome duplication event, containing more gains than simple doubling could produce on its own, and these bursts recur specifically at oncogenes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So whole-genome duplication isn't just doubling everything uniformly, it's a permissive window where focal oncogene amplification becomes much more likely."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's their framing, and it fits with a lot of intuition about why whole-genome duplication is such a strong prognostic marker across cancer types, it's not the doubling itself that's dangerous, it's what it enables afterward. Paper two in the show notes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three stays in cancer genomics but moves to melanoma, and it's a genuinely well-powered clinical genomics study. Two hundred forty-seven stage one or two primary cutaneous melanomas and sixty matched metastases, no treatment in between, from a prospective registry with a median follow-up of ninety-two months. They layered copy number, mutation, protein, and spatial transcriptomic data on top."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Long follow-up for melanoma, that's what lets them actually call relapse versus non-relapse with confidence. What separated the two groups?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Not point mutations, that's the striking negative result. Oncogenic mutations were largely shared between primaries and their metastases regardless of outcome. What did separate them was somatic copy number alterations and overall chromosomal instability."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the driver mutation gets you into the tumor, but something else gets you out of it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That something else is a six-gene copy number signature they call OncoCycle: amplification of CDK4, MCL1, and CD276, plus biallelic loss of CDKN2A, CDKN2B, and TP53BP1. It predicted relapse independently of standard clinicopathological staging, and it held up in a pan-cancer check too."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And in the matched primary-metastasis pairs, was metastasis just more of the same instability, or something new happening during dissemination?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Continued copy number evolution, and interestingly a reduction in intra-tumor heterogeneity, so the metastasis is a narrower, more copy-number-evolved slice of the primary, not a random mutational leap. OncoCycle alterations present in the primary were preserved in whichever clone seeded the metastasis. Clonal reconstruction found both monoclonal and polyclonal seeding events."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the spatial transcriptomics adds what exactly, beyond confirming the clonal structure?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "It shows those copy-number-defined subclones aren't just sitting in different physical locations, they're actively programming distinct immune and stromal niches around themselves. So the genomic lesion and the local tumor microenvironment are entangled from very early on, which is relevant if you're thinking about immune evasion mechanisms tied to specific copy number states rather than generic instability. Paper three in the show notes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four is a nice mechanistic one from the Burge lab on something that gets glossed over in most differential expression pipelines: why intron-containing genes tend to be expressed higher than intronless versions of the same gene, a phenomenon called intron-mediated enhancement, or I-M-E."
+    },
+    {
+      "speaker": "Ava",
+      "text": "I remember that being described as somewhere between two-fold and one hundred-fold depending on the gene, and strongest for the first, promoter-proximal intron. But the mechanistic driver of the magnitude wasn't clear."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's what they pin down here. They built reporter constructs testing thousands of natural human introns, covering essentially all distinct human five prime splice site motifs and thousands of three prime splice sites, and measured enhancement or repression of expression."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the result?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Two clean findings. First, only introns processed by the major spliceosome show enhancement at all, the minor spliceosome, the rare U12-type introns, actually tend to repress expression instead. Second, and this is the one that matters for interpretation, the size of the enhancement effect scales with the strength of that first five prime splice site motif, and is completely independent of how strong the three prime splice site is."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So it's specifically the recognition event at the start of the first intron that's driving expression level, not general splicing efficiency."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, and that has a direct consequence for variant interpretation. A genetic variant that changes the strength of a gene's first five prime splice site could shift that gene's expression level without necessarily changing the splicing outcome itself, no exon skipping, no retained intron, just a dosage effect through this enhancement mechanism."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Did they check that against real variation, or is this purely reporter-assay logic?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They confirmed the expectation using human population genetic data, and then went further, showing that disease-relevant perturbations of U1 snRNP components, the spliceosome subunit that recognizes the five prime splice site, that enhance recognition of a subset of first splice sites, correspondingly up-regulate the associated genes. So this is a real regulatory axis, not a reporter artifact, and it's one more thing to think about when a noncoding variant near a first intron doesn't show up in a splicing QTL but does show up in an expression QTL. Paper four in the show notes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper five is the one I'd call required listening if you use, or plan to use, any of the deep learning models that predict gene expression directly from DNA sequence, Enformer-style models and their successors. This is from the Gaiteri lab and it's explicitly a critical evaluation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "These models get reported with pretty high correlation between predicted and measured expression across genes. What's the catch?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "The catch is what that correlation is actually made of. They show the high overall performance is driven largely by the models correctly predicting whether a gene is on or off at all, essentially the bimodal, expressed-versus-silent distinction, and only to a much lesser extent by getting the finer, disease-relevant expression level differences right among genes that are already on."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So a benchmark that's dominated by on-off genes will look great, and a benchmark of subtler quantitative differences among expressed genes, which is usually what you actually care about for a disease phenotype, will look much worse."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's exactly the pattern they trace, they show the more bimodal a gene's expression distribution is, the better the reported performance, and they track this across tissues, across different molecular systems, and across cancers, so it's not a one-off artifact."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Is this purely an evaluation-metric problem, or is there something wrong with the models being usable for their stated purpose, personalized or disease-relevant prediction?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Both, and they add a second, more mundane finding: they found inconsistencies between the published code for these models and the performance numbers actually reported in the papers, which is its own warning about reproducibility in this space, and an argument for versioning and publishing the evaluation code itself, not just the model weights."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a useful thing to keep in your back pocket the next time a sequence-to-expression model gets pitched as ready for variant effect prediction in a disease context. High aggregate correlation is not the same as being good at the part of the problem you actually need."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Their bottom line is blunt, personalized genomic expression prediction is, in their words, far from solved in a disease context. Paper five in the show notes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Let's move through some briefs. Paper six is Murmurent, an open-source agentic AI infrastructure layer built specifically for biomedical labs, handling data governance, memory across sessions, and specialized sub-agents for tasks like literature search and statistical development. They demonstrate it on a small-molecule search for inhibitors of Pin1, a phosphorylation-dependent isomerase with a notoriously shallow, hard-to-drug catalytic site."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven maps the epigenetic landscape of pancreatic cancer progression using single-cell ATAC-seq and matched single-cell RNA-seq across thirty-three primary tumors and seven metastases. The key finding is a subtype-intermediate progenitor state marked by joint GATA6 and KRT17 accessibility that's associated with better outcomes, while tumors lacking that co-accessibility diverge into distinct, worse-prognosis lineage trajectories, including one route through neural-like progenitor states and another through basal, esophageal-like transdifferentiation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight tackles a real clinical variant interpretation problem. CASR is a gene where gain-of-function and loss-of-function variants cause opposite diseases, low versus high blood calcium, so knowing the direction of effect matters enormously. They engineered cells expressing single CASR variants, profiled them with single-cell RNA-seq, and trained a classifier on ninety-six expert-annotated variants that reached a macro F1 score of zero point nine eight, then used it to assign a mechanism to one hundred fifty-seven variants of uncertain significance, with predictions backed up against calcium measurements in over three hundred thousand patients."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nine, SpatialTRACE, is a practical annotation tool. It learns anatomical axes and tissue regions, like the crypt-to-villus axis in intestine, from just a handful of manually labeled structures, as few as ten annotated villi in their intestine example, then extends that to whole tissue sections. There's also an image-only version that works from plain DAPI nuclear staining, no expression data needed at inference time, which they used to track antigen-specific CD8 T cells in a viral infection model."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper ten, SpaReg, is a three-D reconstruction method for stacking serial tissue sections back into a coherent volume, working across histology, spatial proteomics, and spatial transcriptomics, while explicitly handling the tears and folds that sectioning introduces. Applied to pancreatic cancer arising from a precursor lesion, it found that flat two-D sections systematically overestimate immune exclusion from the tumor, something only visible once you reconstruct the real three-D architecture."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eleven, DECIPHER, is a deconvolution method for estimating cell type proportions from bulk omics data, using disentangled representation learning to separate a domain-constant signal used for deconvolution from domain-specific variation that would otherwise look like batch effects. Beyond cell proportions, they show the domain-constant representation is useful on its own, for predicting chronological age and for prognosis in lung adenocarcinoma."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twelve, MOD-scTWAS, improves transcriptome-wide association studies at single-cell resolution by pooling information across genes within co-expression modules, rather than modeling genetically regulated expression gene by gene. In the OneK1K single-cell dataset it improved prediction accuracy across all fourteen cell types tested and picked up more significant gene-trait associations for blood cell traits in the UK Biobank."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper thirteen is a theory paper worth a mention for anyone into the mathematical side of tumor heterogeneity. It's a unifying framework connecting compartmental ODE models, phenotype-structured PDEs, and single-cell stochastic equations of cellular plasticity, and it reinterprets Waddington's epigenetic landscape literally, as cells performing stochastic gradient descent on an effective potential, with cancer corresponding to a corrupted version of that landscape."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper fourteen looks at circadian clock disruption in high-risk neuroblastoma, using a network-coordination metric called Delta-CCD across two large cohorts. The disruption isn't localized to one or two clock genes, it shows up as a distributed loss of coordination across the whole circadian network, and it's strongest in tumors already classified as high-risk, with the pattern depending on which reference tissue context you compare against."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And paper fifteen is a metabolism and cancer genomics crossover. BRCA1 or BRCA2 loss, the classic homologous recombination deficiency mutations, turns out to push tumors toward a PKM1-dominant glycolytic state instead of the usual PKM2-dominant state seen in most cancers. Pharmacologically overactivating pyruvate kinase, using the approved drug mitapivat, then selectively kills BRCA2-deficient tumors by disrupting mitochondrial quality control, while sparing BRCA2-proficient cells, a nice example of a synthetic lethality route through metabolism rather than DNA repair directly."
+    },
+    {
+      "speaker": "Leo",
+      "text": "For the quick round-up: paper sixteen, GeneSPOT, models gene-centric spatial dynamics across tissue and time. Paper seventeen benchmarks preprocessing workflows for spatial transcriptomics count matrices across different platforms. Paper eighteen, TxCyto, estimates cytokine activity from bulk transcriptomes using machine learning."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nineteen proposes representing chemical perturbations by their measured biological response rather than chemical structure, to better predict drug effects across cell lines. Paper twenty maps expression quantitative trait loci per cell type in the human pancreas using the HPAP consortium single-cell resources. Paper twenty-one, CancerZigZag, is a generative diffusion model for single-cell state transitions in cancer."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twenty-two looks at network topology and developmental robustness in the Drosophila wing. Paper twenty-three is a conceptual piece arguing that good prediction accuracy for chronological age does not, by itself, establish that you're measuring a real biological aging process, worth reading if you work on aging clocks. Paper twenty-four quantifies proteome-wide protein turnover in frog and fly embryos, finding they use divergent strategies for inheriting maternal protein stores. And paper twenty-five identifies tissue-resident memory CD4 T cells as a marker of response to checkpoint inhibitor therapy in high-grade glioma."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the roundup. Overall theme today, if there is one: a lot of energy going into getting the causal story right, whether that's decoupling network inference from network interpretation, timing cancer genome events down to the individual gain, or being honest about what a deep learning benchmark is actually measuring."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Same time tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.09.28.754797",
+      "title": "Interpretable machine learning coupled to gene regulatory networks uncovers subcircuits underlying cell fate decisions",
+      "authors": [
+        "Rarani, Z. H.",
+        "Keshari, S.",
+        "Sachan, A.",
+        "Saini, A.",
+        "Pease, N. A.",
+        "Fan, J.",
+        "Fu, A.",
+        "Liu, Y. C.",
+        "Gurkar, A. U.",
+        "Delgoffe, G. M.",
+        "Singh, H.",
+        "Das, J."
+      ],
+      "abstract": "Gene regulatory networks (GRNs) model causal linkages that control cell fate decisions and differentiation transitions. Prioritizing regulatory subnetworks underlying cell state differences is of critical importance, but current methods including those reliant on topological metrics introduce circularity as the metrics prioritizing TFs are computed from the same networks whose assumptions they inherit. Separately, interpretable machine learning methods can identify latent factors (LFs) that discriminate cellular states with formal statistical guarantees but do not model regulatory linkages. Here, we present FOCAL (Factor-Outcome Coupling for Assessment of Linkages), a paradigm to prioritize regulatory subnetworks by coupling state-specific and dynamic GRNs with outcome-supervised LFs learned using interpretable machine learning without reference to network topology. This shifts GRN focus from macroscopic TF nodes to state-specific and dynamic TF-gene linkages. In B and T cells, FOCAL identified GIFs (GRNs coupled to Interpretable latent Factors), prioritized regulatory subnetworks underlying established states as well as transient regulatory episodes preceding them. By coupling LFs learnt from perturbation experiments of lineage-defining TFs, FOCAL identified transcriptional predisposition to alternative fates within progenitor cell populations before overt differentiation. This uncovered a novel NFATC2-IRF8 interplay in activated B cells, that was validated by in-vitro and in-vivo genetic perturbations. The two transcription factors act cooperatively to restrain extrafollicular plasmablast differentiation and promote germinal center B cell fate.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754797v1",
+      "tier": "deep",
+      "why": "FOCAL couples interpretable machine learning with state-specific gene regulatory networks to prioritize causal TF-gene subcircuits driving cell fate decisions, directly addressing the core methodological challenge of moving GRN inference beyond topology-based circularity."
+    },
+    {
+      "id": "10.64898/2026.09.23.753832",
+      "title": "Complete timing of copy-number amplification histories reveals whole-genome duplication dynamics and coincident oncogene amplification bursts",
+      "authors": [
+        "Gulhan, D. C.",
+        "Brew, J.",
+        "Park, P. J."
+      ],
+      "abstract": "Copy-number amplifications drive cancer evolution through increased oncogene dosage. Mutations acquired before a gain are co-amplified, so their multiplicity places successive gains on a molecular timescale. This principle has been used to time individual gains and whole-genome duplication (WGD), but possible gain histories multiply rapidly with copy number, confining existing methods to low copy-number states or predefined scenarios and leaving oncogene-bearing amplifications unresolved. Here we describe a mathematical framework to systematically enumerate every allele-specific gain route to a copy-number state and derive an analytical timing for each gain, implemented in a method called Tau. Across pan-cancer genomes, punctuated multichromosomal events account for roughly three-quarters of clonal gains. Most are WGD, acquired early and often repeated within a doubling-prone subset, but a distinct, predominantly monoallelic class recurs on tumor-type-specific chromosomes, representing a coordinated mode separate from doubling. Strikingly, the highest copy-number states are reached not gradually but in abrupt bursts that cluster around WGD and contain more gains than doubling alone can produce, recurring at oncogenes. WGD is therefore not a passive doubling but a window in which localized oncogene amplification becomes far more frequent. By resolving the order of gains and the mutational processes shifting between them, Tau establishes punctuated amplification as a pervasive mode of cancer genome evolution.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.23.753832v1",
+      "tier": "deep",
+      "why": "Tau provides a rigorous mathematical framework to fully enumerate and time copy-number gain histories, revealing that whole-genome duplication opens a burst window for oncogene amplification rather than being a passive doubling event."
+    },
+    {
+      "id": "10.64898/2026.09.23.753695",
+      "title": "Genomic correlates of metastatic competence and progression in human melanoma",
+      "authors": [
+        "Chatziioannou, E.",
+        "Luthria, K.",
+        "Shah, P.",
+        "Armeanu-Ebinger, S.",
+        "Admard, J.",
+        "Schroeder, C.",
+        "Forchhammer, S.",
+        "Stihler, F.",
+        "Zhang, X.",
+        "Maiche, S.",
+        "Mankel, A. B.",
+        "Stadelmaier, J.",
+        "Amaral, T.",
+        "Leiter, U.",
+        "Maczey, E.",
+        "Mattern, S.",
+        "Bonzheim, I.",
+        "Fend, F.",
+        "Garbe, C.",
+        "Heneka, Y.",
+        "Krauss, M.",
+        "Pop, O. T.",
+        "Schreieder, L.",
+        "Haferkamp, S.",
+        "Stratigos, A. J.",
+        "Schuerch, C. M.",
+        "Ossowski, S.",
+        "Martus, P.",
+        "Nahnsen, S.",
+        "Sinnberg, T.",
+        "Flatz, L.",
+        "Riess, O.",
+        "Izar, B.",
+        "Roecken, M."
+      ],
+      "abstract": "Genomic events and their timing that grant a primary tumour the competence to disseminate remain poorly defined. We performed sequencing of 247 stage I/II primary cutaneous melanomas (CMs) and 60 matched metastases without intervening therapy from a prospectively followed registry cohort with a median followup of 92 months, integrating copy-number, mutational, protein and spatial-transcriptomic analyses. Relapse was not distinguished by oncogenic point mutations, which were largely shared between primaries and metastases, but by somatic copy-number alterations (SCNAs) and global chromosomal instability. We defined OncoCycle, a six-gene copy-number signature (amplification of CDK4, MCL1 and CD276; biallelic loss of CDKN2A, CDKN2B and TP53BP1) that predicted relapse independently of established clinicopathological features in melanoma, and a pan-cancer analysis. In matched pairs, metastatic progression was driven by continued copy-number evolution and reduction in intra-tumoural heterogeneity, rather than by acquired point mutations, and OncoCycle alterations from primary tumours were preserved in metastasis seeding clones. Clonal reconstruction revealed both monoclonal and polyclonal metastasis seeding, and spatial transcriptomics resolved copy-number-defined metastatic subclones occupying and programming distinct immune and stromal niches. Thus, metastatic competence was primed early by focal SCNAs on a background of chromosomal instability, elaborated by continued copy-number evolution during dissemination and spatio-temporal interactions with the tumour-microenvironment.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.23.753695v1",
+      "tier": "deep",
+      "why": "A large prospective melanoma cohort with matched primary-metastasis sequencing and spatial transcriptomics identifies a copy-number signature (OncoCycle) that predicts relapse, showing metastatic competence is primed by chromosomal instability rather than point mutations."
+    },
+    {
+      "id": "10.64898/2026.09.28.754465",
+      "title": "The strength of a gene's first 5' splice site is a key determinant of its expression",
+      "authors": [
+        "Sakai, Y.",
+        "McGurk, M. P.",
+        "Kowal, E. J.",
+        "Huang, E.",
+        "BURGE, C. B."
+      ],
+      "abstract": "The control of gene expression is central to cellular physiology and to various biotechnological applications. In higher eukaryotes, synthesis of most messenger RNAs involves removal of introns during splicing. Intron-containing genes are often more highly expressed than intronless versions, despite generating the same mRNA transcripts, suggesting that the splicing of transcripts from a gene positively impacts its expression. Termed intron-mediated enhancement (IME), this phenomenon has been observed in animals, plants, and fungi, with enhancement ranging from 2- to 100-fold and the strongest effects observed for promoter-proximal introns1-3. Here, we assayed thousands of natural human introns, covering all distinct human 5' splice site (5SS) motifs and thousands of 3' splice sites (3SS), for their ability to enhance (or repress) expression of a reporter gene. The results confirmed previous observations that intronic UUUU motifs augment the magnitude of IME, and revealed two fundamental features of IME: (i) only introns spliced by the major spliceosome elicit IME, with minor introns often repressing expression; and (ii) the magnitude of IME increases with the strength of the 5SS motif, but is independent of 3SS strength. Our findings imply that genetic variants that alter the strength of the first 5SS of genes may alter their expression by modulating IME without necessarily impacting splicing. We confirm this expectation using human population genetic data and further show that disease-relevant perturbations of U1 snRNP components that enhance recognition of subsets of first 5SS up-regulate expression of the associated genes. These findings demonstrate that recognition of the first 5SS is vitally important to the expression of human genes.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754465v1",
+      "tier": "deep",
+      "why": "A large-scale reporter screen reveals that intron-mediated enhancement of gene expression is governed by the strength of a gene's first 5' splice site independent of splicing efficiency, a fundamental and unexpected rule of gene regulation with implications for interpreting expression-altering variants."
+    },
+    {
+      "id": "10.64898/2026.09.24.753534",
+      "title": "Disease relevance and replicability of deep learning gene expression prediction",
+      "authors": [
+        "Zhang, A.",
+        "Tasaki, S.",
+        "Connell, D.",
+        "Ng, B.",
+        "Gaiteri, C."
+      ],
+      "abstract": "Recent deep learning (DL) models predict average gene expression levels from DNA sequences with high overall correlation to measured values. We examine these DL models through the lens of disease research. The seemingly high overall performance of DL models is largely due to capturing whether genes are \"On\" or \"Off\", and to a lesser extent, disease-relevant expression level changes for \"On\" genes. Indeed, the more bimodal the gene expression distribution, the better the reported performance. We track the extent of this issue across tissues, molecular systems, and cancers. Compounding the model evaluation issue, we find inconsistencies between the published code and reported performance, highlighting the importance of versioning and publishing performance evaluation code. These findings indicate that the high reported performance of popular DL models falls unexpectedly short in disease applications, and that the problem of personalized genomic prediction remains far from solved in a disease context.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.753534v1",
+      "tier": "deep",
+      "why": "A critical re-evaluation shows that popular deep learning models for predicting gene expression from DNA sequence mainly capture binary on/off status rather than disease-relevant expression changes, a sobering methodological finding for anyone using these models for regulatory genomics."
+    },
+    {
+      "id": "10.64898/2026.09.24.753565",
+      "title": "An agentic AI environment to support biomedical research in collaborative academic environments",
+      "authors": [
+        "Wu, T.",
+        "Browne, T. S.",
+        "Meawad, M.",
+        "Emam, H. E.",
+        "Simsam, N. H.",
+        "Xia, Y.",
+        "Jaafar, A.",
+        "Ma, A.",
+        "Kabbani, B.",
+        "Gupta, V.",
+        "Mucaki, E. J.",
+        "Bishop, S. L.",
+        "Edgell, D. R.",
+        "Gloor, G.",
+        "Lu, K. P.",
+        "Weir, L.",
+        "Zhou, X. Z.",
+        "Dumeaux, V.",
+        "Hallett, M. T."
+      ],
+      "abstract": "Agentic artificial intelligence (AAI) is increasingly used by biomedical scientists, where it has substantially lowered the difficulty of integrating computational, statistical and data-science approaches into day-to-day research activities, assisting with project design, analysis and manuscript preparation. Significant barriers remain, however, which are unlikely to be removed solely by releasing more capable AI models. Meaningful use still demands a technical fluency that many biomedical researchers lack: a PI and their lab members must learn how to use the AAI system, establish standard operating procedures (SOPs) for managing, sharing and curating data, and enforce rules that address data privacy and security. Existing commercial AAI systems, which were designed primarily for software engineering purposes, need to be significantly re-purposed for biomedical-related data science. We present Murmurent, shared software that sits beneath the agentic AI and provides the skills, procedures and protections to address the concerns above, removing the need for a lab to develop them independently. This includes (1) infrastructure to support projects and so-called choreographies involving multiple group members; (2) a set of specialized agents each dedicated to typical biomedical data science tasks including software and statistical development, data visualization, literature search, equity, diversity, inclusion, and decolonization (EDID) review, and others; (3) a tiered memory which can retain important research decisions, intermediate, derived outputs and sensitive data, and which can exploit this information to automatically build better contexts in AAI sessions; (4) traceability records which are used by the AAI session to better plan and execute data analyses and software builds by, for example, helping to avoid repeating decisions that lead to dead-ends; (5) enforcement of SOPs for data maintenance and data governance across all lab members; and (6) multi-user capacity to allow groups to interact and collaborate. We use the system to identify putative inhibitors of Peptidyl-prolyl cis-trans Isomerase NIMA-interacting 1 (Pin1), a protein with a shallow catalytic site making it difficult to target. We describe the construction of several approaches to identify Pin1 inhibitors and the results they yield. Murmurent is open source.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.753565v1",
+      "tier": "brief",
+      "why": "EpiZoo is a 2.6B-parameter DNA-sequence-aware foundation model trained on ~21M cells across species that enables cross-species comparative chromatin accessibility analysis and cancer mutation prioritization."
+    },
+    {
+      "id": "10.64898/2026.09.28.754674",
+      "title": "Epigenetic progression of pancreatic cancer to aggressive subtypes involves alternate routes of lineage reprogramming in subtype-intermediate progenitor cells",
+      "authors": [
+        "Hawthorne, K. A.",
+        "Eng, J. R.",
+        "Tsuda, M.",
+        "Worth, P. J.",
+        "Fields, A. J.",
+        "Daniel, C. J.",
+        "Nishida, A.",
+        "Pelz, C.",
+        "Langer, E. M.",
+        "Waugh, T. A.",
+        "Agritelley, E. S.",
+        "Link, J. M.",
+        "Sheppard, B. C.",
+        "Adey, A. C.",
+        "Sears, R. C."
+      ],
+      "abstract": "Pancreatic ductal adenocarcinoma (PDAC) progression involves malignant cell state plasticity. Epigenetic changes underlie this plasticity, yet the PDAC cis-regulatory landscape remains understudied. To address this, we profiled 33 primary tumors and 7 metastases from 39 patients with single-cell ATAC-seq, paired with 10 single-cell RNA-seq profiles. We found that epigenetic GATA6+/KRT17+ co-accessibility identifies a classical-basal subtype-intermediate progenitor state (SIP) associated with better clinical outcomes. SIP cells display limited epigenetic reprogramming from premalignant epithelium and retain gastric-intestinal differentiation reminiscent of neoplastic precursors. Lineages without GATA6+/KRT17+ co-accessibility exhibit greater lineage and epithelial-mesenchymal plasticity. Classical PDACs that repress basal gene accessibility activate neural-like progenitor (NRP) and tuft lineage enhancers, whereas basal committed tumors display esophageal transdifferentiation. Compared to SIP, classical-NRP and basal committed tumors have poorer outcomes, and show distinct PD-1/PD-L1 immune proteomic phenotypes and prognostic myofibroblast epigenetic states, respectively. Our work reveals links between lineage reprogramming, EMT, and epigenetic progression in human PDAC.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754674v1",
+      "tier": "brief",
+      "why": "Single-cell ATAC-seq across 33 primary PDAC tumors and metastases identifies a subtype-intermediate progenitor cell state with limited epigenetic reprogramming that predicts better clinical outcomes."
+    },
+    {
+      "id": "10.64898/2026.09.26.754690",
+      "title": "Single-cell profiling resolves gain- and loss-of-function mechanisms in CASR to advance mechanism-aware variant classification",
+      "authors": [
+        "Padigepati, S. R.",
+        "Stafford, D.",
+        "Kobayashi, Y.",
+        "Tan, C. A.",
+        "Kim, J.",
+        "Jiang, Y.",
+        "Ouyang, K.",
+        "Reuter, J.",
+        "Lacoste, A. M. B."
+      ],
+      "abstract": "Multiplexed assays of variant effect (MAVEs) and computational methods have advanced variant classification but have struggled to distinguish the molecular mechanism of variants with sufficient accuracy, limiting utility for multi-mechanism genes. Here, we coupled single-cell RNA-seq profiling with supervised machine learning to predict the mechanism of variants in CASR, a gene in which gain of function (GOF) variants cause hypocalcemia and loss of function (LOF) variants cause hypercalcemia. We engineered endogenous CASR-depleted HEK293 cells to express a single exogenous variant copy, measured their transcriptional profiles at single-cell resolution, trained a multi-class machine learning model on 96 expert-annotated variants (25 benign, 35 LOF, 36 GOF), and predicted mechanism for 157 variants of uncertain significance, of which 16 were predicted GOF and 54 LOF. The model showed high performance (macro F1 0.98, overall accuracy 0.98), and its predictions were corroborated by clinical phenotype and serum calcium measurements across more than 300,000 patients in a commercial genetic testing database. These results highlight the effectiveness of using molecular mechanism annotations with scRNA-seq to train models that distinguish molecular mechanisms of pathogenicity. The approach has immediate relevance for clinical variant classification and establishes a foundation for mechanism-guided clinical management in disorders with mechanism-dependent interventions, with potential application to other multi-mechanism genes.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754690v1",
+      "tier": "brief",
+      "why": "Single-cell RNA-seq profiling combined with supervised ML distinguishes gain- vs loss-of-function CASR variants with near-perfect accuracy, validated against >300,000 patient records, a strong template for mechanism-aware variant classification."
+    },
+    {
+      "id": "10.64898/2026.09.23.753836",
+      "title": "SpatialTRACE predicts anatomical axes and regions in spatial transcriptomics and microscopy",
+      "authors": [
+        "Monell, A. T.",
+        "Gogate, A. A.",
+        "Patravali, D.",
+        "Abadie, K.",
+        "Yeo, G. W.",
+        "Goldrath, A. W.",
+        "Heeg, M."
+      ],
+      "abstract": "Spatial transcriptomics measures gene expression in tissue sections. However, interpretation requires anatomical maps that link gene expression and cellular composition to tissue structure. Annotating entire sections often requires extensive manual labor. We developed SpatialTRACE (Tissue Region and Axis Coordinate Estimation), consisting of graph- and image-based models, to extend annotations of a few structures into tissue-wide maps of anatomical axes and regions. SpatialTRACE-Graph combines gene-expression profiles with spatial neighborhoods to predict anatomical coordinates or region membership throughout spatial transcriptomic datasets. In held-out mouse small-intestine sections, it predicted crypt-villus and epithelial-distance axis coordinates using as few as 10 annotated training villi and identified Peyer's patches from region annotations. SpatialTRACE-Image predicts the same anatomical axis coordinates and regions across entire tissue images from DAPI alone. This multiscale vision transformer learns from coordinate and region predictions generated by SpatialTRACE-Graph. We applied SpatialTRACE-Image to immunofluorescence images to map the anatomical distribution of antigen-specific P14 CD8 T cells responding to acute systemic infection with lymphocytic choriomeningitis virus (LCMV) Armstrong in the small intestine. Compared with the vehicle-treated section, a section treated with a retinoic acid receptor inhibitor contained fewer P14 CD8 T cells overall, with a smaller fraction in the upper-villus lamina propria and a relative enrichment in the muscularis. Overall, the SpatialTRACE models reduce repeated manual annotation and provide a route to extend anatomical maps learned from spatial transcriptomics to DAPI-containing microscopy data.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.23.753836v1",
+      "tier": "brief",
+      "why": "SpatialTRACE uses graph- and image-based models to extend sparse manual annotations into tissue-wide anatomical axis and region maps for spatial transcriptomics and DAPI microscopy."
+    },
+    {
+      "id": "10.64898/2026.09.28.754175",
+      "title": "SpaReg: sparsity-based 3D reconstruction of tissue microenvironments at native resolution across morphological and spatial molecular modalities",
+      "authors": [
+        "Pawar, R.",
+        "Jacob, T.",
+        "Raphael, R.",
+        "Byrnes, E.",
+        "Watkins, S.",
+        "Soong, T. R.",
+        "Singhi, A.",
+        "Uttam, S."
+      ],
+      "abstract": "Tissue microenvironments comprise cellular and acellular components whose three-dimensional (3D) architecture guides disease fate. Direct imaging of intact specimens by light-sheet and multiphoton microscopy, and computational reconstruction from serial sections, have established that 3D spatial context reveals cell and tissue organization inaccessible at single planes. Computational reconstruction in particular can leverage archived human tissue, benefiting from the cost-effectiveness, robustness, scalable storage, workflow compatibility, and century-long pathobiology knowledge of histology, and can integrate multiple spatial modalities. However, sectioning can introduce tears and folds, and computational alignment can further distort tissue integrity. Here we introduce SpaReg, a sparsity-based 3D reconstruction method spanning histology, spatial proteomics and spatial transcriptomics. Across multiple organs, SpaReg robustly reconstructs large tissue volumes with preserved subcellular morphology despite sectioning artifacts. On a standardized histology benchmark, SpaReg achieves the best balance between 3D reconstruction accuracy and tissue integrity, and on spatial transcriptomics benchmarks it ranks among the leading methods while scaling to hundreds of sections and millions of cells in a dataset that several existing methods fail to process. Preservation of subcellular morphology by SpaReg also enables training of a Hematoxylin and Eosin (H&E)-based epithelial, T and B cell classifier, generating single-cell-resolved 3D maps directly from H&E. Applied to pancreatic tissue containing pancreatic ductal adenocarcinoma arising from an intraductal papillary mucinous neoplasm, these maps reveal that 2D sections overestimate immune exclusion, and resolve lymphoid aggregates in 3D. SpaReg, therefore, provides a scalable foundation for morphologically faithful, multimodal 3D atlases and spatially informed disease modeling",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754175v1",
+      "tier": "brief",
+      "why": "SpaReg offers a sparsity-based 3D reconstruction method spanning histology, spatial proteomics and transcriptomics that corrects sectioning artifacts and reveals that 2D sections overestimate immune exclusion in pancreatic cancer."
+    },
+    {
+      "id": "10.64898/2026.09.24.753940",
+      "title": "DECIPHER integrates disentangled representation learning and prototype-based cell-type deconvolution across molecular modalities",
+      "authors": [
+        "Lai, W.",
+        "Li, C.",
+        "Deng, Q.",
+        "Zhu, Y.",
+        "Liu, C.",
+        "Li, Z.",
+        "Luo, O. J."
+      ],
+      "abstract": "The growing availability of single-cell resources creates new opportunities to extract cell-type-resolved information from the vast body of existing bulk omics data through cell-type deconvolution. Conventional deconvolution methods often rely on linear mixture models or specific probabilistic assumptions and can be sensitive to batch effects, whereas many deep-learning approaches are modality-specific or lack a unified end-to-end learning framework. Here, we developed DECIPHER, an end-to-end representation-learning framework for cell-type deconvolution that can be applied across multiple molecular modalities. DECIPHER learns a domain-constant representation (Zc) for deconvolution and a domain-specific representation (Zs) to model domain-associated variation. By integrating nonlinear representation learning with differentiable non-negative least-squares optimization, DECIPHER estimates cell-type proportions from Zc. Across simulated datasets, experimentally generated bulk-cell mixtures, real-world datasets, and multiple molecular modalities, DECIPHER showed robust and competitive cell-type deconvolution performance. Beyond cell-type proportion estimation, the learned Zc supported chronological age prediction across independent cohorts and prognostic stratification in lung adenocarcinoma, demonstrating that DECIPHER can transform high-dimensional bulk omics data into low-dimensional, biologically informative representations. DECIPHER thus broadens the utility of existing bulk omics resources for biological discovery and clinical research.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.753940v1",
+      "tier": "brief",
+      "why": "DECIPHER is an end-to-end disentangled representation-learning framework for cell-type deconvolution that generalizes across molecular modalities and yields biologically informative low-dimensional embeddings for aging and prognosis tasks."
+    },
+    {
+      "id": "10.64898/2026.09.24.754034",
+      "title": "MOD-scTWAS: Leveraging gene co-expression for single-cell transcriptome-wide association studies",
+      "authors": [
+        "Guo, H.",
+        "Lu, Y.",
+        "Hou, L."
+      ],
+      "abstract": "Transcriptome-wide association studies (TWAS) provide an effective framework for identifying genes associated with complex traits. Population-scale single-cell transcriptomic data enable genetically regulated expression (GReX) prediction and TWAS analyses at cell-type resolution, but the predictive performance of existing single-cell TWAS methods remains limited. Here, we develop MOD-scTWAS, a module-based method that jointly models GReX for genes within co-expression modules to borrow information across genes. Starting from a generative model for single-cell gene expression, MOD-scTWAS accounts for the heteroscedasticity and cross-gene correlation of individual-level pseudobulk expression in joint GReX prediction. In cross-validation analyses of the OneK1K dataset, MOD-scTWAS achieved higher mean GReX prediction accuracy than scTWAS across all 14 cell types and increased the number of imputable genes. When applied to TWAS analyses of UK Biobank quantitative hematological traits, MOD-scTWAS identified more significant cell type-gene-trait associations than scTWAS. These results demonstrate the potential of leveraging gene co-expression through joint modeling to improve cell-type-specific GReX prediction and TWAS discovery.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.754034v1",
+      "tier": "brief",
+      "why": "MOD-scTWAS improves single-cell transcriptome-wide association study power by jointly modeling genetically-regulated expression within co-expression modules, boosting discovery for hematological trait GWAS."
+    },
+    {
+      "id": "2609.37703",
+      "title": "Stochastic gradient descent on the epigenetic landscape: a unified framework for cellular plasticity, tumor heterogeneity, and the asymptotic irrelevance of fitness",
+      "authors": [
+        "Artur C. Fassoni"
+      ],
+      "abstract": "Phenotypic plasticity, the ability of cells to switch between states, is central to development, differentiation, and therapy resistance. Although it is modeled at several scales, from compartmental ODEs to phenotype-structured PDEs and single-cell stochastic equations, a framework connecting these descriptions is missing. We present such a framework. Starting from a general n-compartment ODE model encompassing nonlinear growth and linear transitions between phenotypes, we show, with a new, elementary and generalizable proof of a recent theorem, that under uniform competition, the long-term population distribution is solely governed by transition rates. All phenotypes become selectively neutral at saturation, and the imprint of fitness differences during growth fades at an explicit rate. Restricting transitions to neighboring states transforms the model into a discretization of a phenotype-structured reaction-diffusion-advection PDE. In this continuum model, diffusion and advection are identified from switching rates, and fitness remains asymptotically irrelevant. Interpreting the advection velocity as the negative gradient of an effective epigenetic potential transforms the PDE into a Fokker–Planck equation and converts single-cell trajectories into stochastic gradient descent (SGD) in the Langevin sense on the phenotypic landscape. Non-local transitions, such as mutations, are incorporated via an integro-differential term, yielding a unified model with reaction, gradient flow, diffusion, and jumps. State-dependent noise reshapes the effective landscape without altering the underlying potential. This gives cancer a route to elevated plasticity that static, single-cell snapshots cannot distinguish from a changed landscape. This framework provides a physical interpretation of Waddington's landscape, where cells perform SGD, and cancer corresponds to a corrupted landscape.",
+      "categories": [
+        "q-bio.PE",
+        "physics.bio-ph",
+        "q-bio.CB"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2609.37703",
+      "tier": "brief",
+      "why": "A unifying mathematical framework connects compartmental ODEs, phenotype-structured PDEs, and single-cell stochastic dynamics, showing that under uniform competition long-term phenotype distributions are governed by transition rates rather than fitness—an elegant reinterpretation of Waddington's landscape for cancer plasticity."
+    },
+    {
+      "id": "10.64898/2026.09.28.754955",
+      "title": "Circadian gene-network distortion in high-risk neuroblastoma across multiple biological reference contexts",
+      "authors": [
+        "Maussier, N.",
+        "Tsagkogiannis, D.",
+        "Baryawno, N.",
+        "Kogner, P.",
+        "Johnsen, J. I.",
+        "Wickstrom, M.",
+        "Dyberg, C.",
+        "Bedoya-Reina, O. C.",
+        "Sjoberg Bexelius, T."
+      ],
+      "abstract": "Background: The circadian clock regulates cellular homeostasis, and its disruption has been implicated in aggressive neuroblastoma, particularly in tumours harbouring MYCN- amplification. However, it remains unclear whether alterations are restricted to individual clock genes or extend to circadian gene network coordination. We therefore examined circadian clock network disruption in adverse neuroblastoma across multiple biological contexts. Methods: We estimated circadian gene network dysregulation using Delta-CCD in tumours from two neuroblastoma cohorts (SEQC n=498 and Kocak n=649), comparing clinical features associated with outcome across canonical, adrenal-tissue matched, and developmental references. Robustness was assessed by cross-cohort meta-analysis and leave-one-gene-out analyses. Cox proportional hazards models adjusted for clinical covariates assessed association between individual clock gene expression patient outcome. Results: Delta-CCD was highest in tumours classified as high-risk (study-specific definition) across reference contexts in both cohorts. MYCN-amplified tumours showed a more reference-dependent pattern, strongest in adrenal context, while stage 4 tumours showed a similar but weaker pattern. Additional analyses supported the high-risk signal as a distributed network-level alteration rather than a single-gene phenomenon. Conclusions: High-risk neuroblastoma is characterised by robust disruption of coordinated clock gene network organisation across canonical and tissue-matched references, extending beyond individual clock genes. The extent of circadian dysregulation depends on the reference state used.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754955v1",
+      "tier": "brief",
+      "why": "Delta-CCD network-level analysis shows high-risk MYCN-amplified neuroblastoma is characterized by distributed circadian gene-network dysregulation rather than single clock-gene changes, robust across two cohorts and multiple reference contexts."
+    },
+    {
+      "id": "10.64898/2026.09.29.754041",
+      "title": "BRCA2 loss drives a PKM1-dominant glycolytic state that is selectively lethal to pyruvate kinase activation",
+      "authors": [
+        "Di Tano, M.",
+        "Ahmed, M.",
+        "Li, S.",
+        "Lyashenko, M.",
+        "Ruthen, N.",
+        "Tse, E.",
+        "Nathoo, I.",
+        "E. Echeverria, C.",
+        "Sanford, J.",
+        "Saleh, A.",
+        "Kim, J.",
+        "Dantas, E. C.",
+        "Pradella, D.",
+        "Rhee, K. Y. C.",
+        "Reznik, E.",
+        "Cantley, L. C.",
+        "Goncalves, M. D."
+      ],
+      "abstract": "Homologous recombination deficiency (HRD), most commonly arising from BRCA1/2 loss, is accompanied by metabolic remodeling whose contours and therapeutic implications remain poorly defined. Through pan-cancer analysis of 10,619 tumors from The Cancer Genome Atlas (TCGA) and isogenic BRCA1/2-deficient models, we show that HRD tumors display broad metabolic rewiring, with consistent alterations in glucose metabolism. Unexpectedly, BRCA1/2 loss is associated with selective upregulation of the constitutively active glycolytic enzyme Pyruvate Kinase M1 (PKM1) isoform, contrasting with the PKM2-dominant state of most cancers, and produces an elevated pyruvate kinase activity state. Overactivating PKM, with small molecules activators, including the FDA-approved drug mitapivat, triggers superoxide accumulation, disrupts PINK1-dependent mitochondrial quality control, induces DNA damage, and selectively kills BRCA2-deficient tumors in vivo, while sparing BRCA2-proficient counterparts. These findings recast HRD as a metabolic state and identify PKM activation as a candidate therapeutic strategy for biomarker-selected HR-deficient cancers.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.754041v1",
+      "tier": "brief",
+      "why": "Pan-cancer metabolic analysis reveals BRCA2-deficient tumors adopt a PKM1-dominant glycolytic state that is selectively lethal to pyruvate kinase activators like mitapivat, suggesting a biomarker-driven metabolic vulnerability in HR-deficient cancers."
+    },
+    {
+      "id": "10.64898/2026.09.24.753111",
+      "title": "Deciphering the gene-centric spatial dynamics across tissue and time with GeneSPOT",
+      "authors": [
+        "Zou, Q.",
+        "Wang, Z.",
+        "Li, S.",
+        "Lin, S.",
+        "Han, C.",
+        "Cui, Y.",
+        "Li, S.",
+        "Wang, L.",
+        "Zhang, D.",
+        "Zhang, W.",
+        "Qian, B.",
+        "Gao, R.",
+        "Yuan, Z."
+      ],
+      "abstract": "Spatial omics technologies provide unprecedented opportunities to investigate how molecular programs are organized within tissues. However, existing analytical frameworks primarily focus on identifying cellular states and characterizing differentially expressed molecular features across these states. The relational spatial organization of molecular features and its dynamics across biological contexts therefore remain largely unexplored. Here, we present GeneSPOT, a gene-centric computational framework for characterizing the spatial relationships among genes and quantifying their reorganization across biological conditions. Although gene-centric in design, GeneSPOT generalizes to other molecular features. Across diverse applications, GeneSPOT resolved tissue structures, integrated paired and unpaired spatial multi-omics data, unveiled the spatial convergence of gene programs during embryonic development, and identified aging-associated spatial reorganization among genes whose expression did not change significantly with age. GeneSPOT thus complements conventional cell-centric analysis, providing a framework for deciphering how spatial relationships among molecular features are reorganized across biological conditions and over time.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.753111v1",
+      "tier": "mention",
+      "why": "GeneSPOT is a gene-centric spatial omics framework that quantifies reorganization of spatial gene-gene relationships across tissue conditions and developmental time."
+    },
+    {
+      "id": "10.64898/2026.09.24.753981",
+      "title": "Platform-specific count-matrix preprocessing workflows for spatial transcriptomics data analysis",
+      "authors": [
+        "Du, Y.",
+        "Li, S.",
+        "Yang, X.",
+        "Shu, H.",
+        "Wang, Z.",
+        "Zhang, D.",
+        "Zou, Q.",
+        "Yuan, Z."
+      ],
+      "abstract": "Preprocessing of spatial transcriptomics (ST) count matrices is critical for removing technical variation while preserving biological signals, but optimal strategies remain unclear across diverse platforms. We systematically benchmarked 371 preprocessing workflows across 45 data spanning 11 mainstream ST platforms, evaluating their performance using specifically designed complementary metrics. To further assess preprocessing factors upstream of count-matrix generation, we additionally evaluated image preprocessing, including cell segmentation and post-segmentation transcript processing, across representative imaging-based ST platforms. We found that no universal count-matrix preprocessing workflow performed optimally across all platforms, while data from the same platforms exhibited striking consistency in optimal count-matrix preprocessing workflows. We identified the key data structure characteristics and count-matrix preprocessing steps that critically influence preprocessing performance. We developed platform-specific and data structure-guided recommendations to assist users in selecting the optimal count-matrix preprocessing workflow, validated across a broader range of downstream tasks. We demonstrated that our data-driven recommendations uncover subtle biologically meaningful spatial patterns in new data that were obscured by suboptimal count-matrix preprocessing. Our findings suggest best practices for ST data count-matrix preprocessing.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.753981v1",
+      "tier": "mention",
+      "why": "A systematic benchmark of 371 preprocessing workflows across 11 spatial transcriptomics platforms finds no universal best pipeline and provides platform-specific recommendations."
+    },
+    {
+      "id": "10.64898/2026.09.28.754405",
+      "title": "TxCyto: A machine learning framework for estimating cytokine activity from whole transcriptome",
+      "authors": [
+        "Kumar, R.",
+        "Li, S.",
+        "Jiang, P.",
+        "Hannenhalli, S."
+      ],
+      "abstract": "Cytokines are critical mediators of intercellular communication, and a comprehensive characterization of their activity is essential for understanding health and disease. Existing tools to infer cytokine activity rely on experimental measurements. However, such measurements are available only for a small minority (43) of cytokines, and moreover, cytokine activity and response are highly context-specific, making a comprehensive experimental profiling across tissues, disease states, and biological contexts impractical. To address this gap, we developed TxCyto - a deep learning-based framework that infers the activity of cytokines, and more broadly of the tumor secretome, directly from the whole transcriptome profile of a sample. Trained on pan-cancer TCGA tumor transcriptomes, TxCyto was extensively validated in multiple independent datasets, including cytokine perturbation experiments. Across multiple cancer immunotherapy cohorts, TxCyto identified cytokines whose predicted activity was associated with therapeutic response. Furthermore, in spatial transcriptomic data for Liver cancer, TxCyto discovered spatial niches associated with response to immunotherapy. Overall, we develop a machine learning tool -TxCyto, for predicting the activity of 645 cytokines and tumor secretome from readily available whole transcriptomes. The TxCyto framework is generally applicable to other classes of regulatory molecules and TxCyto code base, and the tools are provided at https://github.com/Rahulncbs/TxCyto.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754405v1",
+      "tier": "mention",
+      "why": "TxCyto is a deep learning model that infers activity of 645 cytokines directly from bulk transcriptomes, identifying spatial niches associated with immunotherapy response in liver cancer."
+    },
+    {
+      "id": "10.64898/2026.09.28.755146",
+      "title": "A biological-response compound representation allows chemical perturbation prediction across cell lines",
+      "authors": [
+        "Le Breton, L.",
+        "Kaufmann, L.",
+        "Carraz-Billat, E.",
+        "Fournier, Q.",
+        "Lemieux, S."
+      ],
+      "abstract": "Accurately predicting cellular responses to drugs remains a challenge with the potential to reduce experimental screening costs and accelerate drug discovery. Current computational approaches represent compounds through chemical structures, which carry little information regarding their activity within biological systems. We show that gene expression responses, measured in a reference cell line, can instead serve as transferable representations of chemical perturbations. The proposed framework, BioPert, uses biological representations with a small neural network to predict transcriptional delta responses in cell lines of different lineages. Across the Tahoe-100M and LINCS L1000 datasets, BioPert outperforms molecular fingerprints and embeddings learned from chemical structure, which provide limited improvements over random controls. BioPert's prediction correlations reach 0.79 on Tahoe-100M, corresponding to an improvement of 0.34 over the next-best representation. On LINCS, performance varies with the experimental reproducibility of the test conditions, highlighting the impact of batch effects. Notably, BioPert considerably surpasses predictions obtained by copying the reference response, demonstrating that it captures context-dependent effects. Further analysis of a C32-cobimetinib case shows pathway-level accuracy of the predictions, including when the reference and target responses differ. These results open a new path for chemical perturbation prediction and could ultimately reduce the burden of phenotypic screening.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.755146v1",
+      "tier": "mention",
+      "why": "BioPert shows that gene-expression-based (rather than chemical structure-based) representations of drug perturbations transfer much better across cell lines for predicting transcriptional responses."
+    },
+    {
+      "id": "10.64898/2026.09.23.753551",
+      "title": "Utilizing single-cell data for per-cell type eQTL mapping in the human pancreas",
+      "authors": [
+        "Weidekamp, M. A.",
+        "Lorenz, K.",
+        "Elgamal, R.",
+        "HPAP Consortium,",
+        "Kaestner, K. H.",
+        "Gaulton, K.",
+        "Grant, S. F.",
+        "Voight, B. F."
+      ],
+      "abstract": "Aims/hypothesis The human pancreas is a central organ for metabolic regulation that is comprised of diverse cell types that uniquely contribute to its function. Previous studies have performed expression quantitative trail loci (eQTL) discovery in either whole pancreas or in pancreatic islets, but due to differences between pancreatic cell types, this approach does not reveal cell type-specific effects. In this study, we sought to either implicate the cell type of action for known eQTLs or identify new eQTLs that may have been masked in bulk studies by performing eQTL discovery in individual pancreatic cell types. Methods We clustered 153,018 single-cell RNA sequencing (scRNA-seq) data from 71 pancreatic islet donors from the Human Pancreas Analysis Program (HPAP). We performed eQTL discovery in six pancreatic cell types using this resource directly. We further utilized this single cell resource as a reference to deconvolute bulk pancreatic RNA sequencing data from 305 Genotype Tissue Expression (GTEx) project donors and performed eQTL discovery in four pancreatic cell types. Finally, we performed fine-mapping and co-localization of pancreatic cell type eQTLs with metabolic GWAS to connect our findings to metabolic disease risk. Results From analyzing 71 individuals with single cell profiles, we identified 112 unique eGenes across six pancreatic cell types, 99 of which had been identified previously and 13 unique to this study. From the deconvoluted eQTLs, we identified 3,134 unique eGenes across four pancreatic cell types, 116 of which were unique to our study. Fine-mapping and co-localization of eQTLs with metabolic GWAS yielded key leads that warrant further investigation, such as the association of rs2168101 with LMO1 expression in alpha cells. Conclusions/interpretation We identified new signals that were previously not found in bulk pancreatic eQTL studies and potential cell type of action for several signals that were identified previously. Although there are limitations to the power, and therefore, discoverability of this study, it provides insights into how individual pancreatic cells differently contribute to metabolic disease.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.23.753551v1",
+      "tier": "mention",
+      "why": "Single-cell eQTL mapping across pancreatic cell types, combined with bulk deconvolution, uncovers cell-type-specific regulatory variants linked to metabolic disease GWAS signals."
+    },
+    {
+      "id": "2609.37735",
+      "title": "CancerZigZag: Iterative Seed-Anchored Diffusion for Generative Modeling of Single-Cell State Transitions",
+      "authors": [
+        "Johannes Schl\\\"uter",
+        "Alexander Sch\\\"onhuth"
+      ],
+      "abstract": "Single-cell cancer datasets are predominantly cross-sectional and rarely provide paired or longitudinal observations linking individual healthy-like cells to tumor-associated states. We introduce CancerZigZag, a seed-initialized diffusion-based framework for exploratory generation of tumor-associated single-cell candidate clouds from unpaired epithelial cell populations. For each cancer context, a diffusion model is trained exclusively on tumor-derived epithelial cells and applied through repeated partial latent-space perturbation and reverse diffusion to held-out healthy-like seeds, generating stochastic candidate clouds without paired measurements or classifier guidance. We applied CancerZigZag to colorectal, breast, lung, and renal cell carcinoma contexts and explored parameter landscapes defined by perturbation depth and the number of ZigZag cycles. Across the reported operating configurations, candidate clouds contained outputs classified toward held-out tumor-derived reference populations for each evaluated seed. Residual seed-dependent organization varied across contexts, with the clearest structure in colorectal cancer, more modest organization in lung cancer, and limited cloud-level structure in breast and renal cell carcinoma. Representative candidates also showed directional concordance with transcriptional shifts observed between held-out healthy-like and tumor-derived reference populations. CancerZigZag is not interpreted as a model of deterministic healthy-to-tumor transformation or cellular progression. Instead, it provides a reference-informed framework for exploring tumor-associated candidate distributions from unpaired healthy-like seeds and quantifying the context-dependent relationship between tumor-associated displacement and residual seed dependence.",
+      "categories": [
+        "q-bio.GN"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2609.37735",
+      "tier": "mention",
+      "why": "CancerZigZag uses seed-anchored diffusion models to generate candidate tumor-associated single-cell state trajectories from unpaired healthy-tumor epithelial populations across four cancer types."
+    },
+    {
+      "id": "10.64898/2026.09.28.755080",
+      "title": "Network topology reveals distinct forms of developmental leverage in the Drosophila wing",
+      "authors": [
+        "Gardner, L.",
+        "Adams, D.",
+        "McKenna, K. Z."
+      ],
+      "abstract": "Developmental gene regulatory networks reliably transform positional information into complex multicellular form, yet the organizational principles linking network architecture to developmental mechanism remain poorly understood. Here, we analyzed the Drosophila melanogaster wing developmental network to determine whether network topology reflects the distribution of developmental leverage during organogenesis. Integration of curated wing-development genes with high-confidence STRING interactions revealed five Hierarchical Layers of Developmental Control (HLDCs) associated with distinct topological and developmental roles. Organizer Centers, Signaling Scaffolds, and Pattern Implementers formed a forward-specification axis in which connectivity progressively contracted as positional information was transformed into increasingly localized developmental programs. Interface Coordinators departed from this hierarchy through disproportionate brokerage, whereas Local Modulators retained connectivity despite localized developmental scope. We propose that these complementary signatures reflect two regulatory architectures: 1) hierarchical information propagation that generates developmental identity and 2) distributed homeostatic regulation that coordinates and refines developmental outputs. Within Character Identity Modules (ChiMOs), this architecture links conserved patterning systems, Hox-defined contexts, and organ-specific kernels to reproducible morphology, providing a mechanistic hypothesis for developmental canalization and experimentally testable predictions.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.755080v1",
+      "tier": "mention",
+      "why": "Network topology analysis of the Drosophila wing gene regulatory network identifies distinct hierarchical and distributed architectures linking connectivity patterns to developmental canalization."
+    },
+    {
+      "id": "10.64898/2026.09.23.753690",
+      "title": "Inferential boundaries of age prediction: why prediction does not establish biological age measurement",
+      "authors": [
+        "Song, S.",
+        "Liang, Q.",
+        "Gao, Q."
+      ],
+      "abstract": "Chronological-age clocks reconstruct age from biological measurements, yet their outputs are interpreted as biological age, gaps as ageing acceleration and intervention-associated decreases as rejuvenation. We show that age supervision identifies an age-task statistic, not a biological-age construct, and establish how this distinction changes biomarker construction and validation. Even at the population optimum, the same observable distribution and age-prediction performance admit incompatible biological-age interpretations. Resolving this ambiguity requires assumptions or evidence beyond the age task. Squared-error age loss penalizes within-age output dispersion without defining its biological direction. Given age and background, a gap re-expresses the compressed score; exact age recovery eliminates it even when heterogeneity remains in the measurements. Shared biological covariance permits genuine prognostic value without establishing construct identity. After allogeneic haematopoietic stem-cell transplantation, recipient-blood scores showed excess donor-lineage affiliation under a score-pairing null. In NHANES, age-trained scores improved held-out five-year mortality prediction beyond age and background, yet direct modelling of source measurements and mortality supervision at matched scalar capacity yielded further gains. The intended biological object must therefore guide study design, measurement selection and representation; validation must establish the claimed measurement relation rather than rely on age-prediction success alone.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.23.753690v1",
+      "tier": "mention",
+      "why": "A methodological critique argues that chronological-age prediction models identify an age-task statistic rather than a true biological-age construct, with implications for how aging clocks are validated across the field."
+    },
+    {
+      "id": "10.64898/2026.09.28.754234",
+      "title": "Proteome-wide quantification of protein turnover in frog and fly embryos reveals divergent strategies of maternal inheritance",
+      "authors": [
+        "Cruz, E. R.",
+        "Marishta, A.",
+        "Bao, G.",
+        "Johnson, A. N. T.",
+        "Keber, F. C.",
+        "Pujari, V.",
+        "Ivanov, D.",
+        "Neinast, M.",
+        "Kirschner, M. W.",
+        "Rabinowitz, J. D.",
+        "Wieschaus, E. F.",
+        "Wuhr, M."
+      ],
+      "abstract": "Every embryo inherits a maternal proteome that it must remodel with zygotic proteins to build its many cell types. The fate of the maternal proteome remains contested because indirect measurements cannot resolve it. Here, we combine 18O-water labeling with multiplexed proteomics to quantify protein turnover proteome-wide in frog and fly embryos. Through hatching, the frog preserves the bulk of its maternal proteome, confining rapid degradation to a small regulatory module. The fly cannot meet its synthesis demand from yolk alone and instead degrades nearly all maternal proteins, including housekeeping proteins long assumed stable, recycling them into new protein. Yet the turnover hierarchy is conserved, with disordered and regulatory proteins degrading fastest, while the fly rescales the whole proteome ~eightfold faster. These results recast the developmental proteome as both informational inheritance and metabolic reserve, establish 18O-water labeling as a turnover method for non-feeding organisms, and provide a resource of embryonic half-lives.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754234v1",
+      "tier": "mention",
+      "why": "Proteome-wide 18O-water labeling reveals frog embryos largely preserve the maternal proteome while fly embryos degrade nearly all of it for recycling, despite a conserved turnover hierarchy—a striking developmental biology finding outside the core focus."
+    },
+    {
+      "id": "10.64898/2026.09.28.754895",
+      "title": "Tissue resident CD4+ memory T-cells mark response to immune checkpoint inhibition in high-grade glioma",
+      "authors": [
+        "Turco, V.",
+        "Tan, C. L.",
+        "Agardy, D. A.",
+        "Lindner, K.",
+        "Herrera, G.",
+        "Sun, L.",
+        "Rosenbauer, J.",
+        "Zhao, B.",
+        "Breckwoldt, M. O.",
+        "Bunse, L.",
+        "Prins, R.",
+        "Green, E. W.",
+        "Platten, M.",
+        "Bunse, T."
+      ],
+      "abstract": "Background: Immune checkpoint inhibitors (ICI) are efficacious in many solid tumors, but response in glioma is restricted to a small subgroup. The determinants of response and resistance to ICI remain poorly understood. Methods: Here we exploit a syngeneic hypermutated high-grade glioma model with dichotomous response to combined PD-1 and CTLA-4 inhibition to unravel determinants of tumor-infiltrating T-cells driving response. Tumor-infiltrating T-cells from ICI-responsive and non-responsive tumors were analyzed by single-cell RNA and T-cell receptor sequencing and tumor-reactive T-cell receptor clonotypes were functionally validated to characterize their transcriptional phenotypes. We verify our findings in IDH1 wildtype glioblastoma patients treated with neoadjuvant pembrolizumab. Results: ICI response was associated with intratumoral clonal expansion of tumor-reactive cytotoxic T-cells and increased infiltration of CXCR6+ CD4+ tissue resident memory T-cells (Trm). CD4 stem-like memory T-cells in responding tumors demonstrated elevated interferon responses, following trajectories toward clonally expanded Trm, versus trajectories toward exhaustion in non-responsive tumors. In responsive tumors, CD4+ Trm interacted with infiltrating CXCR3+ tumor-reactive and clonally expanded, yet transcriptionally versatile cytotoxic T-cells. Probing the post neoadjuvant ICI high-grade glioma patient tissue dataset, we confirmed increased CXCR6 expression in CD4+ T cells and the association of CD4+ Trm with prolonged overall survival. Conclusion: These findings identify CD4 tissue-resident memory T-cells as determinants of ICI response in IDH1 wildtype high-grade glioma and warrant their further investigation to improve immunotherapy outcomes.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754895v1",
+      "tier": "mention",
+      "why": "Single-cell RNA and TCR sequencing in a glioma immunotherapy model identifies CXCR6+ CD4+ tissue-resident memory T-cells as a determinant of checkpoint inhibitor response."
+    }
+  ]
+}

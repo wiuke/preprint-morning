@@ -1,0 +1,868 @@
+{
+  "date": "2026-10-09",
+  "format": "dialogue",
+  "n_papers": 115,
+  "episode_title": "Perturb-seq operators that don't generalize, asynchronous fate restriction in mouse embryos, and temperature-robust morphogen gradients",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "It's October ninth, and the archive and bio-archive dumped about one hundred fifteen new papers on us overnight. We can't do all of them, obviously, so today we picked five for a proper look and a bunch of others for quicker hits."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And there's a nice thread running through a few of today's picks: a lot of methods people are asking whether popular models actually generalize, or whether they just look good on the data they were fit to. We'll start with a paper that's pretty brutal on that front."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, paper one in the show notes, from Fullmer, Kutzen and Terooatea. It's about Perturb-seq, the pooled crisper screens where you knock out genes one at a time, in a shared cell population, and read out single-cell R-N-A-seq per cell. A lot of the field's gene regulatory network inference rests on a simple assumption: that each gene's knockout contributes an additive input to a shared linear operator, and that operator is a stand-in for the regulatory network."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Which is a nice idea if it's true, because it means you could fit the operator on perturbations you've seen and predict what an unseen gene's knockout would do. So what did they actually test?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They took three real screens: the Replogle K562 and RPE1 essential gene screens, and the Jost 2020 screen, and asked whether a fitted additive-input operator generalizes to gene targets it was never trained on. Crucially, they held out entire target genes, not just cells, using nested cross-validation grouped by target, and they built matched synthetic linear-truth controls with the same signal-to-noise so they'd know what success should look like if the model were actually correct."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the control tells you the ceiling you'd expect if the biology really were linear and additive."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly. And the real data fell flat. For inverse operator prediction, held-out error on the real screens sat right at the predict-zero baseline, around zero point nine six for K562, and effectively one point zero for the other two. Meanwhile the matched linear controls, same noise level, got down to zero point one eight, zero point five three, and zero point seven two. Big gap."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a huge tell. It means the linear operator isn't failing because of noise, it's failing because the assumption itself doesn't hold for unseen targets on real data."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And they really tried to rescue it. Different random target panels, an overdetermined dimension sweep on Jost, direction-only fits, ridge regression, truncated S-V-D, five different synthetic ground truths. Nothing closed the gap. Forward prediction, where you predict the response given a known perturbation, did a little better than a predict-the-training-mean baseline in K562, but not in the other two screens, and even the K562 gain only recovered about seven percent of the gap to the linear control."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the headline is: identifiability in closed form doesn't mean the operator you fit is the regulatory network, it might just be a decent fit to the cells you trained on."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's their point exactly. They're not saying Perturb-seq data is useless, they're saying this specific additive, fixed program-space formulation shouldn't be treated as a validated, target-generalizing model of regulation. And they released a toolkit, anchor-op, specifically for other people to run these same identifiability and matched-control checks on their own perturbation models."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth remembering next time a paper claims its linear perturbation model predicts unseen knockouts. Ask whether they held out targets, not just cells."
+    },
+    {
+      "speaker": "Ava",
+      "text": "From a cautionary methods paper to a genuinely new piece of developmental biology. Paper two, Liu, Park, Amaya and a long list of coauthors, on lineage tracing in mouse embryos and stem-cell-derived embryo models."
+    },
+    {
+      "speaker": "Leo",
+      "text": "This is the DNA Typewriter line of work, right? Where you use an editable genomic locus as a running tape recorder of cell divisions."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes. They combine DNA Typewriter lineage recording with tetraploid complementation, which is the classic trick of injecting diploid embryonic stem cells into a tetraploid host embryo so the host contributes only extraembryonic tissue and the diploid cells build the actual embryo. That lets them reconstruct single-cell genealogies at high resolution through real mouse development, not just in a dish."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And they built some kind of framework to read fate bias out of those trees?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "FateVec, which infers fate-bias dynamics and lineage-associated transcriptional programs directly from the reconstructed phylogenies. The main finding is that loss of developmental potential is progressive and asynchronous. Some lineages show detectable fate bias well before gastrulation, before you'd see any morphological sign of diversification."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So commitment isn't a single clean switch at gastrulation, it's already partly baked in earlier for some lineages, and later for others."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and the neural crest is a nice example of the opposite extreme: most of those cells stay multipotent for an extended window, but independent founder clades within the neural crest differ a lot in exactly when they restrict. Then they extended the lineage recording into a stem-cell-derived embryo model and found that cells with the same transcriptional identity can come from genuinely different lineage histories."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the uncomfortable part for anyone using transcriptomic clusters as a proxy for developmental history, including a lot of trajectory inference work."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly their closing point: cell identity, meaning your transcriptomic state, doesn't reliably predict either developmental ancestry or the timing of fate restriction. They also saw embryonic lineages contributing to extraembryonic-like states, which is a plasticity nobody had mapped this cleanly before."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Good complement to a lot of trajectory and pseudotime work we talk about, since it's a reminder that the ground truth tree and the expression manifold are related but not interchangeable."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Which, funnily enough, leads straight into our next deep dive. But first, three quick methods briefs."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper six, STAVelo, from Li, Shen and Zhang. It's a graph attention encoder-decoder for R-N-A velocity in spatial transcriptomics, so it folds in physical cell location and lets kinetic rate parameters vary per cell instead of assuming one constant rate genome-wide. Across brain, kidney, chicken heart, and embryo-placenta datasets, they show it recovers known migration and developmental gradients, like the inside-out migration of neurons across cortical layers."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven, HyperCom, from Moy and Przytycki, tackles cell-cell communication inference. Instead of aggregating ligand-receptor signal by cell type, which can hide real heterogeneity, it builds a hypergraph straight from ligand-receptor expression in individual cells and does graph diffusion to score each cell on a sender-to-receiver spectrum, pair by pair. They validate it against physical contact data and spatial and multicondition datasets."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight, scStable, from Jiang and Li, is about a problem a lot of single-cell studies quietly have: one or a few biological samples, so you can't really know how stable your findings are to between-sample variation. scStable generates synthetic samples that keep the single-cell heterogeneity of your real reference but inject bulk-derived between-sample variation, and in a gastric cancer dataset with matched bulk and single-cell profiles it tracked observed variability better than ZINB-WaVE, subsampling, or just adding Gaussian noise. Useful for sanity-checking which differentially expressed genes and clustering choices you should actually trust."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Which brings us back to trajectory inference and its blind spots. Paper three, from Arjun and Abhiram Bhupatiraju, is squarely in that same cautionary vein as the Perturb-seq paper."
+    },
+    {
+      "speaker": "Leo",
+      "text": "This is about the fact that trajectory inference often has multiple equally good solutions that disagree on individual cell fates."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, the question is whether you can quantify that disagreement without lineage labels, and whether a per-cell confidence score built from that disagreement actually helps you trust individual fate calls more. They call their framework FateMultiplicity. It builds what's called a Rashomon set, a set of models that all fit the data about equally well, using cross-fitted held-out genes and a non-inferiority test calibrated against ordinary random-seed variation, so you're not just measuring noise."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And how much disagreement do these equally-good models actually show?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "A lot, and it depends more on how diverse your model space is than how many models you include. Twelve configurations of one algorithm exposed disagreement on twenty percent of cells, while twenty-four configurations of a different algorithm only exposed three point eight percent. So breadth of the model space matters far more than sheer count."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Okay, but the real test is whether knowing a cell's fate is contested actually makes your fate calls better calibrated."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the answer is basically no. On simulated ground truth, their certified fate margin, built from the whole Rashomon set, discriminated correct versus incorrect fate assignments with an A-U-C of zero point six eight two. A single baseline model's own confidence margin did far better, zero point nine six five, with a p value around zero point zero zero three. A simpler seed-dispersion baseline also beat the fancy certified margin, at zero point eight five four."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So building the elaborate label-free uncertainty machinery actually threw away information the plain model already had."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's their conclusion, worded carefully: measuring and reporting multiplicity in trajectory inference is worth doing, but using it to certify individual cells as reliable isn't a shortcut to better fate calls. Two things did hold up, though. A margin-erosion ratio, which tracks how fast model agreement degrades near a branch point, separated real branch points from spurious ones well in simulation, A-U-C zero point eight nine, though that's untested on real data yet. And when they checked against actual clonally observed fates, cells flagged as uncertified disagreed with their own clone's outcome sixteen point four percentage points more often than certified cells, with p below zero point zero zero one."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the clonal validation is the one place the whole multiplicity framework earns its keep. Good pairing with the lineage tracing paper, since both are basically saying: don't assume your expression-based model is telling you the true history."
+    },
+    {
+      "speaker": "Ava",
+      "text": "From statistical honesty about cell fate to the physics of actual morphogen gradients. Paper four, Capek and a large team, on temperature scaling of developmental tempo in medaka fish embryos."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Medaka's a nice ectotherm model for this, since you can just change the water temperature and the whole embryo speeds up or slows down."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly the lever they use. The question is how morphogen gradients, which pattern the embryo by diffusing and being produced and degraded, stay correctly scaled when temperature changes developmental speed and biochemical reaction rates a lot, but is expected to barely touch diffusion, since diffusion depends on temperature much more weakly."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So you'd expect gradients to get distorted if reactions speed up but spreading doesn't."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the puzzle. They measured developmental speed, morphogen clearance, diffusion, and endogenous Nodal dynamics, Nodal being a key T-G-F-beta family morphogen in germ layer patterning, across a broad temperature range. Developmental tempo, morphogen production, clearance, and tissue movement all scaled up roughly two to threefold per ten degrees Celsius. Diffusion barely moved."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And despite that mismatch, patterning still comes out looking normal?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Germ layer proportions and morphogen patterning stayed robust across that whole range. Their mathematical simulations point to why: the system sits in what they call a reaction-dominated regime, where the gradient's shape is set mainly by the balance of production, clearance, and growth kinetics, not by diffusion length scales. So when reaction rates speed up together with everything else, the gradient rescales itself automatically, without diffusion needing to keep pace."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a satisfying piece of systems biology, since it explains robustness without needing some separate temperature-compensation mechanism bolted on. The scaling falls out of which regime the reaction-diffusion system happens to live in."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And it's a nice general lesson for anyone building reaction-diffusion style models of patterning or signaling, the regime you're in matters more than any single rate constant."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Couple more briefs before our last deep dive. Paper nine, Miller, Sawai, Cavanagh and Dasen, on Polycomb complexes in spinal motor neuron identity. P-R-C-one, the Polycomb repressive complex that maintains silencing, forms subnuclear condensates as neural progenitors become motor neurons, built around BMI1, PHC2, CBX2, and RING1B. Disrupting PHC2's ability to polymerize dismantles those assemblies and de-represses caudal hox genes, scrambling the segment-specific motor neuron identities those hox genes are supposed to lock in. Interestingly, losing the P-R-C-two complex instead wipes out the H-three-K-twenty-seven trimethylation mark but leaves the P-R-C-one assemblies and hox boundaries intact, so the two complexes aren't redundant here, they're doing different jobs."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten, Kuo and a large team, on heterochromatin protein one alpha, HP-one, and chromatin packing domains, which are those fifty to two hundred nanometer structures with density-dependent, almost fractal-like mass scaling. Degrading HP-one disrupted the dense heterochromatic cores of these domains, and counterintuitively caused overall gene downregulation, not the opposite you'd expect from losing a repressor. Under hypoxia stress, HP-one-depleted cells also mounted a dampened transcriptional response, suggesting the domain architecture itself is needed to properly execute stress-induced reprogramming, not just everyday repression."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven is a different kind of methods paper, ARGUS from Dutta and colleagues. It's a large language model agent built to interpret noncoding G-W-A-S variants without just hallucinating transcription factor effects, which is apparently a real problem when you ask raw language models to do this. ARGUS keeps a strict separation between deterministic biology, four hundred fifty-eight DNABERT-based transcription factor binding models plus real queries to ADASTRA, JASPAR, and ENCODE candidate regulatory element annotations, and the language model's role, which is just planning what evidence to gather next and when to abstain. On the well-known eight-q-twenty-four cancer risk variant, different transcription factors end up with genuinely different, evidence-based verdicts, including a couple that just abstain for lack of direct support."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Good antidote to the usual worry about L-L-Ms confidently inventing binding site effects, since here the model's job is mostly knowing when to stop and say it doesn't know."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twelve, Matthews, Seoighe and Wheeler, takes a gene-centric look at copy number variants instead of the usual region-based approach. Using GTEx expression data to confirm these whole-gene deletions actually change expression as predicted, they link thirty-four gene deletions to cancer incidence, including a novel germline extension of a known somatic association at thirteen-q-fourteen. The total count of whole-gene losses tracked with cancer risk even excluding known cancer genes, and they also found associations with asthma and heart attack when they extended the method beyond cancer."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper thirteen, PRICE 2 from Maidhof, Schlosser and Erhard, improves detection of short, weakly translated, overlapping open reading frames from ribo-seq data, which is the ribosome profiling technique that maps where ribosomes actually sit on messenger R-N-A. It borrows group LASSO regularized regression from isoform deconvolution to jointly resolve overlapping translation events across multiple sequencing runs at once, beating thirteen existing tools in benchmarks and finding about forty percent more cryptic M-H-C class one peptides than the next best tool at a fixed false discovery rate, validated against real immunopeptidomics data. They packaged the results into a new database called ORF-stock covering forty-five cell and tissue types."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper fourteen, Taniyama and colleagues, looked at Schlafen eleven, S-L-F-N-eleven, a gene that determines sensitivity to D-N-A damaging chemotherapy in several cancers. Using single-cell R-N-A-seq and imaging across eight cancer cell lines, they found substantial cell-to-cell heterogeneity in its expression, correlated with a stress-response and genome-maintenance transcriptional state and anti-correlated with translation activity. That heterogeneity showed up again in public small cell lung cancer single-cell datasets, and it's invisible to bulk profiling, which the authors flag as a possible hidden reservoir of chemotherapy resistance."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And paper fifteen closes out this run of cautionary methods papers nicely. Talukder and Kaplan tested AlphaGenome, a genomic foundation model, on its ability to explain A-L-S regulatory genetics without any disease-specific fine-tuning. Across spinal cord splicing quantitative trait loci it basically failed to recover measured effect sizes, Spearman correlation around zero point zero four one. At the well-characterized UNC13A cryptic exon locus it predicted the known risk variant's effect on splice site usage in the wrong direction, and across seven A-L-S G-W-A-S loci its predicted effect dropped off sharply with distance from the variant, independent of which gene was actually the true effector."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So a genomic foundation model can look locally plausible while still getting the direction of effect wrong at a locus people have mechanistically nailed down by hand. Good reminder to validate these models against known mechanisms before trusting them on unresolved ones, which is basically the theme of the whole episode so far."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Which brings us to our last deep dive, a bit further from our usual beat but a clean example of a different kind of generalization test. Paper five, De, Lodh, Majumder and Chowdhury, on predicting ligand activity across G protein-coupled receptors, GPCRs, which are the largest family of drug targets in the human genome."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's actually new here versus the many existing ligand-activity predictors?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They combine an explicit molecular graph of the ligand with a frozen protein language model's representation of the receptor's amino acid sequence, feeding both into a graph neural network that jointly predicts a continuous potency value, pActivity, and a binary active or inactive call, across many receptors at once rather than training one model per receptor."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the training set?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "About two hundred seventy-two thousand curated ligand-receptor pairs, roughly one hundred eighty-four thousand distinct ligands against two hundred sixteen human GPCRs. They tested under three splitting strategies of increasing difficulty: random pairs, Bemis-Murcko scaffold splits which separate ligands by core chemical scaffold, and a strict cold-ligand split where test ligands are chemically unlike anything in training."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So that's the real generalization test, scaffold and cold-ligand."
+    },
+    {
+      "speaker": "Ava",
+      "text": "With the larger ESM-2 six-hundred-fifty-million-parameter receptor embeddings, mean absolute error was about zero point five one for random splits, zero point five four for cold ligand, and zero point six four for scaffold splits, consistently beating a protein-aware but fixed-feature baseline and a matched graph neural network without the receptor conditioning. Removing the receptor embeddings entirely hurt performance a lot, more than swapping between different protein language models did."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What happens when you take it fully outside the training distribution?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the catch. On an independent external set from ChEMBL and BindingDB, error jumped to around zero point nine four to zero point nine five, despite the careful internal scaffold and cold-ligand testing. So internal chemical-novelty controls don't fully capture real external domain shift."
+    },
+    {
+      "speaker": "Leo",
+      "text": "But the receptor-specific signal still does something useful?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, that's the one result I'd flag as genuinely strong. In a selectivity analysis between the closely related dopamine receptors D-R-D-two and D-R-D-three, the cold-ligand model scored strong D-R-D-three selectivity with an R-squared of zero point eight five three, a Spearman correlation of zero point nine one six, and an R-O-C A-U-C of zero point nine six six. Strip out the receptor embedding and that selectivity signal collapses to roughly chance."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the protein language model embedding is actually carrying real receptor-specific chemistry information, not just acting as a label. Useful for anyone doing cross-target selectivity work, even if the headline error numbers outside the training distribution are a fair warning that these models aren't ready to extrapolate to genuinely novel chemotypes yet."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick mentions to close out. Faure and colleagues built a sketching method for experiment-wide similarity search across four point eight million metagenomes in the Sequence Read Archive, paper sixteen. Borst and colleagues, paper seventeen, mapped Nectin-two and TIGIT inhibitory interactions between macrophages and C-D-eight T cells in spatial immune niches in neuroblastoma, linking that pattern to worse outcomes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eighteen, Gong and colleagues, propose a quotient-space exploration strategy, an alternative to just maximizing action entropy, for automatically repairing genome-scale metabolic models. Paper nineteen, Bhandary and colleagues, identify C-C-T-two marking a translation-activated state in sporadic A-L-S motor neurons, tied to functional decline. Paper twenty, Kim and a large international consortium, report sex-dependent D-N-A methylation differences in A-L-S."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twenty-one, Prabakaran and Bromberg's REFinder, mines metagenomes for new enzymes. Paper twenty-two, Faucher-Giguere and colleagues, show a ribosomal pseudouridine modification driving an oncogenic translation program. Paper twenty-three, Dorsch and colleagues, find that loss of the Y chromosome drives basal identity and metastatic potential in pancreatic cancer through epigenetic reprogramming."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twenty-four, Yazgeldi Gunaydin and the FINNPEC group, map placental cis-eQTLs that act in a preeclampsia-dependent way at gene promoters. And paper twenty-five, Miao and Baba, describe an androgen-derived transcriptional state exposing signaling and mitochondrial vulnerabilities in cancer."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the roundup. A fair amount of today's episode was really about the limits of the models we rely on, whether that's linear perturbation operators, trajectory uncertainty estimates, or genomic foundation models, which feels like a useful theme to sit with on the way to lab."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Same time tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.09.30.755776",
+      "title": "Additive-input encoding fails operator-level target-held-out prediction on current Perturb-seq screens",
+      "authors": [
+        "Fullmer, K.",
+        "Kutzen, D.",
+        "Terooatea, T. W."
+      ],
+      "abstract": "Pooled Perturb-seq screens are often interpreted through a linear steady-state model in which each targeted gene supplies an additive perturbation input. Although this formulation identifies an operator on the observed response subspace in closed form, identifiability alone does not establish that inferred operators generalize to new perturbation targets. We evaluated fixed program-space additive inputs in three Perturb-seq screens – Replogle K562 essential, Replogle RPE1 essential, and Jost 2020 – using target-grouped nested cross-validation and matched signal-to-noise linear-truth controls. For inverse operator prediction, real held-out error remained at the predict-zero baseline (0.96, 1.00, and 1.00), whereas matched linear controls achieved 0.18, 0.53, and 0.72. This discrepancy persisted across random K562 target panels, an overdetermined Jost dimension sweep, direction-only fits, ridge and truncated-SVD estimators, and five linear ground-truth ensembles. Forward target-held-out prediction was more nuanced: fixed, footprint, and learned linear encodings modestly beat a predict-training-mean baseline in K562 but not in RPE1 or Jost, and the K562 gains recovered only about 7% of the gap to the matched linear control. On the tested screens, fitted fixed program-space operators should not be interpreted as validated target-generalizing regulatory operators. We release anchor-op, a reproducible toolkit for target-grouped evaluation, identifiability checks, and matched-geometry positive controls for perturbation-response models.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755776v1",
+      "tier": "deep",
+      "why": "A rigorous negative result showing that fixed additive-input linear operators fail to generalize to held-out perturbation targets in Perturb-seq screens, directly challenging a common modeling assumption underlying GRN inference from perturbation data."
+    },
+    {
+      "id": "10.64898/2026.10.06.756974",
+      "title": "Lineage tracing reveals asynchronous fate restriction in mouse embryos and stem cell-derived embryo models",
+      "authors": [
+        "Liu, Y.",
+        "Park, J.",
+        "Amaya, L.",
+        "Junyent, S.",
+        "Sun, X.",
+        "Xiao, J. S.",
+        "Wang, Y.",
+        "Wang, H.",
+        "Lu, Y.",
+        "Nakagawa, S.",
+        "Park, S.-E.",
+        "Hu, W.",
+        "Liu, S.",
+        "Wei, J.",
+        "Kim, H. H.",
+        "Thomson, M.",
+        "Ju, C.-W.",
+        "Bronner, M. E.",
+        "Choi, J.",
+        "Zernicka-Goetz, M."
+      ],
+      "abstract": "How a flexible mammalian embryo gives rise to a reproducible body plan remains unclear, partly because cell lineages cannot be followed continuously in vivo. We combined DNA Typewriter lineage recording with tetraploid complementation to reconstruct high-resolution single-cell genealogies across mouse development and built FateVec, an analysis framework that infers fate-bias dynamics and lineage-associated transcriptional programs from reconstructed phylogenies. Loss of developmental potential proved progressive and asynchronous, with multiple lineages acquiring detectable fate bias before morphological diversification at gastrulation. Within the neural crest, most cells remained multipotent over an extended window, while independent founder clades differed markedly in restriction timing. Extending lineage recording to a stem-cell-derived embryo model revealed that cells with shared transcriptional identities can arise from distinct lineage relationships. We further found embryonic-lineage contributions to extraembryonic-like states, exposing an unexplored lineage plasticity. This lineage-resolved view of embryogenesis reveals that cell identity alone predicts neither developmental ancestry nor the timing of fate restriction.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.756974v1",
+      "tier": "deep",
+      "why": "Combining DNA Typewriter lineage recording with tetraploid complementation to build high-resolution single-cell genealogies reveals that fate restriction in mouse embryos is progressive and asynchronous, with cell identity alone failing to predict lineage history."
+    },
+    {
+      "id": "2610.11185",
+      "title": "Predictive Multiplicity in Cell-Fate Assignment: Label-Free Rashomon Sets and the Limits of Per-Cell Certification",
+      "authors": [
+        "Arjun Bhupatiraju",
+        "Abhiram Bhupatiraju"
+      ],
+      "abstract": "Single-cell trajectory inference maps transcriptomic measurements onto developmental continua, yet configurations that fit the data equally well can assign conflicting cell fates. FateMultiplicity is a label-free framework that constructs a statistically admissible model set, or Rashomon set, without lineage labels, by evaluating model discrepancy on cross-fitted held-out genes under non-inferiority testing calibrated against random-seed variation. Multiplicity is large and depends more on the diversity of the model space than its size: twelve configurations of a second algorithm expose 20.0% of cells where twenty-four of the first expose 3.8%. Whether the per-cell certified fate margin FM yields more reliable assignments than the fitted model already provides is then tested, and it does not. On simulation ground truth, on the same cells, FM discriminates misassignment at AUC 0.682, against 0.965 for the baseline configuration's own decision margin (p = 0.003) and 0.854 for a seed-dispersion baseline. Informativeness is governed by the breadth of the admitted set, not its cardinality: at cardinality four, seed refits give 0.933 and hyperparameter-perturbed sets 0.701. Relaxing the infimum to a q-quantile recovers discrimination but converges toward the single model's own confidence; the supremum reaches 0.973 because theta*'s membership bounds it from below, while the infimum is unanchored. Multiplicity in trajectory inference is worth measuring and reporting, but per-cell certification over a label-free Rashomon set is not a route to more reliable fate calls. Two constructions survive: a margin-erosion ratio separates real from spurious branch points in simulation (AUC 0.890, untested on real data), and against clonally observed fate, uncertified cells disagree with their clone's outcome 16.4 percentage points more often than certified cells (p < 0.001).",
+      "categories": [
+        "cs.LG",
+        "q-bio.GN"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.11185",
+      "tier": "deep",
+      "why": "A careful statistical dissection of predictive multiplicity in trajectory inference shows that label-free Rashomon-set certification does not improve per-cell fate-assignment reliability over a model's own confidence, a cautionary methodological result for the single-cell trajectory field."
+    },
+    {
+      "id": "10.64898/2026.10.06.757014",
+      "title": "Temperature scaling of developmental tempo reveals reaction-dominated morphogen patterning",
+      "authors": [
+        "Capek, D.",
+        "Eich, T.",
+        "Kögler, A.",
+        "Morales-Navarrete, H.",
+        "Riabtsev, O.",
+        "Thumberger, T.",
+        "Floeth, L.",
+        "Bihler, J.",
+        "Bajoghli, B.",
+        "Wittbrodt, J.",
+        "Müller, P."
+      ],
+      "abstract": "A central question in developmental biology is how embryonic patterning remains robust when developmental tempo changes. In ectotherms, temperature strongly alters developmental speed and biochemical reaction rates, whereas diffusion is expected to change only weakly. How morphogen gradients required for patterning remain correctly scaled under these conditions is unclear. We addressed this problem in medaka embryos by quantifying developmental speed, morphogen clearance, diffusion, and endogenous Nodal dynamics across a broad temperature range. Developmental tempo, morphogen production, clearance, and tissue movement increased approximately two- to threefold per 10degreesC, whereas effective morphogen diffusion remained largely unchanged. Despite this mismatch, germ-layer proportions and morphogen patterning remained robust. Our mathematical simulations suggest that this robustness arises because the system operates in a reaction-dominated regime, in which changes in reaction and growth kinetics - rather than diffusion - are sufficient to rescale morphogen gradients. Together, our experiments and simulations provide new insights into how morphogen gradients adjust to maintain accurate tissue patterning across changes in developmental time and tempo.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757014v1",
+      "tier": "deep",
+      "why": "Elegant quantitative developmental biology showing that morphogen gradients in medaka embryos remain correctly scaled across temperature-driven changes in developmental tempo because patterning operates in a reaction-dominated regime rather than a diffusion-dominated one."
+    },
+    {
+      "id": "10.64898/2026.09.27.754816",
+      "title": "Protein Language Model-Conditioned Graph Neural Networks for Multitask GPCR Ligand Activity Prediction",
+      "authors": [
+        "De, M.",
+        "Lodh, E.",
+        "Majumder, S.",
+        "Chowdhury, T."
+      ],
+      "abstract": "Predicting ligand activity across G protein-coupled receptors (GPCRs) requires models that capture both molecular structure and receptor-specific information while remaining robust to chemical and target-domain shift. We developed a multimodal graph neural network that combines explicit ligand molecular graphs with frozen protein language model representations of GPCR sequences and jointly predicts quantitative pActivity and binary activity. The model was trained on 271,739 curated ligand-GPCR pairs spanning 183,694 ligands and 216 human GPCRs and evaluated using random, Bemis-Murcko scaffold, and strict cold-ligand partitions. With ESM-2 650M receptor embeddings, the selected model achieved mean absolute errors of 0.513 +/- 0.006, 0.540 +/- 0.006, and 0.641 +/- 0.005 pActivity units under random, cold-ligand, and scaffold evaluation, respectively, substantially outperforming a protein-aware fixed-feature multilayer perceptron and consistently improving quantitative prediction over a matched GINE reference. Removing receptor embeddings markedly degraded both regression and classification, whereas differences among ESM-2 35M, ESM-2 650M, and ProtT5 were comparatively small. Independent evaluation on 6,319 ChEMBL 37/BindingDB pairs revealed a substantial external domain shift, with mean absolute error increasing to approximately 0.94-0.95 despite chemically stringent internal validation. Nevertheless, receptor-specific information remained highly informative in a DRD2-DRD3 selectivity analysis: the cold-ligand ensemble achieved R2 = 0.853, Spearmanrho = 0.916, and ROC-AUC = 0.966 for strong DRD3 selectivity, whereas the receptor-independent ablation approached chance-level discrimination. These results establish protein-language-model-conditioned molecular graph learning as a scalable strategy for GPCR bioactivity prediction while identifying chemotype novelty, external-domain transfer, and richer ligand-receptor interaction representations as key remaining challenges.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754816v1",
+      "tier": "deep",
+      "why": "AmbiDose introduces per-cell, expression-aware removal budgets for ambient RNA contamination in droplet scRNA-seq, substantially outperforming existing decontamination approaches on cross-species and marker-leakage benchmarks."
+    },
+    {
+      "id": "10.64898/2026.10.02.756177",
+      "title": "STAVelo: deciphering spatiotemporal cellular dynamics via spatial RNA velocity inference from spatial transcriptomics data",
+      "authors": [
+        "Li, S.",
+        "Shen, Q.",
+        "Zhang, S."
+      ],
+      "abstract": "RNA velocity is a powerful tool for deciphering cellular transcriptional dynamics from transcriptomics datasets. However, existing methods have several limitations: some do not model cellular spatial location information, some rely on cell-agnostic constant transcriptional kinetic rates, and some have not been validated for generalization across a wide range of datasets. To this end, we present STAVelo, a graph attention encoder-decoder framework that models spatial information in spatial transcriptomics (ST) data and infers RNA velocity from neural representations of transcriptional kinetic parameters. In quantitative comparisons of multiple datasets from diverse species and platforms, STAVelo outperforms previous methods in capturing cellular migration and development dynamics. In human and mouse brain datasets from different platforms, STAVelo accurately inferred the inside-out migration pattern of neurons across cortical layers. Analysis of mouse kidney and chicken heart datasets captured organ-specific developmental gradients during organ development. Analysis of mouse embryo and placenta datasets with multiple time points uncovered spatiotemporal dynamics from existing states to newly established states. In short, STAVelo provides a spatial view of cellular state transitions and deeper insights into spatiotemporal cellular dynamics in complex tissue structures.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756177v1",
+      "tier": "brief",
+      "why": "STAVelo extends RNA velocity to spatial transcriptomics with a graph-attention model, accurately recovering spatial developmental gradients across brain, kidney, heart and placenta datasets."
+    },
+    {
+      "id": "10.64898/2026.09.30.755742",
+      "title": "HyperCom: a hypergraph-based method to infer cell-resolved cell-cell communication",
+      "authors": [
+        "Moy, J. K.",
+        "Przytycki, P. F."
+      ],
+      "abstract": "Cell-cell communication underpins intercellular responses allowing cells to dynamically change states across conditions; however current methods typically aggregate signals by cell type annotations which may introduce biases. We developed HyperCom, a hypergraph-based method to infer cell-resolved cell-cell communication from single cell transcriptomics data. HyperCom constructs a hypergraph from known ligand-receptor interactions and the expression of those ligands and receptors in individual cells and performs graph diffusion on the hypergraph to score cells on a continuous spectrum from sender to receiver for each LR pair. HyperCom then generates a cell-type agnostic ranking of LR pairs by communication either over the whole dataset or in a condition-aware manner. Validation of HyperCom on physical cell-to-cell contact, spatial, and multicondition datasets highlight its flexibility to capture subtle per cell communication information. HyperCom is available as a species-agnostic, scalable, and open source R package: https://github.com/pawelab/HyperCom.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755742v1",
+      "tier": "brief",
+      "why": "HyperCom uses hypergraph diffusion to infer cell-resolved, rather than cell-type-aggregated, ligand-receptor communication, reducing a common source of bias in cell-cell communication analysis."
+    },
+    {
+      "id": "10.64898/2026.10.01.755876",
+      "title": "scStable: assessing scRNA-seq analysis stability under bulk-derived between-sample variation",
+      "authors": [
+        "Jiang, C.",
+        "Li, J. J."
+      ],
+      "abstract": "Single-cell RNA sequencing (scRNA-seq) studies often profile only one or a few biological samples, limiting assessment of discovery stability under between-sample variation. We present scStable, a framework for assessing scRNA-seq analysis stability by generating synthetic samples that preserve cell-level heterogeneity from a single-sample reference while injecting bulk-derived between-sample variation. In gastric cancer data comprising 21 matched scRNA-seq and bulk RNA-seq profiles, scStable better recapitulates observed between-sample variation than ZINB-WaVE, subsampling, and Gaussian noise injection. Using synthetic sam-ples, scStable enables stability-aware analysis, including prioritization of stable differentially expressed genes and selection of clustering methods and hyperparameters.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.755876v1",
+      "tier": "brief",
+      "why": "scStable injects bulk-derived between-sample variation into single-sample scRNA-seq references to assess discovery stability, addressing the common but under-tested problem of single-sample scRNA-seq generalizability."
+    },
+    {
+      "id": "10.64898/2026.10.06.757095",
+      "title": "PHC2-Dependent PRC1 Assemblies Stabilize Motor Neuron Hox Codes",
+      "authors": [
+        "Miller, A. K.",
+        "Sawai, A.",
+        "Cavanagh, A. E.",
+        "Dasen, J. S."
+      ],
+      "abstract": "Polycomb Repressive Complexes PRC1 and PRC2 establish and maintain chromatin architectures critical for cell-type specific gene expression. In the developing spinal cord, PRC1 is essential for implementing Hox-dependent transcriptional programs that diversify motor neuron identities. Although PRC1 can assemble into subnuclear condensates, whether these structures contribute to the specification and maintenance of neuronal subtype fates remains unclear. Using chick and mouse models, we show that canonical PRC1 components - BMI1, PHC2, CBX2, RING1B - coalesce into subnuclear assemblies as neural progenitors differentiate into motor neurons. Disrupting PHC2 polymerization in either neural progenitors or postmitotic neurons dismantles BMI1-containing PRC1 assemblies, triggering derepression of caudal Hox genes and a cell autonomous loss of segment-specific motor neuron fates. Mouse mutants lacking the core PRC1 subunit Ring1 fail to form BMI1-containing assemblies, despite intact PHC2 and CBX2 polymers. In contrast, motor neuron-restricted deletion of core PRC2 subunits (Ezh1/2) depletes H3K27me3 histone marks but retains PRC1 assemblies and Hox boundaries. Together, these findings indicate that PHC2-dependent PRC1 assemblies stabilize Hox transcriptional boundaries and motor neuron segmental identities.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757095v1",
+      "tier": "brief",
+      "why": "Shows that PHC2-dependent PRC1 subnuclear condensates are required to stabilize Hox transcriptional boundaries and motor neuron segmental identity, linking chromatin 3D assembly to gene regulatory output."
+    },
+    {
+      "id": "10.64898/2026.10.05.753292",
+      "title": "Heterochromatin protein 1α acts as an essential stabilizer of chromatin packing domains",
+      "authors": [
+        "Kuo, T.",
+        "Carrillo Gonzalez, P.",
+        "Acosta, N.",
+        "Carter, L. M.",
+        "Pujadas Liwag, E.",
+        "Arriaga, C. V.",
+        "Johnson, B.",
+        "Dunton, C. L.",
+        "Almassalha, L. M.",
+        "Szleifer, I.",
+        "Backman, V."
+      ],
+      "abstract": "Background: The spatial organization of the human genome emerges from an enzyme-guided self-assembly process in which chromatin has a bidirectional relationship with transcription. Central to this architecture are chromatin packing domains, 50-200 nm structures exhibiting mass-scaling behavior. Nascent domains arise through transcription and cohesin/CTCF-mediated loop extrusion, while their maturation depends on conditions that permit differential access of epigenetic enzymes to their dense cores and continuously lower density periphery, resulting in the accumulation of heterochromatic marks in domain cores and euchromatic marks outside of the domain cores. In turn, packing domains support transcription by creating an \"ideal zone\" peripherally to their cores due to a nonmonotonic dependence of transcription rate on local chromatin density. Results: We investigated the role of heterochromatin protein 1 alpha (HP1), a key chromatin crosslinking factor with affinity to H3K9me3 marks, in maintaining packing domain organization. Paradoxically, short-term HP1 degradation resulted in overall downregulation of genes, contrasting with the canonical view that repression of heterochromatin allows chromatin to become more accessible for transcription. While some packing domains persisted, heterochromatic cores of dense packing domains were disrupted. When exposed to hypoxia, HP1-depleted cells exhibited a dampened transcriptional response, showcasing that when domain maturation is disrupted, stress response pathways are not effectively activated. Conclusions: This work highlights HP1 crosslinking as an essential component of domain maturation, as HP1 loss disrupts domain geometry and inhibits efficient transcriptional reprogramming. Our findings suggest an intriguing perspective on the potential relationship between chromatin architecture and gene regulation that could inform chromatin engineering-based treatments.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.753292v1",
+      "tier": "brief",
+      "why": "Demonstrates that HP1 alpha crosslinking is essential for maintaining heterochromatic cores of chromatin packing domains and for enabling stress-responsive transcriptional reprogramming."
+    },
+    {
+      "id": "2610.12281",
+      "title": "Unlocking the Regulatory Genome by ARGUS: An Evidence-Constrained Agentic Framework for Interpreting Single Nucleotide Variants",
+      "authors": [
+        "Pratik Dutta",
+        "Matthew B. Obusan",
+        "Max Chao",
+        "Rekha Sathian",
+        "Nimisha Papineni",
+        "Ramana V. Davuluri"
+      ],
+      "abstract": "Over 90% of disease-associated variants from genome-wide association studies fall in noncoding regulatory regions, yet their functional interpretation remains a central open problem in genomic medicine. Large language models prompted to interpret such variants routinely hallucinate transcription factor (TF) binding changes, fabricate experimental support, and assign biological significance to statistically negligible signals. We present ARGUS (Agentic Regulatory Genomics for an Uncertainty-aware Scientist), which strictly separates deterministic biological computation from LLM-mediated reasoning. ARGUS wraps 458 DNABERT-based TF binding models in a hypothesis-directed investigation loop where a planner selects evidence sources based on current uncertainty, a verifier deterministically interprets each observation, and intermediate results change the investigation path. On variant rs6983267 at the 8q24 cancer risk locus, the same planner produces four divergent trajectories for four TFs. FOXA1 is rescued in 3 steps when real ADASTRA allele-specific binding data (15 experiments, FDR = 0.030) reveals a model false negative masked by saturation. KLF6 traverses 8 steps across ADASTRA, JASPAR motif analysis, and ENCODE cCRE regulatory annotation before abstaining due to mixed indirect evidence. RAD21 abstains in 8 steps after ADASTRA returns a coverage-qualified but nonsignificant allelic test (5 experiments, FDR = 0.65), and SP1, which shares FOXA1's saturated retained prediction, abstains because no direct experimental evidence exists at this locus. All observations come from real ADASTRA, JASPAR, and ENCODE cCRE queries; none are simulated. A comparison of fixed-priority and LLM-mediated planning shows that the LLM planner reaches identical verdicts with fewer tool calls by declining evidence that cannot resolve the claim under test.",
+      "categories": [
+        "q-bio.GN",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.12281",
+      "tier": "brief",
+      "why": "ARGUS pairs 458 DNABERT TF-binding models with an LLM-mediated evidence-gathering agent to interpret noncoding GWAS variants, showing how uncertainty-aware tool orchestration can resolve conflicting regulatory evidence without hallucination."
+    },
+    {
+      "id": "10.64898/2026.10.06.757170",
+      "title": "A gene-centric analysis of copy number variation reveals tumour suppressor modulation of cancer risk and novel associations with common diseases",
+      "authors": [
+        "Matthews, S.",
+        "Seoighe, C.",
+        "Wheeler, G. L."
+      ],
+      "abstract": "Copy number variants (CNVs) are a significant source of genomic variation in humans. They can span large genomic regions that encompass whole genes and their flanking regions, having the potential to alter the number of functional copies in an individual. Typically, CNVs are analysed individually or combined into regions without regard to the genes they span. Here, we employ a gene-centric approach to link changes in whole-gene copy number to phenotype. We first examined the relationship between CNVs spanning whole genes and gene expression using data from GTEx and found that predicted effects on gene expression are often realised. Applying this method, we identified 34 gene deletions associated with cancer incidence, including several novel candidate associations. Most notably, we discovered that gene deletions in the 13q14 region are linked to increased cancer risk, a novel extension of a known somatic association to the germline, which we did not find using region-based methods. Statistical associations were found between whole-gene loss of tumour suppressor genes and overall cancer risk, as hypothesized. It was additionally found that the total number of whole-gene losses was strongly associated with increased cancer risk, even when known cancer-related genes are not included in the count. Finally, we extended these methods to non-cancer phenotypes, uncovering significant associations with common diseases, including asthma and heart attack.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757170v1",
+      "tier": "brief",
+      "why": "A gene-centric, rather than region-based, CNV analysis identifies novel whole-gene deletions, including a germline extension of the 13q14 somatic association, linked to cancer risk and other common diseases."
+    },
+    {
+      "id": "10.64898/2026.10.01.755973",
+      "title": "Robust ORF Deconvolution from Multiple Ribo-seq Datasets with Group LASSO Penalty",
+      "authors": [
+        "Maidhof, K.",
+        "Schlosser, A.",
+        "Erhard, F."
+      ],
+      "abstract": "Ribo-seq has provided compelling evidence that there are many translated but unannotated ORFs. Despite a growing body of peptidomic support for cryptic ORFs, the computational discovery of weakly translated, short and mutually overlapping ORFs has remained a major bottleneck. Here we introduce PRICE 2, a method designed to resolve these challenging translation events by adapting concepts from isoform deconvolution. PRICE 2 employs a generative model combined with group LASSO regularized regression to jointly infer active ORFs across multiple sequencing runs. In a comprehensive benchmark, PRICE 2 outperformed thirteen state-of-the-art tools in detecting short and overlapping ORFs. Orthogonal validation via immunopeptidomics demonstrated that ORFs identified by PRICE 2 enable the discovery of [~]40% more cryptic MHC-I peptides than the best-performing competing tool at a fixed false discovery rate. By analyzing public ribo-seq data across 45 distinct cell and tissue types, we constructed ORF-stock, a comprehensive database of non-canonical ORFs for immunopeptidomic studies.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.755973v1",
+      "tier": "brief",
+      "why": "PRICE 2 applies group-LASSO deconvolution across multiple Ribo-seq datasets to resolve weakly translated and overlapping ORFs, substantially boosting discovery of cryptic MHC-I peptide sources."
+    },
+    {
+      "id": "10.64898/2026.10.01.755884",
+      "title": "Dynamic Schlafen 11 (SLFN11) expression revealed by single-cell RNA sequencing of clonal human cancer cells",
+      "authors": [
+        "Taniyama, D.",
+        "Inoue, Y.",
+        "Elloumi, F.",
+        "Kim, Y. S.",
+        "Roper, N.",
+        "Seibert, C.",
+        "Kelly, M.",
+        "Lobanov, A.",
+        "Aladjem, M. I.",
+        "Luna, A.",
+        "Pommier, Y."
+      ],
+      "abstract": "Schlafen 11 (SLFN11) is a key determinant of sensitivity to DNA-damaging therapies in multiple cancers including leukemia, Ewing sarcoma, head and neck cancers, mesothelioma and small cell lung cancer (SCLC). Here, utilizing immunofluorescence microscopy and single-cell RNA sequencing we characterized SLFN11 expression across eight different human cancer cell lines and found cell-to-cell heterogenous expression both at the protein and RNA levels. Gene set enrichment and pathway analyses show that SLFN11 is coexpressed with a distinct stress-response state and enhanced genome maintenance programs while being inversely correlated with protein translation pathways. Publicly available single-cell RNA-sequencing datasets of human SCLC tumors confirmed the heterogeneous distribution of SLFN11 expression and confirmed its association with replication-related transcriptional programs. These findings indicate that heterogeneous SLFN11 expression reflects dynamic regulation at the single-cell level. They also underscore the limitations of bulk proteomic and transcriptome profiling and point to a potential reservoir of intrinsic chemotherapy resistance.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.755884v1",
+      "tier": "brief",
+      "why": "Single-cell profiling reveals dynamic, heterogeneous SLFN11 expression linked to a stress-response state, exposing a hidden determinant of chemotherapy resistance invisible to bulk assays."
+    },
+    {
+      "id": "10.64898/2026.10.01.756029",
+      "title": "Limitations of Genomic Foundation Models for Decoding Regulatory Mechanisms in ALS",
+      "authors": [
+        "Talukder, A.",
+        "Kaplan, A."
+      ],
+      "abstract": "Genomic foundation models promise to infer regulatory consequences of genetic variants directly from DNA sequence, but how well these predictions translate to clinical utility remains unclear. To probe this question, we evaluate AlphaGenome (AG) for understanding amyotrophic lateral sclerosis (ALS) genetics without any disease-specific fine-tuning across three settings of increasing difficulty: recovering measured variant effects, reconstructing a known splicing mechanism, and generating de novo regulatory hypotheses at unresolved loci. At population scale, AG failed to recover measured effect sizes across 1,254 spinal-cord splicing quantitative trait loci (QTL) (Spearman = 0.041, Pearson = 0.104) and was precise only at negligible recall (precision = 1.00 at 1.3% recall). At a mechanistically resolved locus of UNC13A cryptic-exon event, AG predicted the intronic risk variant's splice-site usage opposite its known risk effect (Delta approx. -2 x 10^-6), showed near-identical effects in disease-relevant and disease-irrelevant tissues (cerebellar effects reached approximately 60% of neural magnitude), and recovered only a partial cis-regulatory signature. Finally, AG showed limited gene-level resolution across seven ALS genome-wide association study (GWAS) loci, with predicted effects declining sharply as a gene lay farther from the variant (a 10-fold increase in distance cost 0.95 standard deviations of signal; p = 2.7 x 10^-23). In summary, AG can identify a small set of high-confidence regulatory variants, but cannot reliably rank variants by biological effect, or assign regulatory signals to the correct effector gene at unresolved loci. Thus, although AG captures meaningful local regulatory effects, these predictions do not resolve the effect sizes and effector genes needed to connect ALS-associated variants to their causal mechanisms.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.756029v1",
+      "tier": "brief",
+      "why": "A sobering benchmark showing that AlphaGenome fails to recover measured splicing QTL effect sizes and effector genes in ALS, highlighting current limits of genomic foundation models for regulatory variant interpretation."
+    },
+    {
+      "id": "10.64898/2026.10.07.757297",
+      "title": "Sketching the SRA: experiment-wide similarity search across 4.8 million metagenomes",
+      "authors": [
+        "Faure, R.",
+        "Nakshi, A. H.",
+        "Abrar, M. H.",
+        "Chikhi, R.",
+        "Lemane, T.",
+        "Taheri, M.",
+        "Won, S.",
+        "Wu, H.",
+        "Koslicki, D.",
+        "Medvedev, P."
+      ],
+      "abstract": "Recent efforts have demonstrated that systematic analysis of the millions of metagenomes in the Sequence Read Archive (SRA) enables groundbreaking biological discoveries. However, SRA-scale comparison of whole metagenomes has remained elusive. Here, we introduce the most comprehensive resource to date for experiment-to-experiment analysis of all SRA metagenomes, comprising FracMinHash sketches (470GB), hypergen sketches (19GB), and an all-pairs Jaccard similarity matrix (90GB), which we release online at https://github.com/RolandFaure/SRA-metagenome-sketches-databases. These resources enable a wide range of analyses, which we demonstrate with several applications. First, we use the FracMinHash sketches to uncover temporal trends, finding that the amount of newly discovered microbial sequence continues to grow, rather than saturate or shrink. Second, we use the hypergen sketches, which enable nearest-neighbor search, to identify co-assembly candidates and thereby improve assembly quality. Third, we use the similarity matrix to analyze all SRA metagenomes, identifying duplicated submissions and over 50K candidates for metadata correction. Together, our resources unlock systematic analysis of metagenomic data at unprecedented scale.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.757297v1",
+      "tier": "mention",
+      "why": "Releases experiment-wide sketches and an all-pairs similarity matrix for 4.8 million SRA metagenomes, enabling unprecedented scale metagenome comparison and metadata correction."
+    },
+    {
+      "id": "10.64898/2026.10.07.756693",
+      "title": "Inhibitory Nectin-2/TIGIT interactions between CD163+ macrophages and CD8+ T cells in spatially defined immune niches associate with poor outcomes in neuroblastoma",
+      "authors": [
+        "Borst, A. L.",
+        "Bergsma, F. J.",
+        "van den Ham, F.",
+        "Verdonschot, M. E.",
+        "Amini, M.",
+        "Boltjes, A.",
+        "van Dam, S.",
+        "Hiddink Verberne, N.",
+        "Bonine, N.",
+        "Leusen, J. H.",
+        "van Noesel, M. M.",
+        "de Krijger, R. R.",
+        "Vercoulen, Y.",
+        "Krijgsman, D.",
+        "Wienke, J."
+      ],
+      "abstract": "Background: While immunotherapies have transformed outcomes in several adult cancers, more than half of pediatric patients with high-risk neuroblastoma fail to achieve sustained responses, resulting in poor outcomes. Therefore, understanding the phenotypic and spatial organization of immune cells within the neuroblastoma tumor microenvironment is essential to identify mechanisms driving immunotherapy failure. Methods: To identify spatial determinants of the neuroblastoma immune landscape that may contribute to treatment failure, we dissected immunoregulatory mechanisms at single-cell and protein levels in neuroblastoma samples from 28 patients, using imaging mass cytometry (IMC, n=14) and high-dimensional spectral flow cytometry (n=18). Results: We characterized four distinct cellular neighborhoods, ranging from tumor-dominant to stromal and immune niches. Macrophages were broadly distributed across these niches. In contrast, T and B cells were largely confined to immune niches, forming immature tertiary lymphoid structure-like aggregates within the tumor and stromal cores. T cells displayed a CD69+ tissue-resident memory phenotype, with an overall reduced cytotoxic profile (in CD8+ T cells) and increased expression of inhibitory receptors (predominantly in CD4+ T cells), indicative of dysfunctional features. Intriguingly, T cell functional states differed between spatial niches, with a TCF7+/Ki-67+ self-renewing profile within immune niches, and increased granzyme B expression in CD8+ T cells in tumor cores. Interaction analysis pinpointed CD163+ macrophages as the dominant immunosuppressive interaction partner of T cells, particularly within the tumor edge and immune cores. Analysis of inhibitory ligand-receptor interactions identified the TIGIT/PVR/Nectin-2 axis as the main engaged axis between CD163+ macrophages and T cells. Nectin-2 expression on macrophages was particularly high within immune cores, and elevated in macrophages with direct T cell contact, suggesting a high probability of in situ engagement. Consistent with this immunosuppressive role, both CD163 and Nectin-2 expression on macrophages correlated with poor patient survival, substantiating the clinical relevance of inhibitory macrophage-T cell interactions. Conclusions: This study reveals T cell-excluded tumor niches and targetable inhibitory interactions between CD163+ macrophages and T cells. These insights provide a rationale for combinatorial immunotherapeutic strategies that both enhance T cell infiltration into tumor-rich areas and disrupt inhibitory signaling to improve immunotherapy efficacy in neuroblastoma.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.756693v1",
+      "tier": "mention",
+      "why": "Spatial imaging mass cytometry identifies CD163+ macrophage-CD8+ T cell Nectin-2/TIGIT interactions in immune niches that correlate with poor neuroblastoma outcomes."
+    },
+    {
+      "id": "2610.11627",
+      "title": "Beyond Action Entropy: Quotient-Space Exploration for Genome-Scale Metabolic Model Repair",
+      "authors": [
+        "Xuan Gong",
+        "Hanbo Huang",
+        "Wenbin Dai",
+        "Jing Wang",
+        "Lei Bai",
+        "Xiang Xiao",
+        "Weishu Zhao",
+        "Shiyu Liang"
+      ],
+      "abstract": "Repairing scientific models from functional observations differs fundamentally from supervised prediction: feedback may certify a solution without revealing which structural correction is responsible. We study this setting for genome-scale metabolic model (GEM) repair, where multiple reaction edits can explain the same phenotypes and many apparently distinct edits correspond to the same biological mechanism. This many-to-one structure creates a hidden failure mode for conventional exploration: diversity in the output space need not translate into diversity of scientific hypotheses. We introduce QuotientPO, which collapses equivalent repairs into canonical mechanisms and optimizes exploration directly over the resulting quotient space. To make quotient exploration informative under finite rollouts, we derive a kernelized Rényi estimator that resolves graded crowding among distinct repair cores beyond coarse exact-match counts. On 2,212 held-out GEMs, QuotientPO improves Success@32 from 17.93% to 20.10% (+12.1% relative) while consistently increasing distinct successful-core discovery under the same sampling budget. These results establish quotient-space exploration as a principled approach to mechanism-level discovery under verifier-induced equivalence.",
+      "categories": [
+        "cs.LG",
+        "q-bio.MN"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.11627",
+      "tier": "mention",
+      "why": "QuotientPO reframes genome-scale metabolic model repair as quotient-space exploration over mechanistically equivalent edits, improving mechanism-level discovery under verifier-induced equivalence."
+    },
+    {
+      "id": "10.64898/2026.10.06.757033",
+      "title": "CCT2 expression marks a translation-activated state in sporadic ALS motor neurons and is associated with functional decline",
+      "authors": [
+        "Bhandary, P.",
+        "Wang, Y.",
+        "Omar, M.",
+        "Moore, J. H.",
+        "Wang, Z. P."
+      ],
+      "abstract": "Sporadic disease accounts for about 90% of amyotrophic lateral sclerosis (ALS) cases, and its biological heterogeneity is a major contributor to the failure of trials that enroll patients under a single diagnosis. Because sporadic ALS lacks a shared genetic anchor, identifying biological signals is critical for effective patient stratification. We analyzed induced pluripotent stem cell derived motor neurons from 619 AnswerALS participants using transcriptomics, proteomics, and whole-genome sequencing and identified CCT2 as the first single-gene marker of a molecular state within sporadic ALS, providing a measurable basis for trial enrollment according to biology. We first anchored the analysis in known ALS genotypes. C9orf72 and SOD1 motor neurons did not converge on a common signature but retained genotype-specific differences that bulk postmortem tissue compresses. Scoring 391 sporadic patients along three transcriptomic axes (bioenergetic stress, cell cycle, and inflammation) resolved three states. One state was marked by CCT2, a TRiC chaperonin subunit, which distinguished it from the quiescent state with an area under the curve of 0.892. CCT2 was also elevated at the protein level and associated with the rate of ALSFRS-R decline, although this association weakened after adjustment for culture composition. Upstream regulator analysis placed this state downstream of MYC and mTORC1 activation. No germline test across 360 whole genomes explained these states. Validation using Target ALS data showed that the relationship between CCT2 and the cell cycle program was also present in postmortem cortex enriched for layer 5b projection neurons.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757033v1",
+      "tier": "mention",
+      "why": "CCT2 is identified as a single-gene marker of a translation-activated molecular state in sporadic ALS motor neurons, offering a candidate biological stratifier for a genetically heterogeneous disease."
+    },
+    {
+      "id": "10.64898/2026.09.30.755680",
+      "title": "Sex-dependent DNA methylation in amyotrophic lateral sclerosis",
+      "authors": [
+        "Kim, Y. J.",
+        "Iacoangeli, A.",
+        "Zwamborn, R. A. J.",
+        "van Rheenen, W.",
+        "Byrne, R.",
+        "Van Eijk, K. R.",
+        "Marzi, S.",
+        "Watson, D.",
+        "Vourc'h, P.",
+        "Corcia, P.",
+        "de Carvalho, M.",
+        "Gotkine, M.",
+        "Povedano, M.",
+        "Mora Pardina, J. S.",
+        "Garton, F.",
+        "McRae, A.",
+        "Shaw, P. J.",
+        "Landers, J. E.",
+        "Glass, J. D.",
+        "Shaw, C. E.",
+        "Basak, N. A.",
+        "Hardiman, O.",
+        "Van Damme, P.",
+        "McLaughlin, R. L.",
+        "van den Berg, L. H.",
+        "Project MinE ALS Sequencing Consortium,",
+        "Mill, J.",
+        "Al-Chalabi, A.",
+        "Al Khleifat, A."
+      ],
+      "abstract": "Amyotrophic lateral sclerosis (ALS) shows well-established sex differences in incidence, age at onset and progression, but their biological basis is unclear. We hypothesised that the DNA methylation changes associated with ALS differ between the sexes, which would point to sex-specific disease processes. To test this, we performed a blood-based epigenome-wide association meta-analysis of ALS cases and controls from Project MinE, an international ALS genomics consortium, and an independent Australian cohort, comprising 8,946 individuals after quality control (5,129 males and 3,817 females; 8,942 with complete covariates in the primary models). We analysed 781,648 autosomal CpGs using complementary sex-stratified case-control models and an ALS-by-sex interaction model that directly tested whether ALS-associated methylation effects differed by sex. Sex-stratified analyses identified no genome-wide significant differences between male and female ALS effects. In contrast, interaction testing identified seven robust sex-dependent ALS-associated differentially methylated positions (P < 9 x 10-8), mapping to KCNQ1, ADPRH, HLA-F, GHRLOS, IRF5, RAD51B and one intergenic region. The strongest signal was at KCNQ1 (P = 3.1 x 10-9). Six of the seven remained genome-wide significant in a four-stratum sensitivity analysis, and none was detected in previous conventional ALS or population sex-associated methylation analyses. Together, these findings suggest a distinct sex-conditional component of the ALS blood methylome, implicating immune, metabolic and ion-channel loci and providing new candidates for investigating biological heterogeneity between males and females with ALS.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755680v1",
+      "tier": "mention",
+      "why": "A large epigenome-wide meta-analysis finds sex-dependent ALS methylation signals at immune, metabolic and ion-channel loci invisible to sex-stratified analyses alone."
+    },
+    {
+      "id": "10.64898/2026.10.01.756075",
+      "title": "REFinder: Mining new enzymes from metagenomes",
+      "authors": [
+        "Prabakaran, R.",
+        "Bromberg, Y."
+      ],
+      "abstract": "Microbial metagenomes encode vast catalytic diversity, but recovering enzymes of novel, yet-undescribed functionality typically requires whole-community assembly plus a means of identifying active proteins ab initio. The first step of the task is compute-intensive and misses low-abundance sequences. The second is complicated by our inability to predict novel functions. REBEAN, our DNA language model, sidesteps the latter by assigning each sequencing read a high-level Enzyme Commission (EC) class or a non-enzyme label without alignment. Here we build REFinder, a pipeline that addresses both steps by routing REBEAN-annotated reads to assemble only the putative enzymatic reads that have identified catalytic signatures. In our evaluation of 50 microbiome metagenomes, REFinder identified 1.2 to 2.1 fold more enzymes than could be recovered via homology-based annotation of the proteins from the corresponding full assemblies. Moreover, it was as much as 6.4-fold cheaper computationally than full assembly. Across all samples, REFinder identified at least three fourths and as many as 90% of the homology-accessible enzymes identified via full assembly of the complete metagenomes. Notably, a fraction of these, 22% to 45% per EC class, carried no similarity to Swiss-Prot proteins, i.e. a set of enzymes homology cannot annotate. For roughly two fifths of the over thirteen thousand such novel oxidoreductases from two saliva samples, ESMFold predicted structures aligned with TM-score[&ge;]0.7 to a characterized enzyme structure in the PDB - a substantial structural similarity without sequence homology. These results illustrate that targeted, alignment-free assembly turns even well-mapped microbiomes into a source of thousands of previously invisible but credible novel enzymes, raising our expectations for exploration of environmental microbiomes.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.756075v1",
+      "tier": "mention",
+      "why": "REFinder uses a DNA language model to triage metagenomic reads before assembly, recovering thousands of novel, homology-invisible enzymes far more cheaply than full-community assembly."
+    },
+    {
+      "id": "10.64898/2026.10.06.757013",
+      "title": "A ribosomal pseudouridine drives an oncogenic translation program",
+      "authors": [
+        "Faucher-Giguere, L.",
+        "Rivera-Pizana, A.",
+        "Seguineau de Preval, B.",
+        "Fafard-Couture, E.",
+        "Deschamps-Francoeur, G.",
+        "Marchand, V.",
+        "Motorin, Y.",
+        "Barchet, C.",
+        "Klaholz, B. P.",
+        "Azad, T.",
+        "Scott, M. S.",
+        "Abou Elela, S."
+      ],
+      "abstract": "Dynamic ribosome heterogeneity has emerged as a potential layer of translational regulation, but whether variation in ribosomal RNA (rRNA) modification stoichiometry can selectively control the translation of mRNAs with shared encoded features remains unclear. Here we show that SNORA81-guided pseudouridylation at U4636 controls a selective translational program in ovarian cancer cells. U4636 is partially pseudouridylated and lies within 28S rRNA near eL31 and the peptide exit tunnel. Depletion of SNORA81 reduces pseudouridylation at U4636 without broadly perturbing rRNA processing or bulk translation. Instead, it remodels codon-specific and nascent-peptide-associated pausing and the polysome association of SNORA81-dependent translationally altered mRNAs. These mRNAs display characteristic GC content and amino-acid composition, are enriched in cancer-related functions and show corresponding changes in protein levels. Our findings support a model in which a change in the abundance of a single snoRNA propagates from rRNA-modification stoichiometry through ribosome dynamics and selective mRNA translation to protein output and cancer cell proliferation. We term this multilevel amplification cascade the \"sno-balling\" effect.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757013v1",
+      "tier": "mention",
+      "why": "A single snoRNA-guided rRNA pseudouridine modification is shown to selectively reprogram translation of cancer-related mRNAs in ovarian cancer cells via a 'sno-balling' amplification cascade."
+    },
+    {
+      "id": "10.64898/2026.10.06.756936",
+      "title": "Loss of the Y chromosome drives basal identity and metastatic potential via epigenetic reprogramming in pancreatic cancer",
+      "authors": [
+        "Dorsch, M.",
+        "Beaudry, F. E. G.",
+        "Baginska, A. K.",
+        "Meyer, N.",
+        "Petzold, A.",
+        "Zhao, P.",
+        "Otero-Carrasco, B.",
+        "Aliar, K.",
+        "Urban, S.",
+        "Zummack, J.",
+        "Jung, J.",
+        "Hölken, J. M.",
+        "Duan, N.",
+        "Godfrey, L.",
+        "Chen, M.-j. M.",
+        "Schlüter, K.",
+        "Ganesan, K.",
+        "Over, F.",
+        "Kono, T.",
+        "Schildhaus, H.-U.",
+        "Steiger, K.",
+        "Schwarz, R.",
+        "Hessmann, E.",
+        "Schneider, G.",
+        "Siveke, J. T.",
+        "Neoptolemos, J. P.",
+        "Peccerella, T.",
+        "Llamazares-Prada, M.",
+        "Schramm, A.",
+        "Plass, C.",
+        "Rambow, F.",
+        "Notta, F.",
+        "Grünwald, B. T.",
+        "Grüner, B. M."
+      ],
+      "abstract": "Loss of the Y chromosome (LOY) has been largely unexplored in pancreatic ductal adenocarcinoma (PDAC), and no mechanistic framework previously explained its role in tumor biology. We identify LOY as a recurrent, functionally consequential alteration affecting ~50% of male PDAC patients across two independent cohorts, with strong enrichment in advanced disease and, critically, in the basal subtype, establishing LOY as a clinically actionable biomarker. Comprehensive genomic profiling positions LOY as a distinct genetic event associated with TP53 mutations, implicating it in aggressive tumor evolution. Integrative analyses across bulk tumors, single-cell datasets and CRISPR-engineered PDAC models converge on epithelial-to-mesenchymal transition (EMT) as the dominant LOY-driven program. Y-chromosome deletion alone induces EMT transcriptional states, mesenchymal morphology and enhanced metastatic ability. Mechanistically, LOY disrupts epigenetic regulation through loss of Y-linked chromatin modifiers, reshaping DNA methylation at EMT- and basal-defining loci and reducing chemotherapy sensitivity. These findings establish LOY as a causal genetic driver of PDAC progression and a clinically accessible biomarker with direct therapeutic relevance.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.756936v1",
+      "tier": "mention",
+      "why": "Loss of the Y chromosome is identified as a recurrent driver of EMT and metastatic basal identity in pancreatic cancer through epigenetic reprogramming, affecting about half of male PDAC patients."
+    },
+    {
+      "id": "10.64898/2026.10.05.756656",
+      "title": "Placental cis-eQTL analysis identifies preeclampsia-dependent genetic regulation at promoters",
+      "authors": [
+        "Yazgeldi Gunaydin, G.",
+        "Leinonen, J.",
+        "Ezer, S.",
+        "Kajantie, E.",
+        "Kivinen, K.",
+        "Heinonen, S.",
+        "Pouta, A.",
+        "FINNPEC Group,",
+        "Laivuori, H.",
+        "Wedenoja, S.",
+        "Kere, J.",
+        "Katayama, S."
+      ],
+      "abstract": "Background: Preeclampsia (PE) is a hypertensive pregnancy disorder with contributions from both maternal and fetal genetic factors, but how both genomes regulate placental transcription remains incompletely understood. Results: We analyzed placental 5'-end RNA sequencing data from 59 pregnancies in the FINNPEC cohort and performed separate maternal and fetal cis-eQTL analyses using gene-level expression and promoter-level expression defined as Transcript Far 5' Ends (TFE). Genotype-by-PE interaction models were used to identify genetic effects that differ according to PE status. No gene-level interaction eQTLs remained significant after multiple-testing correction, although suggestive signals included LILRB2 in the maternal and LPCAT3 in the fetal analyses. In contrast, we identified two significant syntenic promoter-level interaction eQTLs: rs12504642-TFE61820 at the FHDC1 locus in the maternal analysis and rs1557150-TFE9032 at the PPIAP31 locus in the fetal analysis. Conclusion: These findings suggest that PE-dependent genetic interaction effects may be detectable at specific transcript promoter regions even when they are not captured at annotated gene levels.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756656v1",
+      "tier": "mention",
+      "why": "Promoter-level, but not gene-level, cis-eQTL analysis in placenta reveals preeclampsia-dependent genotype interactions missed by standard gene-level eQTL mapping."
+    },
+    {
+      "id": "10.64898/2026.10.06.757186",
+      "title": "An androgen-derived transcriptional state reveals signaling and mitochondrial vulnerabilities in cancer",
+      "authors": [
+        "Miao, Y.",
+        "Baba, T."
+      ],
+      "abstract": "Transcriptional states can provide functional information beyond genomic alterations, but whether states derived from nonmalignant physiological perturbations remain informative in cancer is unclear. We separated global RNA-output suppression from relative transcriptional remodeling induced by dihydrotestosterone in mouse adrenal zona fasciculata cells and derived a cross-sex transcriptional signature. Projection of this signature to human orthologs defined an androgen-suppressed transcriptional state (ASTS) across cancer cell lines. Integration with pharmacogenomic and CRISPR dependency datasets showed that higher ASTS was associated with resistance to EGFR-targeted drugs and reduced EGFR dependency, together with increased dependency on mitochondrial pathways, including mitochondrial translation and respiratory electron transport. These associations were not attributable to a single major cancer lineage and remained evident after adjustment for canonical oncogenic drivers and cell-state covariates. ASTS provides a proof of concept that an endocrine-derived transcriptional state can reveal candidate functional vulnerabilities in an unrelated cancer context.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757186v1",
+      "tier": "mention",
+      "why": "An androgen-derived transcriptional signature, projected across cancer cell lines, reveals unexpected EGFR-resistance and mitochondrial dependency relationships independent of cancer lineage."
+    }
+  ]
+}
