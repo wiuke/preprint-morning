@@ -1,0 +1,818 @@
+{
+  "date": "2026-10-01",
+  "format": "dialogue",
+  "n_papers": 70,
+  "episode_title": "Splicing factor mutations poisoning protein complexes in leukemia, a dosage-constrained EBF3 dependency, and CDX2's reused enhancers in gut regeneration",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Morning. It's October first, and across the archive and the bio-archive we're looking at roughly seventy new papers in systems and computational biology today."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Good spread this morning too. We've got two leukemia papers that both mess with how we think about oncogenes versus tumor suppressors, a pangenome study catching transposable elements mid-evolution, a transcription factor that reuses its enhancer wiring for gut regeneration, and a new single-cell foundation model borrowing tricks from protein language models."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's start with paper one, Moura and colleagues, on splicing factor mutations in myeloid neoplasms. These mutations are founding events in blood cancers, they scramble RNA splicing, but nobody's pinned down how that actually initiates the disease."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, and the usual approach is bulk or single-cell RNA-seq, which tells you splicing is messed up but not what that does downstream. What's actually new here?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They worked with sixty-two patients with myeloid neoplasms and twenty healthy donors, and they could isolate the actual cancer-initiating stem cells, the hematopoietic stem cells, which is something you can't cleanly do in most splicing-mutant cancers. On twenty-one samples they ran combined long and short read single-cell transcriptomics, ten-X genomics libraries sequenced on Oxford Nanopore long reads, so they get full isoform resolution per cell. Then, across seventy-eight samples, they did what they call pauciproteomics, low-input, immunophenotype-sorted protein profiling across the different stages of blood cell maturation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the real question is whether the mis-splicing you see at the RNA level actually predicts what happens to the protein."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the answer is no, not reliably. The splicing errors decouple RNA and protein dynamics in a mutation-specific way. At the protein layer, pauciproteomics shows these mis-splicing events poison entire functional protein complexes early on, and that damage propagates and compounds as cells mature, progressively disrupting the whole proteome network. None of that was predictable from the transcriptomic data alone. They backed this up functionally using induced pluripotent stem cell models of early blood differentiation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the part worth sitting with over coffee. We spend a lot of effort inferring regulatory consequences from RNA-seq, and this is a fairly stark reminder that for splicing-driven disease, the protein complex is where the real damage shows up, and it's a layer transcriptomics structurally can't see."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper two, from Lee and colleagues, is a genuinely strange case of gene classification. In acute promyelocytic leukemia, the transcription factor gene E-B-F-three carries recurrent heterozygous loss of function mutations, which is the textbook signature of a tumor suppressor."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Except?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Except E-B-F-three turns out to be essential for the leukemia cells' survival. You can't lose it entirely without killing the cancer, so calling it a tumor suppressor doesn't fit. They resolve the paradox by showing the fusion oncoprotein that defines this leukemia, P-M-L-R-A-R-A, actually drives E-B-F-three expression through a p-three-hundred-dependent enhancer sitting inside one of its introns. But too much E-B-F-three suppresses proliferation. So the cell is squeezed into a narrow corridor of expression, too little is bad, too much is also bad."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the patient mutations aren't knocking the gene out, they're just dialing it down into that viable corridor."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly, heterozygous inactivation that optimizes expression rather than eliminates function. And they show you can exploit this pharmacologically: inhibiting p-three-hundred pushes E-B-F-three below the viability threshold and kills the leukemia cells."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth flagging as a general lesson for anyone annotating cancer genomes. A mutation pattern that looks exactly like tumor suppressor loss can actually mark a gene the oncogene itself has tuned into a dosage-constrained dependency. That's a classification trap that pure loss-of-function calling would walk right into."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three is from the Human Pangenome Reference Consortium and Jiang and colleagues, on transposable elements and human regulatory evolution. Most of what we know about transposable elements as regulatory elements comes from ones that are already ancient and fixed in the genome, which only shows you the survivors."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So this is about catching them before that fixation happens."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, the polymorphic phase, where an element is still segregating, present in some haplotypes and absent in others. Previously you could only score these as present or absent. Here they use two hundred thirty one haplotype-resolved human pangenomes with matched long-read multi-omics, so for each segregating transposable element allele they can resolve not just its sequence but its methylation state and how it's actually incorporated into transcripts."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And what does that resolution buy you?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "A few things. These elements' origins go beyond recent transposition events. Their regulatory consequences depend heavily on methylation and transcript context, in ways that gene-level analyses would simply miss. They find mechanistic links at loci already associated with traits. And selection isn't just favoring the presence of these elements, it favors loss just as readily."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So regulatory innovation from transposable elements isn't a one-way accumulation story, it's an ongoing mix of gain, remodeling, and loss, happening right now in segregating human variation. That's a nice complement to the usual ancient-insertion framing, and it's exactly the kind of population-scale functional genomics the pangenome resources were built for."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper four, Lorzadeh and colleagues, is on the transcription factor C-D-X-two in the intestine. The puzzle here is that region-specific transcription factors set up small intestine versus colon identity, but what switches those regional factors on in the first place has been unclear. And separately, certain fetal gene programs come back during post-injury regeneration, but how much of that program reactivates, and what controls it, wasn't resolved either."
+    },
+    {
+      "speaker": "Leo",
+      "text": "C-D-X-two itself is expressed uniformly across the whole gut epithelium though, fetal and adult, so how does a uniformly expressed factor generate regional identity?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the core finding. They mapped C-D-X-two and its partner transcription factor binding, enhancer activity, and gene expression across intestinal regions, in stem and differentiating cells, and across development and adult regeneration. C-D-X-two organizes a hierarchical enhancer network, cooperating with C-T-C-F, that first establishes a shared, plastic fetal enhancer landscape, which then resolves into region-specific programs sitting upstream of the regional transcription factors."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And during regeneration?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Rather than just flipping back on a generic fetal state, C-D-X-two selectively rebinds a mix of region-specific and shared enhancers, tied to fetal cell motility and tissue morphogenesis genes, plus a more recently active adult stem cell program, and it deploys these differently across the different tiers of the regenerating crypt."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So C-D-X-two acts as a context-responsive hub rather than a fixed master switch, reusing the same enhancer toolkit for development, regional identity, and injury repair depending on what the tissue needs. Nice example of enhancer grammar being reread rather than rewritten."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Last deep dive, paper five, CellMSA, from the archive. The complaint motivating it is that existing single-cell foundation models either encode each cell in isolation or only compare cells within the same batch for denoising, so they're throwing away a lot of relational information across batches and cell types."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the fix is borrowing from protein language models?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, the analogy is multiple sequence alignment context, the way protein models look across many homologous sequences to infer which positions co-vary. Here, for each target cell, CellMSA retrieves related cells from different batches and biologically related cell types, summarizes the cross-cell patterns into a context-dependent gene-pair representation, and feeds that into a pair-aware encoder for the target cell."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Scale?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Pretrained on about one hundred nine million cell observations, with sixty five point six million of those as primary observations, pulled from a large human single-cell corpus. They report it consistently beats existing methods across multiple benchmarks."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The abstract doesn't say which benchmarks or by how much, so I'd want to see the actual numbers before getting excited. But conceptually, treating cross-batch, cross-cell-type context as a first-class signal rather than something to be denoised away is a reasonable direction for batch correction and integration, which is exactly the kind of modeling problem worth tracking."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick round of briefs now. Paper six is BEACON, a demultiplexing method for barcode-multiplexed single-cell RNA-seq. It learns and removes the background barcode count distribution directly from the data, improving classification accuracy over existing tools, and they show it also helps recover protein signal in multimodal protein-transcriptome experiments, including identifying a CD161-positive effector memory CD4 T cell population with a Th17-like phenotype."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper seven, ProxiNet, takes spatial transcriptomics data and learns what gene expression signatures predict two cells being physically near each other, then transfers that learned proximity model to ordinary dissociated single-cell data that has no spatial information at all. They validate it across brain regions and even across different spatial technologies, and apply it to an Alzheimer's dataset to infer age-associated changes in cellular neighborhoods."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eight is CHACAM, built for early C. elegans embryogenesis, where closely related sister cells often have nearly identical transcriptomes and get merged into the same label. It adds a ligand-receptor interaction database and a cell contact map on top of expression data, learning interaction signatures that distinguish touching from non-touching neighbors to resolve those ambiguous sister identities, reportedly with near-perfect accuracy on two existing embryo atlases."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper nine, CycloCross, is a CycleGAN-style adversarial model for translating single-cell RNA-seq between species without needing one-to-one ortholog mapping, which is the usual bottleneck. They apply it to germ cell development across mouse, macaque, and human, and claim it can interpolate or extrapolate expression at developmental time points that weren't experimentally sampled."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten is a population genetics piece on the seventeen Q twenty one point three one inversion in humans, a nearly one megabase polymorphism linked to neurodegenerative and fertility phenotypes. Using single-sperm genome sequencing, they find standard crossovers between the two inversion orientations are almost completely suppressed, but smaller gene conversion-like exchanges still happen at surprisingly high rates, and they date this ongoing gene flux back roughly one hundred to five hundred thousand years, meaning the two haplotype lineages have been swapping material for half a million years despite looking like they shouldn't recombine at all."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven looks at B-R-C-A-one-associated triple negative breast cancer and argues the cell of origin, not just accumulated mutations, shapes which molecular subtype you get. Using mouse models and single-cell RNA-seq on sixty seven thousand cells, aberrant differentiation starting from basal-myoepithelial cells produces the mesenchymal subtype, while aberrant luminal differentiation produces the basal-like subtype, which has implications for how we stratify prevention strategies in B-R-C-A-one carriers."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twelve is a nice systems framing of aging: they sleep-deprive young and old mice, profile transcriptomes across six organs during stress and recovery, and use neural ordinary differential equations to fit vector fields describing how each organ's transcriptome relaxes back to baseline. The striking find is a separatrix, a boundary in transcriptomic space, specifically in testis of young mice, beyond which the perturbed state can no longer return to control."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper thirteen is a more skeptical methods piece on predicting viral fitness without labeled data. Testing protein language models against simple alignment-based models on viral deep mutational scanning data, they find the trivial alignment model more than doubles the accuracy of a six hundred fifty million parameter protein language model, and the real culprit is non-stationary selection, meaning the amino acid preferences at each site literally drift over time, so which time slice of the alignment you use matters more than model architecture or scale."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fourteen probes Evo two, a nucleotide-level genomic foundation model, for in-context learning on classification tasks like microRNA and toxin detection. It works reasonably on short sequences but collapses at kilobase scale, and oddly the seven billion parameter model beats the forty billion parameter version, with interpretability analysis suggesting the model may be tracking the structure of the prompt rather than the actual biological signal."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And paper fifteen is a molecular dynamics study simulating twenty two cancer hotspot mutations as histone-DNA complexes, finding the thermodynamic effects are tightly localized to the DNA-histone contact interface rather than causing global structural change, with RAS family mutations trending toward stabilizing the nucleosome and kinase domain mutations trending toward destabilizing it, a gene-family pattern they flag as exploratory given it's based on a Mann-Whitney p value of zero point zero zero eight across a small hotspot set."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick mentions to round out the day. Paper sixteen finds pervasive somatic N-F-one mutations drive cell-type and spatially specific clonal selection in neurofibromatosis. Paper seventeen offers a framework for interpreting protein-RNA interaction specificity by bridging omics and structural data."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eighteen is a phylodynamic analysis showing dengue virus spread globally in an asymmetric and accelerating pattern. Paper nineteen characterizes Plasmodium falciparum population structure and drug resistance across Uganda and neighboring countries using whole genomes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twenty describes prion-induced heritable states in Caenorhabditis elegans. Paper twenty one proposes a computable metabolic organ clock linking cell lineage architecture to whole-organ bioenergetics."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twenty two runs a genome-scale open reading frame screen for resilience factors that protect the retinal pigment epithelium and restore vision in aged mice. Paper twenty three looks at nutrient-responsive programs revealed by simplifying growth media in a near-minimal bacterium."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twenty four introduces EsViritu, a profiler for detecting viral pathogens and recovering genomes from metagenomic data. And paper twenty five, digestome, is a licence-clean marker gene panel for functional profiling of anaerobic digestion microbiomes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the stack for today."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Enjoy the coffee, and we'll see you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.09.29.754980",
+      "title": "RNA splicing factor mutations drive myeloid neoplasm oncogenesis through protein complex poisoning",
+      "authors": [
+        "Moura, P. L.",
+        "Branca, R. M. M.",
+        "Kaminskiy, Y.",
+        "Siavelis, I.",
+        "Shrung, K. R.",
+        "Hofmann, S.",
+        "Perraki, C. M.",
+        "Argyriou, A.",
+        "Fazeli, S.",
+        "Nakagawa, M. M.",
+        "Mortera-Blanco, T.",
+        "Boettcher, S.",
+        "Kubaczka, C.",
+        "Schlaeger, T. M.",
+        "Creignou, M.",
+        "Barbosa, I.",
+        "Björklund, A.-C.",
+        "Hillberg Widfeldt, M.",
+        "Bosch, D.",
+        "Massaar, S.",
+        "Sanders, M.",
+        "Fagerström-Billai, F.",
+        "Rowe, G.",
+        "Woll, P. S.",
+        "Jacobsen, S. E. W.",
+        "Ungerstedt, J.",
+        "Nannya, Y.",
+        "Lundin, V.",
+        "Ogawa, S.",
+        "Lehtiö, J.",
+        "Hellström-Lindberg, E."
+      ],
+      "abstract": "RNA splicing factor mutations (SFmut) are founding oncogenic events which cause RNA splicing errors with unpredictable gene expression dynamics. Despite extensive transcriptomic studies, SFmut cancer-initiating mechanisms remain elusive. Among SFmut cancers, myeloid neoplasms (MN) alone offer a setting where true cancer-driving SFmut stem cells can be identified, namely the hematopoietic stem cell (HSC). Within a cohort of 62 MN patients and 20 healthy donors, we conducted long/short-read single-cell transcriptomics (10X-ONT, n = 21) and immunophenotype-resolved low-cell proteomics (pauciproteomics, n = 78) to resolve gene expression, RNA splicing and protein expression dynamics across healthy and SFmut MN hematopoiesis. During hematopoietic differentiation, SFmut RNA mis-splicing decouples proteotranscriptomic dynamics in a mutation-specific manner. Pauciproteomics defines the functional effects of SFmut RNA mis-splicing on the protein layer, identifying early-stage protein effects which poison entire functional protein complexes and progressively disrupt the proteome-wide network during cellular maturation. Importantly, this information could neither be resolved nor predicted by transcriptomic analyses. Finally, we functionally validate the proteome dynamics of HSC through induced pluripotent stem cell culture models of early hematopoietic differentiation, identifying candidate mechanisms for SFmut oncogenesis. Overall, these data elucidate SFmut MN disease biology with unprecedented granularity, defining the molecular consequences of SFmut RNA mis-splicing and offering a generalizable framework for cancer stem cell studies.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.754980v1",
+      "tier": "deep",
+      "why": "Combines long-read single-cell transcriptomics with low-cell proteomics to show that splicing-factor mutations in myeloid neoplasms act by poisoning whole protein complexes, a mechanism invisible to transcriptomics alone and directly relevant to multi-omic integration methods."
+    },
+    {
+      "id": "10.64898/2026.09.29.755484",
+      "title": "Tumor suppressor-like mutations mark a dosage-constrained dependency in leukemia",
+      "authors": [
+        "Lee, J. D.",
+        "Uyemura, M. M.",
+        "Lamini, F.",
+        "Posey, R. R.",
+        "Shin, E. H.",
+        "Harris, A. C.",
+        "Ottone, T.",
+        "Cheloni, G.",
+        "Chou, D. B.",
+        "Trinh, B. Q.",
+        "Paulo, J. A.",
+        "Tenen, D. G.",
+        "Clohessy, J. G.",
+        "Voso, M. T.",
+        "Graubert, T. A.",
+        "Slack, F. J."
+      ],
+      "abstract": "Cancer genes are classically categorized as oncogenes or tumor suppressors based on whether gain or loss of function promotes malignancy. Here we show that oncogene-imposed dosage constraints can produce mutations that mimic tumor suppressor loss yet mark essential genes. In acute promyelocytic leukemia (APL), the transcription factor EBF3 gene harbors recurrent heterozygous loss-of-function mutations, a tumor suppressor signature, and is essential for APL survival. We resolve this paradox by showing that while PML::RARA, the fusion oncoprotein defining APL, drives EBF3 expression, excess EBF3 suppresses proliferation. Patient mutations reduce EBF3 activity through heterozygous inactivation, optimizing its expression within a corridor bounded by fitness constraints at both extremes. PML::RARA activates EBF3 via a p300-dependent intronic enhancer, and p300 inhibition exploits this constraint by suppressing EBF3 below the viability threshold. Our findings reveal that oncogenes can impose dosage constraints that drive adaptive mutations conventionally misclassified as tumor suppressor loss, with implications for interpreting cancer genomes.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755484v1",
+      "tier": "deep",
+      "why": "Elegant reframing of cancer genetics showing that oncogene-driven dosage constraints can generate heterozygous loss-of-function mutations that mimic tumor-suppressor signatures while marking an essential dependency, with direct implications for how cancer genomes are interpreted."
+    },
+    {
+      "id": "10.64898/2026.09.24.754167",
+      "title": "Pangenome-resolved polymorphic transposable elements reveal human regulatory evolution in action",
+      "authors": [
+        "Jiang, J.",
+        "Zhuo, X.",
+        "Li, R.",
+        "Dong, Z.",
+        "Zhang, W.",
+        "Li, D.",
+        "Macias-Velasco, J.",
+        "Human Pangenome Reference Consortium,",
+        "Wang, T."
+      ],
+      "abstract": "Transposable elements are a major source of gene-regulatory functions. Yet this contribution is understood largely from ancient insertions already fixed in the genome: the successes, seen long after the fact. The polymorphic phase before fixation or loss remains poorly resolved because such alleles could be scored only as present or absent. We resolved segregating transposable-element alleles as sequences, epigenetic states, and transcript components using 231 haplotype-resolved human pangenomes with matched long-read multi-omics. Their origins extend beyond recent transposition; their regulatory consequences depend on methylation and transcript context and are often missed by gene-level analyses; they provide mechanisms at trait-associated loci, while selection favors element presence and absence alike. Regulatory innovation before fixation is therefore not one-way accumulation, but a mixture of gain, remodeling, and loss.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.754167v1",
+      "tier": "deep",
+      "why": "A 231-haplotype pangenome resource resolving segregating transposable-element alleles as sequence, epigenetic state and transcript, revealing regulatory evolution 'in action' before fixation—a major resource for gene-regulatory and population genomics."
+    },
+    {
+      "id": "10.64898/2026.09.29.755502",
+      "title": "CDX2 Drives Divergent Regional Programs During Intestinal Development and Redeploys Them During Regeneration",
+      "authors": [
+        "Lorzadeh, A.",
+        "Ye, G.",
+        "Romero-Wolf, M.",
+        "Quiloan, M. L.",
+        "Sharma, S.",
+        "Sanchez, E.",
+        "Jadhav, U."
+      ],
+      "abstract": "Region-specific transcription factors (TFs) establish small intestinal and colonic identity, yet what activates their region-specific expression during development is unresolved. Moreover, discrete fetal gene sets reactivate during post-injury regeneration, but their full scope, and what reactivates the programs required to restore regional identity and tissue structure, remain unclear. By determining CDX2 and partner TF binding, enhancer activity, and gene expression dynamics across intestinal regions, in stem and differentiating cells, and through development and adult regeneration, here we show that CDX2, despite uniform expression across the fetal and adult intestinal epithelium, organizes a hierarchical enhancer network. This network cooperates with partner factors such as CTCF to establish a shared, plastic fetal enhancer landscape, which resolves into region-specific programs upstream of regional TFs. During regeneration, rather than reactivating a general fetal state, CDX2 selectively rebinds many region-specific and common enhancers for genes associated with fetal cell-motility and tissue-morphogenesis signatures along with a more recently active adult stem-cell program, each deployed across distinct crypt tiers. CDX2 thus functions as a central, context-responsive regulator, deploying fetal, adult stem-cell differentiation, and regenerative programs as tissue context requires.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755502v1",
+      "tier": "deep",
+      "why": "Dissects how a single uniformly-expressed TF (CDX2) builds a hierarchical, region-specific enhancer network during development and redeploys distinct enhancer subsets during regeneration—core gene-regulation/chromatin biology."
+    },
+    {
+      "id": "2609.38908",
+      "title": "CellMSA: Context Modeling for Single-Cell Representation Learning",
+      "authors": [
+        "Suyuan Zhao",
+        "Minghao Liu",
+        "Yizhen Luo",
+        "Zaiqing Nie"
+      ],
+      "abstract": "Single-cell transcriptomics enables profiling of cellular states at unprecedented resolution, but its high dimensionality, sparsity, and technical batch effects pose significant challenges for representation learning. Existing single-cell foundation models typically encode each cell independently or only model cells from the same batch for denoising, thereby underutilizing the rich relational information across batches and cell types to model gene expression patterns. We argue that single-cell models can benefit from more informative cell-context modeling. By comparing consistency and variation across cells, models can capture fine-grained gene-gene dependencies associated with cell states, which are essential for learning high-quality representations. Inspired by the use of multiple sequence alignment (MSA) context in protein modeling, we propose CellMSA, a single-cell representation learning framework that introduces an MSA-inspired inductive bias into transcriptomic modeling. For each target cell, CellMSA retrieves relevant cells from different batches and biologically related cell types as context, and summarizes cross-cell patterns into a context-dependent gene-pair representation. This representation is then injected into a pair-aware target-cell encoder for fine-grained representation learning. We pretrain CellMSA on a large-scale human single-cell corpus of approximately 109 million cell observations, including 65.6 million primary observations. Experiments show that our framework consistently outperforms existing methods across multiple benchmarks. Code is available at the following repository: https://github.com/PharMolix/CellMSA.",
+      "categories": [
+        "q-bio.GN",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2609.38908",
+      "tier": "deep",
+      "why": "Proposes an MSA-inspired cross-cell context modeling architecture for single-cell foundation models trained on ~109M cells, directly addressing batch-effect and representation-learning challenges central to the field."
+    },
+    {
+      "id": "10.64898/2026.09.26.754667",
+      "title": "Accurate and scalable demultiplexing of single-cell RNA sequencing using BEACON",
+      "authors": [
+        "Ji, B. W.",
+        "Lammers, M.",
+        "Houser, A.",
+        "Chan, N.",
+        "Rodriguez, J.",
+        "Chae, H.",
+        "Xiang, C.",
+        "Bui, J.",
+        "Li, H.",
+        "Ji, A."
+      ],
+      "abstract": "Barcode-based multiplexing strategies can significantly increase sample throughput and decrease costs, while mitigating batch effects of single-cell RNA sequencing experiments. However, these approaches can be limited by inaccurate or inefficient demultiplexing, resulting in cell loss and reduced statistical power. Here, we present BEACON, a novel sample demultiplexing method that efficiently learns the background count distribution from data and removes it from individual cells, thereby improving classification accuracy. BEACON outperforms other state-of-the-art methods on multiple human data sets. We apply it to cancer cell line time course experiments in vitro, enabling the identification of genes associated with aggressive tumors in vivo. Finally, we adapt BEACON to multimodal protein-transcriptome profiling, enhancing protein signal recovery to identify a CD161-positive effector memory CD4 T-cell population with a Th17-like phenotype, which we prospectively validate. BEACON can therefore be applied to other droplet-based single-cell sequencing methodologies.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.26.754667v1",
+      "tier": "brief",
+      "why": "A new demultiplexing method (BEACON) that learns background noise distributions to improve scRNA-seq sample classification accuracy, including multimodal protein-transcriptome applications."
+    },
+    {
+      "id": "10.64898/2026.09.25.754372",
+      "title": "ProxiNet transfers spatially learned cellular proximity to dissociated single-cell transcriptomes",
+      "authors": [
+        "Zhan, Y.",
+        "Yan, B.",
+        "Zhang, A.",
+        "Kellis, M.",
+        "Sun, N."
+      ],
+      "abstract": "Spatial transcriptomics reveals cellular organization within intact tissues, whereas dissociated single-cell RNA sequencing provides broad transcriptomic coverage but loses information about cellular proximity and neighborhood structure. Here, we developed ProxiNet, a spatially supervised framework that learns transcriptomic signatures of pairwise cellular proximity from spatial reference datasets and transfers these relationships to dissociated single-cell transcriptomes. ProxiNet predicted cellular proximity across brain regions and spatial technologies, including zero-shot cross-technology transfer, and gradient-based attribution identified genes and broader transcriptional programs associated with proximity predictions. In spatial datasets with known coordinates, ProxiNet-derived cellular neighborhoods recovered reproducible tissue organization and anatomical structure, providing independent spatial validation of the inferred proximity relationships. Applying the spatially calibrated model to dissociated scRNA-seq revealed heterogeneous cellular neighborhoods with distinct cell-type compositions and candidate communication programs. In an Alzheimer dataset, ProxiNet further identified age-associated remodeling of inferred neighborhoods, including an AD-associated neighborhood at 8 months characterized by distinct astrocyte and neuronal transcriptional states and candidate intercellular communication programs. Together, these results establish pairwise cellular proximity as an interpretable and transferable representation for extending spatially learned tissue organization to dissociated single-cell transcriptomes.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.25.754372v1",
+      "tier": "brief",
+      "why": "ProxiNet transfers spatially-learned cell-proximity signatures to dissociated scRNA-seq data, recovering tissue organization and neighborhood structure without spatial coordinates."
+    },
+    {
+      "id": "10.64898/2026.09.24.754260",
+      "title": "CHACAM: a cell-cell interaction-guided hierarchical attention model for high-precision cell identity annotation of scRNA-seq data in early C. elegans embryogenesis",
+      "authors": [
+        "Chen, X.",
+        "Ju, X.",
+        "Murali, M.",
+        "Li, H.",
+        "Chen, M.",
+        "Zhang, M. Q."
+      ],
+      "abstract": "Accurate cell identity annotation is essential for reconstructing cell lineages and gene-regulatory networks in embryogenesis. However, in Caenorhabditis elegans (C. elegans) single-cell RNA-sequencing (scRNA-seq) atlases, closely related sub-lineage cells often have near-identical transcriptomes, leading to merged labels and limiting downstream analyses. We present CHACAM (Cell-Cell Interaction-guided Hierarchical Attention-based Cell Allocation Model), a supervised machine learning framework that integrates gene expression, a curated C. elegans ligand-receptor (L-R) interaction database, and a high-resolution cell contact map to refine cell annotations. CHACAM learns interpretable \"interaction signatures\" that distinguish contacting vs. non-contacting neighbors and applies a triangulation strategy using reference cells to resolve ambiguous sister identities. Applied to the Tintori and Cole-Yanai embryo atlases, CHACAM achieves near-perfect annotation accuracy, resolving longstanding ambiguities of the AB lineage and other lineages. The model also identifies new discriminative marker genes and provides mechanistic hypotheses linking contact-specific signaling to fate specification.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.754260v1",
+      "tier": "brief",
+      "why": "A cell-cell interaction-guided hierarchical attention model resolves ambiguous sister-cell identities in C. elegans scRNA-seq embryo atlases using ligand-receptor and contact-map priors."
+    },
+    {
+      "id": "10.64898/2026.09.24.754263",
+      "title": "CycloCross: Adversarial single-cell RNA-seq data translation across species",
+      "authors": [
+        "Hacquard, O.",
+        "Tokuta, Y.",
+        "Imoto, Y.",
+        "Nakamura, T.",
+        "Deguchi, S.",
+        "Nagano, M.",
+        "Saitou, M.",
+        "Hiraoka, Y."
+      ],
+      "abstract": "Single-cell RNA sequencing (scRNA-seq) has transformed our understanding of cellular heterogeneity, yet most datasets are limited to a handful of model organisms, leaving critical gaps in cross-species biology. Existing computational methods for integrating multi-species scRNA-seq data often rely on one-to-one ortholog mapping, which fails to account for gene duplications, losses, or functional divergences. To address these challenges, we introduce CycloCross, an adversarial method based on the CycleGAN architecture, designed to translate scRNA-seq data between species without requiring a priori gene correspondences. Unlike generative models that synthesize data from noise, CycloCross leverages real data from a source species, enabling more realistic and data-efficient translations. We demonstrate its effectiveness in germ cell development, translating data between mouse, macaque, and human with conserved yet divergent transcriptional programs. CycloCross not only preserves temporal dynamics but also enables interpolation and extrapolation of gene expression at missing time points, offering predictions for experimentally inaccessible states. Furthermore, CycloCross generates biologically plausible samples even with limited data, outperforming traditional generative models.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.754263v1",
+      "tier": "brief",
+      "why": "CycloCross adapts CycleGAN for cross-species scRNA-seq translation without relying on one-to-one orthologs, enabling interpolation of germ-cell developmental states across mouse, macaque and human."
+    },
+    {
+      "id": "10.64898/2026.09.28.755014",
+      "title": "Gene flux shapes diversity and evolution of the ancient 17q21.31 inversion polymorphism",
+      "authors": [
+        "Harringmeyer, O. S.",
+        "Biddanda, A.",
+        "McCoy, R. C.",
+        "Akey, J. M."
+      ],
+      "abstract": "A hallmark of chromosomal inversions is that they suppress recombination between haplotypes, allowing inversion haplotypes to persist as single co-inherited units. To determine the extent to which inversions nevertheless permit genetic exchange, we investigated a common 979-kb inversion polymorphism at the human 17q21.31 locus. This locus exhibits deep divergence between the reference (H1) and inverted (H2) haplotypes, extensive segmental duplications (SDs) flanking the inversion, and association with neurodegenerative diseases, developmental disorders, and fertility-related phenotypes. Using single-cell sperm genome sequencing data, we directly measured recombination rates between H1 and H2 haplotypes and found near-complete suppression of single-crossover events between the haplotypes. The rare single crossovers that did occur were mediated by non-allelic homologous recombination between shared H1 and H2 SDs, generating novel duplication architectures. In contrast, two-switch events consistent with gene conversion or double crossovers, spanning 17-150 kb, occurred throughout the inversion at rates exceeding genome-wide estimates for events of comparable size. Consistent with recurring genetic exchange, we identified 99 distinct H1-H2 recombinant haplotypes segregating in All of Us genomes, including 26 with combinations of H1 and H2 SDs. These recombinant haplotypes facilitated dissection of the inversion's effects on fertility-related phenotypes; using a large parent-embryo dataset, we found that H2 additively increases female crossover rates across chromosomes and that KANSL1 duplications do not explain this effect. Finally, ancestral recombination graphs dated H1-H2 gene flux (the exchange of genetic material between alternative arrangements) to approximately 100-500 thousand years ago, revealing that H1 and H2 haplotypes have co-segregated for at least half a million years. Together, these results demonstrate that inversions can be permeable barriers to recombination, with ongoing gene flux influencing the diversity and evolution of inversion polymorphisms.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.755014v1",
+      "tier": "brief",
+      "why": "Single-cell sperm sequencing reveals that the 17q21.31 inversion polymorphism, long thought to suppress recombination, still permits gene conversion-mediated exchange that has shaped haplotype diversity for half a million years."
+    },
+    {
+      "id": "10.64898/2026.09.29.755499",
+      "title": "Cell-of-origin shapes tumor subtype in BRCA1-associated triple-negative breast cancer",
+      "authors": [
+        "Lev, T.",
+        "Samy, A. L. P. A.",
+        "Mallya, S.",
+        "Adam, I.",
+        "Pueschl, D.",
+        "Ma, D.",
+        "McMullen, T. P.",
+        "Lev, M. S.",
+        "Gonzalez, J. G.",
+        "Longworth, A.",
+        "Nair, A.",
+        "Lu, X.",
+        "Godwin, A. K.",
+        "James, P. A.",
+        "Mai, P. L.",
+        "Offit, K.",
+        "Thorne, H.",
+        "Antoniou, A. C.",
+        "Chenevix-Trench, G.",
+        "Domchek, S. M.",
+        "Chen, X. S.",
+        "Lander, A. D.",
+        "Lowengrub, J.",
+        "Nathanson, K. L.",
+        "Kessenbrock, K.",
+        "Lawson, D. A."
+      ],
+      "abstract": "Pathogenic germline BRCA1 variants greatly increase lifetime breast cancer risk, with no targeted prevention. Accrual of mutations following DNA repair errors in luminal progenitors is considered the chief mechanism of triple-negative breast cancer (TNBC) initiation, which cannot explain the organ specificity nor the phenotypic spectrum of the disease. Here we show that TNBC also originates in basal-myoepithelial cells, and that the cell of origin shapes TNBC subtype through aberrant epithelial differentiation, likely due to pleiotropic role of BRCA1 in regulating hormone signaling. Single-cell RNA sequencing of 67,001 cells from Wap-Cre Brca1/p53 mice and reanalysis of published Blg-Cre data show that aberrant basal-myoepithelial differentiation (Wap-Cre) generates the mesenchymal subtype (TNBC-M) and aberrant luminal differentiation (Blg-Cre) the basal-like subtype (TNBC-BL1). We also show that both subtypes occur at comparable frequency in BRCA1 carriers. Aberrant basal-myoepithelial differentiation precedes tumor formation, and only tumors derived from transplanted basal cells reproduce the basal-containing phenotype of spontaneous tumors. Comparison with a developmental atlas identifies de-differentiation of myoepithelial cells into basal cells lacking myoepithelial markers, a fetal state, whereas experimental metastases shift toward luminal states while retaining a TNBC-M-like transcriptional program. These findings support the inclusion of basal-myoepithelial and luminal cells in targeted prevention strategies for BRCA1 carriers, and adoption of TNBC subtyping for patient stratification and improving outcomes.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755499v1",
+      "tier": "brief",
+      "why": "Shows that BRCA1-associated triple-negative breast cancer subtype is determined by cell-of-origin (basal-myoepithelial vs luminal), reshaping prevention strategy thinking using single-cell atlases."
+    },
+    {
+      "id": "10.64898/2026.09.29.755524",
+      "title": "Stress-recovery dynamics reveal a separatrix in transcriptomic landscapes across organs and aging",
+      "authors": [
+        "Xu, B.",
+        "Ji, S.",
+        "Lin, Z.",
+        "Deng, C.",
+        "Li, L."
+      ],
+      "abstract": "Aging is often characterized statically as molecular profiles, but how these profiles may affect the capacity of systems to respond to the external environment remains elusive. We perturbed young and aged mice via transient sleep deprivation and profiled transcriptomes from six organs immediately after stress and following recovery. The same perturbation induced complex temporal dynamics for each gene in an organ- and age- dependent manner. A shape parameter distinguished genes that recovered toward control expression from those that continued to drift away during recovery. Transcriptomic vector fields were inferred from these transitions using neural ordinary differential equations, revealing distinct stability regimes across organ systems. Interestingly, that of testis from the young mice contained a separatrix bounding the region within which perturbed state can return toward control. These findings establish transient perturbation and recovery as a framework for probing age-dependent transcriptomic stability and identifying boundaries that determine whether a perturbed system can return.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755524v1",
+      "tier": "brief",
+      "why": "Uses neural ODEs on multi-organ transcriptomic stress-recovery time courses to identify a separatrix governing whether aged tissue states can return to baseline, a nice systems-biology application of dynamical systems theory."
+    },
+    {
+      "id": "10.64898/2026.09.17.752359",
+      "title": "A moving target: non-stationary selection governs unsupervised prediction of viral fitness",
+      "authors": [
+        "Aris-Brosou, S.",
+        "Vilain, M."
+      ],
+      "abstract": "Anticipating how mutations change viral fitness is central to genomic surveillance and vaccine design, yet the supervised phenotype data behind the most accurate variant-effect predictors are unavailable for most emerging pathogens. We ask how far label-free scoring can go using only sequences, their evolutionary history, and structure. We assemble a modular, fully unsupervised pipeline that estimates a few interpretable terms (intrinsic replicative fitness, antigenic escape, and realized growth), and that lets each term be produced by more than one estimator, so the estimator itself becomes a testable modeling choice. Benchmarking the intrinsic term on 21 viral deep-mutational-scanning assays from ProteinGym, we find that a 650-million-parameter single-sequence protein language model predicts viral mutational fitness weakly and heterogeneously (mean Spearman 0.15), whereas a trivial site-independent alignment model more than doubles it (0.39, better on 17 of 21 assays), with the largest gains on the antigenic surface proteins where the language model fails. Yet the ordering reverses across 186 non-viral ProteinGym assays, where the language model instead exceeds the alignment model, localizing the weakness to viral families under-represented in the model's training data. Alignment-conditioned language models (MSA Transformer, Tranception) recover this accuracy but do not clearly exceed the simple alignment, so the decisive feature is the family alignment, not model scale or architecture. Our central result is evolutionary. Using dated samples of SARS-CoV-2 spike and influenza H3N2 hemagglutinin, we show that the epoch of the alignment is itself a leading, virus-specific determinant of accuracy. This traces to non-stationary selection: the site-specific amino-acid preferences drift over time, abruptly for spike at the emergence of Omicron and gradually for H3N2 hemagglutinin. A phylogenetic mutation-selection estimator does not match the far cheaper alignment model, falling significantly below it on matched data. Unsupervised viral fitness prediction is, then, as much an evolutionary problem as a modeling one.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.17.752359v1",
+      "tier": "brief",
+      "why": "A careful unsupervised benchmarking study shows that alignment-based models beat protein language models for viral fitness prediction, and traces this to non-stationary selection drifting site preferences over evolutionary time."
+    },
+    {
+      "id": "10.64898/2026.09.30.755330",
+      "title": "Evo 2 as a classification machine: evidence from in-context learning and mechanistic interpretability",
+      "authors": [
+        "Bertolini Agnoletto, L.",
+        "Curion, F.",
+        "Petrillo, M.",
+        "Leoni, G.",
+        "Ronco, M.",
+        "Ruiz Serra, V.",
+        "Consoli, S.",
+        "Ceresa, M."
+      ],
+      "abstract": "In-context learning (iCL) is an emergent capability of Large Language Models (LLMs), allowing them to perform new tasks at inference time using prompt-injected examples. While extensively studied in LLMs, the boundaries of its capabilities and underlying mechanisms remain poorly characterised in genomic Language Models (gLMs). Here, we map the operating regime of Evo 2, a nucleotide-level foundation gLM, across five binary classification tasks spanning biological and artificial sequences. We observe robust iCL on shorter natural sequences (F1=0.902 for miRNA, 0.785 for Toxins), degrading with sequence length, and collapsing at kilobase scale. Strikingly, we find no benefit in model scaling, as the 7B model systematically outperforms the 40B variant. We further find that perplexity, a widely used gLM performance proxy, poorly predicts accuracy. Mechanistic interpretability reconciles these observations: the logit-lens profiling suggests a prediction-generalisation trade-off, while Jacobian Scope indicates models might track prompts' structure rather than the signal-carrying content.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755330v1",
+      "tier": "brief",
+      "why": "Probes in-context learning and mechanistic interpretability of the Evo 2 genomic language model, finding scaling and perplexity are poor predictors of classification performance—useful cautionary methods result."
+    },
+    {
+      "id": "10.64898/2026.09.28.754892",
+      "title": "Gene-family-dependent thermodynamic effects of oncogenic mutations on nucleosome-DNA binding stability: a comparative molecular dynamics study across 22 cancer hotspots",
+      "authors": [
+        "Freudenberger, S.",
+        "Boczko, E.",
+        "Goel, S.",
+        "Maitra, R."
+      ],
+      "abstract": "Oncogenic mutations are known to occur at non-random rates and specific hotspots, yet the structural and thermodynamic factors underlying these hotspots remain poorly understood. This study presents molecular dynamics simulations of 22 cancer hotspots across 10 oncogene families, simulated as histone-DNA complexes. Across 18 of 22 mutations, thermodynamic effects were predominantly localized to within 6 [A] of the DNA-histone interface (mean capture 104%), with van der Waals interactions driving the effect at the thermodynamic extremes, indicating that oncogenic mutations alter nucleosome binding through precise local contact changes rather than global structural rearrangements. Further, analysis revealed a gene-family correlated pattern in thermodynamic stability. RAS family mutations showed a consistent trend toward nucleosome stabilization (mean DeltaDeltaG = -4.82 kcal mol-1), while kinase domain mutations trended toward destabilization (mean DeltaDeltaG = +40.12 kcal mol-1), a difference reaching statistical significance in this exploratory analysis (Mann-Whitney U, p = 0.008). This interface-specific mechanism, combined with the gene-family-correlated thermodynamic pattern, provides a biophysical framework for understanding nucleosome-level contributions to cancer hotspot mutation biology.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754892v1",
+      "tier": "brief",
+      "why": "Molecular dynamics across 22 cancer hotspots reveals gene-family-specific thermodynamic signatures (RAS stabilizing vs kinase destabilizing) at nucleosome-DNA interfaces, linking chromatin biophysics to mutation hotspots."
+    },
+    {
+      "id": "10.64898/2026.09.29.755447",
+      "title": "Pervasive Somatic Mutations in NF1 Drive Cell Type and Spatially Specific Clonal Selection in Neurofibromatosis",
+      "authors": [
+        "Snellings, D. A.",
+        "Essuman, K.",
+        "Finander, B.",
+        "Goodman, E.",
+        "Cambridge, C.",
+        "Buecking, J.",
+        "Chhouk, B.",
+        "Cai, C.",
+        "Sun, L.",
+        "Ghosh, U.",
+        "Miller, M. B.",
+        "Walsh, C. A."
+      ],
+      "abstract": "Tumorigenesis is a multi-step process shaped by the accumulation of somatic driver mutations, but identifying the earliest steps and cell of origin of tumorigenesis remains challenging. Single cell genomics in >1.7 million single cells across donors with the cancer predisposition syndrome neurofibromatosis type 1 (NF-1), shows that somatic 'second-hit' mutations in NF1 are pervasive and show positive clonal selection in oligodendrocytes (OLs) and OL precursor cells (OPCs), but are exceedingly rare in neurons and other lineages. Combined spatial genotyping and transcriptomic analysis enabled dissection of cell autonomous and non-autonomous effects of second-hit mutations including clonal expansion of mutant OPCs with strong bias for cerebral gray matter versus white matter, suggesting that gray matter influences OPC proliferation and differentiation via non-cell autonomous interactions between OPCs and neurons. NF1-null OL lineage cells upregulate CDKN2A–a tumor suppressor frequently lost in NF1-mutant tumors–whereas brain cancers from these same individuals show CDKN2A loss across multiple cancer cell states, suggesting CDKN2A loss in OPCs is a critical step in tumor progression. Our findings reveal developmentally early, exquisitely lineage-specific NF1 somatic mutations in premalignant NF-1 brain, suggest cell autonomous and non-autonomous roles in clonal selection in brain, and suggest that clones harboring cancer driver mutations can persist over a lifetime in phenotypically normal tissues.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755447v1",
+      "tier": "mention",
+      "why": "Single-cell genomics across >1.7M cells shows pervasive, lineage-specific second-hit NF1 mutations in oligodendrocyte lineage cells that clonally expand before overt tumorigenesis."
+    },
+    {
+      "id": "10.64898/2026.09.24.754079",
+      "title": "Bridging the gap between omics and structural data: A framework for interpreting protein-RNA interaction specificity",
+      "authors": [
+        "Fauconnet, Y.",
+        "Deng, S.",
+        "Koundri, R.",
+        "Pagani, M.",
+        "Quignot, C.",
+        "Antonio, D.",
+        "Andreani, J."
+      ],
+      "abstract": "Protein-RNA interactions play a central role in many cellular processes, such as gene regulation, protein synthesis and viral infections. Although a few thousand protein-RNA complexes have been structurally characterized, they represent only a small fraction of all interactions. This lack of experimental data limits the ability of deep-learning based approaches such as AlphaFold3 to predict structures of protein-RNA interactions. In this study, we investigate protein-RNA binding specificity by enriching experimental structures with omics data. To this end, we present a scoring approach and associated web resource quantifying the agreement between experimental structures of protein-RNA interfaces and their omics-derived binding preferences, allowing us to identify interaction motif cores. Through key structural and evolutionary features, we further highlight that these motif cores correspond to important interface regions. We then leverage the dataset of protein-RNA complexes for which structural information can be combined with binding preferences in order to benchmark the ability of AlphaFold3 to predict protein-RNA interaction specificity. To this aim, we run AlphaFold3 predictions using different RNA inputs, from the exact sequence present in the experimental structure to a non-specific sequence, including sequences embedding the consensus binding motif from in vitro experiments. We show that despite good prediction quality, the sensitivity of AlphaFold3 to the exact RNA sequence used as input indicates signs of memorization. We examine some particular complexes and uncover challenges encountered by our scoring workflow and AlphaFold3, especially in the case of alternative binding modes. Altogether, this work evidences both the promise and current limitations of deep learning approaches for protein-RNA structure prediction, and provides a resource to guide their further development.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.24.754079v1",
+      "tier": "mention",
+      "why": "Benchmarks AlphaFold3 against omics-derived binding preferences for protein-RNA interfaces, finding signs of sequence memorization rather than true specificity learning."
+    },
+    {
+      "id": "10.64898/2026.09.28.754967",
+      "title": "Phylodynamic analysis reveals asymmetric and accelerating global spread of dengue virus",
+      "authors": [
+        "Hill, V.",
+        "Dudas, G.",
+        "Ji, X.",
+        "Huits, R.",
+        "Hamer, D. H.",
+        "Joshi, H.-K.",
+        "Porzucek, A. J.",
+        "Lopes, R.",
+        "Robertson, H.",
+        "Whittaker, C. F.",
+        "Kraemer, M. U. G.",
+        "Johansson, M. A.",
+        "Faria, N. R.",
+        "Brady, O.",
+        "Dellicour, S.",
+        "Suchard, M. A.",
+        "Lemey, P.",
+        "Carlson, C. J.",
+        "Baele, G.",
+        "Grubaugh, N. D."
+      ],
+      "abstract": "Dengue virus (DENV) continues to expand globally, with increasing incidence in both endemic and non-endemic countries. Leveraging a large global dataset of DENV genomes starting from the 1940s, we reconstructed global and regional patterns of DENV spread using phylogeographic and phylodynamic methods. Our analyses reveal that the current global diversity of urban DENV originated in Asia in the first half of the 20th century. During the more than 100 years since, we find that the highest density of between-country spread occurs within Asia and the region continues to be a global source, seeding transmission in Africa and the Americas. Global spread is, however, not balanced. Even though there is more travel to South America, we show that DENV lineages primarily enter North America (mostly from South Asia) through a link defined by seasonal synchrony across the Northern Hemisphere. Along with a substantial increase in global travel starting ~2010, the rate of spread to the Americas is increasing, establishing new lineages associated with large recent outbreaks. DENV lineages do not frequently spread back to Asia from the Americas or Africa, and we posit this is due to higher genetic diversity in Asia, leading to stiffer competition for invading lineages. Within the Americas, the network of DENV dispersal initiates in North America, primarily the Caribbean, and then is maintained by major hubs in South America. Overall, we find that travel volume, rather than climate factors, is mostly responsible for long-term patterns of DENV spread globally and within the Americas. Our results highlight key nodes in the global dynamics of DENV lineages, and suggest spread will continue to accelerate in a more connected world.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.754967v1",
+      "tier": "mention",
+      "why": "Large-scale phylodynamic analysis of dengue genomes reveals asymmetric, accelerating global spread driven by travel volume rather than climate."
+    },
+    {
+      "id": "10.64898/2026.09.27.754784",
+      "title": "Whole-genome characterization of Plasmodium falciparum population structure and drug resistance across Uganda and neighboring countries",
+      "authors": [
+        "Kiyaga, S.",
+        "Mbabazi, M.",
+        "Katairo, T.",
+        "Asua, V.",
+        "Semakuba, F. D.",
+        "Nsengimaana, B.",
+        "Tukwasibwe, S.",
+        "Wiringilimaana, I.",
+        "Nakasaanyaa, J.",
+        "Mulondoa, J.",
+        "Watyekele, E.",
+        "Maiteki, C. S.",
+        "Katete, D. P.",
+        "Nabende, J. N.",
+        "Jjingo, D.",
+        "Mboowa, G.",
+        "Batte, C.",
+        "Sam, N.",
+        "Kamya, M. R.",
+        "Agaba, B. B.",
+        "Ssewanyana, I.",
+        "Aranda-Diazi, A.",
+        "Ajogbasile, F. V.",
+        "Davlieva, M.",
+        "Dorsey, G.",
+        "Rosenthal, P. J.",
+        "Conrad, M. D.",
+        "Greenhouse, B.",
+        "Hathaway, N. J.",
+        "Briggs, J."
+      ],
+      "abstract": "Uganda has one of the world's highest malaria burdens, but parasite population structure and connectivity have not been characterized nationally with whole-genome data. We analyzed 249 monoclonal Plasmodium falciparum genomes from 26 sentinel sites across Uganda in 2023 and compared them with publicly available genomes from five neighboring countries. Genetic diversity was high and differentiation low in Uganda, but identity-by-descent detected limited structure. This was most pronounced in the low-transmission southwest, where parasites shared ancestry and recent relatedness with isolates from western Tanzania. Selection scans identified signals at loci associated with resistance to artemisinins and their partner drugs, and to chloroquine and antifolates. The strongest signal was at PfPX1 where the PIN haplotype (L1222P, M1701I, D1705N) reached 70% prevalence nationwide, but selection was carried by PIN haplotypes that had additionally acquired D384A, largely confined to northern and eastern Uganda. A second substitution at the same codon, D384Y, formed a haplotype shared across the Tanzanian border. PfKelch13 variants were partitioned across multiple backgrounds, consistent with repeated independent emergence, and C469Y was enriched on the PfPX1 D384A-PIN background. These genomes provide a 2023 baseline for tracking potential mediators of drug resistance and support coordinated genomic surveillance across Uganda and its neighbors.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.754784v1",
+      "tier": "mention",
+      "why": "National whole-genome survey of Ugandan Plasmodium falciparum reveals emerging multi-drug resistance haplotypes and cross-border parasite connectivity."
+    },
+    {
+      "id": "10.64898/2026.09.27.753494",
+      "title": "Prion-induced heritable states in Caenorhabditis elegans",
+      "authors": [
+        "Ilbay, O.",
+        "Zabinsky, R. A.",
+        "Lozanoski, T.",
+        "Jarosz, D. F.",
+        "Fire, A."
+      ],
+      "abstract": "Self-replicating protein conformations can encode persistent epigenetic states that underlie prion diseases and contribute to age-related neurodegenerative disorders in mammals. In fungi, such conformers are transmitted through mitosis and meiosis, enabling robust inheritance of diverse phenotypes. Whether analogous transgenerational protein-based inheritance extends beyond unicellular systems to metazoans remains unknown. Here, we address this question in C. elegans, a genetically tractable, short-lived animal well suited for tracking the transmission of heritable information across generations. We found that a yeast prion domain, when fused to a host protein, induced a heritable altered state that arose at elevated temperatures and persisted across generations at lower temperatures. The emergence of this state depended on known prionogenic yeast repeats, while the state itself was reversible and behaved semi-dominantly in crosses, consistent with a protein-based epigenetic mechanism. These findings provide direct evidence that protein domains capable of adopting self-replicating conformers can encode heritable information in an animal.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.27.753494v1",
+      "tier": "mention",
+      "why": "Demonstrates that a yeast prion domain can confer heritable, reversible epigenetic states in C. elegans, extending protein-based inheritance beyond unicellular systems."
+    },
+    {
+      "id": "10.64898/2026.09.29.755490",
+      "title": "The Metabolic Organ Clock: A Computable Framework Linking Cell-Lineage Architecture to Emergent Organ Bioenergetics",
+      "authors": [
+        "Martin Sevilla, A.",
+        "Pan, L."
+      ],
+      "abstract": "Cell-type atlases now catalogue hundreds of distinct human cell identities across development, each annotated with mitochondrial abundance, dominant fuel pathway, and lineage of origin, yet no computable model connects the topology of the lineage tree to the metabolic rate the resulting organs display in the adult body. Using a curated 396-node human cell-lineage tree spanning the zygote to terminal somatic identities, we test whether organ-level standard metabolic rate (SMR) is better predicted by developmental time (lineage depth) or by terminal fate identity (anatomical compartment). We find that lineage depth explains essentially none of the variance in a cell's metabolic tier (r = 0.11, R2 approximately 1.2%), whereas compartment identity explains roughly three-quarters of it (approximately 75%), and that the mean mitochondrial volume fraction of an organ's constituent terminal cell types tracks the organ's classical literature-derived SMR with r = 0.90 across five canonical reference-man organ groups. These results motivate a five-layer computable framework: lineage as a formal tree grammar, information-theoretic structure of the tree, metabolic switches as runtime operators, compilation to organ-level energetic networks, and execution as organism-level bioenergetics. We also introduce the metabolic commitment-horizon model: the hypothesis that a cell's metabolic tier is fixed at a discrete lineage-commitment event and thereafter held constant, rather than accumulated continuously with differentiation time. In a worked held-out test (5-fold cross-validation, n = 396), a nearest-commitment-ancestor predictor beat a global-mean null (MAE 0.752 vs 0.809, p = 0.015) but was not significantly better than a lineage-depth regression (delta MAE = -0.042, 95% CI -0.098 to +0.012, p = 0.175), so we report the commitment-horizon model as supported descriptively but not yet discriminated predictively on these data. We connect this within-species result to the classical, cross-species rate-of-living hypothesis, treat insulin resistance as an acquired perturbation of the clock, survey machine-learning and deep-learning tools that could extend the framework on primary single-cell data, and close with eight testable predictions and falsification conditions.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755490v1",
+      "tier": "mention",
+      "why": "Proposes a computable framework linking cell-lineage tree topology to organ-level metabolic rate, finding terminal fate identity (not developmental depth) best predicts bioenergetics."
+    },
+    {
+      "id": "10.64898/2026.09.29.755187",
+      "title": "A genome-scale ORF screen for resilience factors that protect the RPE and restore vision in aged mice",
+      "authors": [
+        "Lu, Y. R. R.",
+        "Shen, H.",
+        "Kajderowicz, K.",
+        "Ai, J.",
+        "Chen-Neumann, Y. H.",
+        "Hu, Y.",
+        "Tyshkovskiy, A.",
+        "Lou, Q.",
+        "Dong, T.",
+        "Grauvogel, L.",
+        "Chen, Z.",
+        "Cameron, J. C.",
+        "Li, X.",
+        "Shirahama, S.",
+        "Bligh, M.",
+        "Hou, S.",
+        "Chin, J.",
+        "Costa, M. W.",
+        "Ryu, J.",
+        "Sharma, R.",
+        "Mann, M.",
+        "Bharti, K.",
+        "Bowes Rickman, C.",
+        "Gladyshev, V. N.",
+        "Gregory-Ksander, M.",
+        "Ksander, B.",
+        "Weissman, J."
+      ],
+      "abstract": "Aging is a complex phenomenon, yet therapeutic discovery has largely relied on testing individual hypothesis-driven targets. Here, we performed a genome-scale open reading frame (ORF) screen for oxidative-stress resistance in retinal pigment epithelium (RPE) cells, which are vulnerable to oxidative damage during aging. The screen identified nine protective ORFs including antioxidant factors and an epithelial-to-mesenchymal transition regulator. Notably, we also identified three factors that reduce transcriptomic age including the cardiac transcription factor NKX2-5. NKX2-5 conferred robust oxidative resilience in vitro and in vivo. Domain dissection revealed that its homeodomain is dispensable for resilience, enabling development of NKX2-5DeltaHD, which retained protective activity without detectable toxicity over 14 months. In middle-aged mice, subretinal NKX2-5DeltaHD restored visual and electrophysiological function, and its systemic delivery improved grip strength and reduced frailty in late-aged mice. These findings highlight the value of unbiased, genome-scale gain-of-function screening, as resilience factors normally expressed in other contexts can be reengineered as potential therapeutics for age-related decline in other tissues.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755187v1",
+      "tier": "mention",
+      "why": "A genome-scale ORF screen identifies NKX2-5 as a reengineerable resilience factor that restores vision and reduces frailty in aged mice."
+    },
+    {
+      "id": "10.64898/2026.09.29.755377",
+      "title": "Reducing growth-medium complexity reveals nutrient-responsive programs in a near-minimal bacterium",
+      "authors": [
+        "Duval, A.",
+        "Gagnon, J.",
+        "Jeanneau, S.",
+        "Matteau, D.",
+        "Jacques, P.-E.",
+        "Rodrigue, S."
+      ],
+      "abstract": "Mesoplasma florum is a fast-growing, near-minimal bacterium and an emerging model for systems and synthetic biology. However, its dependence on complex serum-containing media limits experimental control and complicates the interpretation of cellular phenotypes. Here, we developed CMRL-AT, a serum-free, quasi-defined medium that supports rapid growth comparable to the commonly used ATCC 1161 medium. Despite supporting similar biomass, CMRL-AT profoundly reshaped the M. florum transcriptome, with approximately one-third of the annotated protein-encoding genes being differentially expressed relative to ATCC 1161. These changes revealed distinct physiological programs associated with rapid growth in complex medium and higher nutrient acquisition in CMRL-AT, illustrating how medium composition alters the functional priorities of a near-minimal cell. Transcriptome profiling across six energy sources further uncovered distinct sugar-responsive expression programs. Combining these responses with transcription-unit organization, protein-domain predictions, and metabolic context resolved fructose- and sucrose-responsive modules, and allowed the assignment of previously ambiguous phosphotransferase system components to specific sugar-utilization pathways. CMRL-AT provides an experimental framework to help resolving gene functions, refining metabolic models, and designing reduced genomes adapted to defined environments.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755377v1",
+      "tier": "mention",
+      "why": "A new serum-free defined medium for the near-minimal bacterium Mesoplasma florum reveals substantial nutrient-responsive transcriptional reprogramming useful for systems/synthetic biology."
+    },
+    {
+      "id": "10.64898/2026.09.29.755457",
+      "title": "EsViritu is a sensitive and specific profiler for viral pathogen detection and genome recovery in metagenomes",
+      "authors": [
+        "Tisza, M. J.",
+        "Simar, S. R.",
+        "Zorz, J.",
+        "Javornik Cregeen, S. J.",
+        "Maresso, A. W."
+      ],
+      "abstract": "Metagenomic sequencing allows for detection of any number of pathogenic viruses from a single sample without a priori knowledge of its contents. This has created a substantial opportunity to characterize pathogens in humans and their environment, but the field is held back by a lack of bioinformatics tools for taxonomic profiling and reconstructing virus genomes. The ideal profiler would simultaneously do two things: report viruses at single-read sensitivity so that ultra-low-abundance pathogens are not missed and hold near-perfect specificity so that a pathogen is never falsely reported. Here we present EsViritu, a taxonomic profiler that pairs an iterative greedy clustering algorithm and lowest-common-ancestor taxonomic refinement with a curated Virus Pathogen Database to reconstruct virus genomes and generate virome profiles directly from reads. We benchmarked EsViritu against four leading metagenomic profilers (Kraken2, Centrifuger, Metabuli, and Sylph), running each program across a full parameter sweep and against the same Virus Pathogen Database for an apples-to-apples comparison. Across synthetic positive controls, pathogen-free negative controls, and mutated mock communities, EsViritu was the most accurate tool at reconstructing community composition: it led or tied every tool on relative abundance accuracy at all taxonomic ranks and led or tied on detection across ranks. Importantly, other tools frequently report the presence of multiple related taxa when only reads for a single genome are present, but EsViritu faithfully records the correct, single taxon and genome. EsViritu achieves read-level sensitivity for sequences as low as 85% average nucleotide identity to the nearest reference and reports essentially no false positives in pathogen-free host and synthetic samples. EsViritu also returns reconstructed consensus genomes whose nucleotide identity to the nearest reference closely tracks ground truth, yielding both a profile and genomes from a single run.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755457v1",
+      "tier": "mention",
+      "why": "EsViritu is a new taxonomic profiler for viral metagenomics that outperforms existing tools on sensitivity and specificity for pathogen detection and genome recovery."
+    },
+    {
+      "id": "10.64898/2026.09.28.755039",
+      "title": "digestome: a licence-clean marker-gene panel for functional profiling of anaerobic digestion microbiomes",
+      "authors": [
+        "Päll, T."
+      ],
+      "abstract": "Functional profiling of anaerobic digestion microbiomes is routinely performed against KEGG or MetaCyc, both of which require a paid licence for commercial use. This blocks fee-for-service analysis for biogas operators, the setting where the results have the most immediate operational value. We present digestome, a curated marker-gene panel for anaerobic digestion built exclusively on sources that are free for commercial use (NCBIfam, public domain; Pfam, CC0; Rhea, CC BY), together with a scorer that reports pathway completeness, branch capability and, for hydrolysis, whether the enzyme is built for export. Benchmarked against 1,401 metagenome-assembled genomes from 134 anaerobic digesters, the panel assigned no methanogenesis route to any of 1,361 non-methanogens, and every acetoclastic call fell within Methanosarcina or Methanothrix. The result held for 3,043 species representatives from the Genome Taxonomy Database, spanning 203 phyla, which are built differently from binned metagenomes: the only background genomes given a route were two archaea carrying mcrA, and none of the 90 anaerobic methane and alkane oxidisers was given one. Specificity against non-methanogens does not show that a methanogen gets the right route: with a family-level check, 59 of 156 acetoclastic calls in that sample fell on methylotrophic genera that do not use acetate, and a lineage policy removed them, with 14 more left unconfirmed in unnamed genera. Testing whether a catalytic domain shares a polypeptide with an export module reduced the genomes credited with cellulolytic capacity from 597 to 50.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.28.755039v1",
+      "tier": "mention",
+      "why": "digestome offers a license-free marker-gene panel for functional profiling of anaerobic digestion microbiomes, useful for biogas operators needing open-licence alternatives to KEGG/MetaCyc."
+    }
+  ]
+}
