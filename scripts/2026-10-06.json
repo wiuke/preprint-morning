@@ -1,0 +1,813 @@
+{
+  "date": "2026-10-06",
+  "format": "dialogue",
+  "n_papers": 74,
+  "episode_title": "Methylation-based TF activity, generalizing perturbation prediction, and two cancer spatial atlases",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Good morning, it's October sixth. Across archive and bio-archive, roughly seventy-four new papers landed in systems and computational biology overnight."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Today we've got transcription factor activity inferred from DNA methylation, a serious attempt at generalizing perturbation prediction to truly unseen conditions, scalable Boolean network inference from single-cell data, and two cancer spatial transcriptomics studies, one in a rare sarcoma, one a large ovarian cancer survival cohort."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's get into it. First up is paper one, methylTFR, from Gunduz and colleagues. It's about pulling transcription factor activity out of DNA methylation data instead of the usual RNA-seq or ATAC-seq footprints."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Why methylation specifically? We already have chromatin accessibility as a proxy for TF occupancy."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Methylation is a much more stable, long-lived mark, and it reflects local TF binding history at specific CpGs. The idea is to look across TF binding sites genome-wide and summarize methylation patterns there into one interpretable activity score per factor, rather than reporting thousands of individual CpG values."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So it's basically a dimensionality reduction specific to known motif binding sites, like chrom-VAR but for methylomes instead of accessibility."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly that philosophy. They built it as an R package and tested it on one hundred forty-seven human immune cell methylomes. It picks up cell-type-specific regulators you'd expect, like C-E-B-P and E-T-S family activity in myeloid lineages."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Anything beyond just recovering known biology?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "In C-D-four T cells, the activity scores resolve the naive-to-memory differentiation trajectory and flag A-P-one factors as important for the memory state. That's a continuous trajectory, not just discrete clusters, so the scores carry real quantitative information."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What about single-cell methylomes? Those are famously sparse, you get maybe ten to twenty percent of CpGs covered per cell."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They applied methylTFR there too, then went a step further, combining the methylation-derived activity scores with gene expression and accessibility in joint factor models, giving a shared low-dimensional multimodal view of lineage regulators across all three layers."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the appealing part. Multi-omic integration usually means stitching RNA and ATAC together. Adding methylation as a third, independently informative axis on T-F activity, rather than just as another feature matrix, could make those factor models more identifiable."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And because methylation changes are slower and more hysteretic than accessibility, it might act almost like a memory trace of regulatory history, useful for ordering cells along a differentiation trajectory."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The catch, from the abstract alone, is there's no independent validation against Chip-seq binding or perturbation data here, it's correlative, consistent with known biology but not causally tested."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Fair, but as a scalable screening tool across hundreds of methylomes, and now single-cell ones, it fills a real gap in the multi-omic toolkit."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two is P-I-E, from Verma, Adduri and colleagues including Roohani, in the perturbation prediction space, think Perturb-seq modeling."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The core problem is generalization, training on some combination of cell context and perturbation, then predicting effects on combinations never seen."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the setting that matters if you want a model useful for in-silico screening, not just interpolating within the training distribution. The hard case is when both context and perturbation are new simultaneously."
+    },
+    {
+      "speaker": "Ava",
+      "text": "How do they tackle it differently from, say, GEARS or scGen-style approaches?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They reformulate the target as population-level perturbation effects, differentially expressed genes and the magnitude of expression change per context-perturbation pair, rather than single-cell level outcomes. The architecture takes auxiliary inputs, external biological knowledge, baseline expression of the unperturbed system, and previously observed perturbation responses, so it handles variable feature sets, genes seen or unseen during training."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What's the benchmark?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "The Replogle Nadig dataset, combining large genome-wide crisper perturbation screens. Across every generalization setting, unseen contexts, unseen perturbations, unseen datasets, and the hardest case of jointly unseen context and perturbation, P-I-E comes out ahead on most metrics."
+    },
+    {
+      "speaker": "Ava",
+      "text": "By how much?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "For predicting differentially expressed genes specifically, they report one point two to three point two times the area under the precision-recall curve of the strongest baseline, depending on the setting."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's a meaningful jump, though A-U-P-R-C on D-E gene calling is sensitive to how differential expression itself is defined and thresholded, so I'd want to see it hold up under different D-E conventions."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Also, this is population-averaged effects, so it sidesteps single-cell heterogeneity in response, which is itself biologically interesting, cells within the same perturbation don't all respond identically."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Still, if the goal is virtual screening across cell types and compounds before committing wet-lab resources, a model that degrades gracefully into truly unseen combinations is the practically important benchmark."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Agreed, this feels like one of the more honest attempts at the generalization problem that's been plaguing perturbation modeling."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three, scBOLT, from Roncalli, Remy and Pauleve, is about Boolean network inference from single-cell transcriptomes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Boolean networks being the logical, on-off abstraction of gene regulatory networks, where each gene's state is a function of its regulators, updated at discrete time steps."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Traditionally, building these requires heavy prior knowledge, essentially a pre-specified interaction graph, which limits you to well-studied pathways."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's new here?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They frame model inference as a constraint-satisfaction problem. Single-cell transcriptomes across multiple experimental conditions get converted into Boolean state abstractions and dynamical constraints, basically what logical states are reachable from what, and a synthesis engine searches for networks consistent with those constraints."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The tricky step is always that conversion from continuous expression to discrete Boolean states. How do they handle ambiguity near thresholds, across many conditions at once?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's exactly the bottleneck the abstract targets, calling it semi-automated Boolean constraint engineering, which suggests there's still a human-in-the-loop component for deciding thresholds, rather than something fully push-button."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the payoff?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Mainly scalability, they report inferring Boolean networks with several hundred components within practical runtimes, a substantial jump from typical logical modeling efforts that stay much smaller because the search space explodes combinatorially."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the part that matters for us. Genome-scale regulatory network inference from single-cell data usually means correlation-based methods that ignore dynamics, or small, hand-curated logical models that don't scale. Something data-driven that reaches hundreds of genes is a genuinely useful middle ground."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Especially because Boolean models, unlike correlation networks, let you simulate interventions, force a gene on or off, which ties back to mechanistic systems biology rather than descriptive network maps."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The obvious caveat is Boolean logic is a coarse abstraction, no rates, so it's better for qualitative attractor landscapes than quantitative prediction, a different kind of model than an O-D-E based regulatory model."
+    },
+    {
+      "speaker": "Ava",
+      "text": "True, but for poorly characterized systems without kinetic parameters anyway, qualitative attractor reasoning from single-cell snapshots might be the more honest modeling choice."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four moves to a rarer cancer type, leiomyosarcoma, a soft tissue sarcoma that likes to metastasize to lung and liver, from Kuebler and colleagues."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The reason this is hard to study is right there in the abstract, matched primary and metastatic tissue from the same patient is rare, so we don't actually know much about what changes during metastatic progression in this cancer."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What did they manage to get?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Four matched primary-metastasis pairs, two to lung, two to liver, profiled with single-nucleus RNA-seq from archival F-F-P-E tissue, about forty-nine thousand nuclei, plus imaging-based spatial transcriptomics on an extended tissue microarray cohort, twenty-one patients, sixty-nine tissue cores, over three hundred thousand cells."
+    },
+    {
+      "speaker": "Leo",
+      "text": "F-F-P-E for single-nucleus is notable, that's formalin-fixed paraffin-embedded, the standard clinical preservation method, historically harder to get good R-N-A out of than fresh-frozen tissue."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and because malignant cells in sarcoma lack a clean transcriptomic reference the way epithelial carcinomas have, they identified them computationally, inferring copy number profiles from expression and cross-validating against matched D-N-A methylation arrays, confirming each metastasis was clonally derived from its matched primary."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's the main finding?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Organ context shapes the tumor's transcriptional program. Lung metastases skew toward a stress and hypoxia associated state, liver metastases skew proliferative and matrix-remodeling. A specific stromal population, antigen-presenting cancer-associated fibroblasts, was enriched specifically in metastases, forming a discrete band at the interface between tumor and surrounding organ, confirmed in the larger spatial cohort with a p-value around zero point zero zero one."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That spatial banding is the interesting bit, it says the stroma isn't just along for the ride, it's organized exactly where invasion is presumably happening."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly, and in primary tumors those same fibroblasts are sparse and randomly distributed, so the organization seems metastasis-specific. They also split the malignant compartment into three histomolecular phenotypes, each with a matching immunohistochemistry marker, including one defined by G-P-N-M-B that's potentially a drug target."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The I-H-C correlate is what would let pathologists actually use this without redoing spatial transcriptomics on every tumor. The catch is still just four matched pairs for the discovery part, so the organ-specific programs are suggestive rather than definitive, even with a larger validation cohort."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Fair, but as a reference atlas for a rare, understudied cancer, with a clear computational strategy for calling malignant cells without a clean reference, it's a solid contribution either way."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper five stays in cancer but asks a more statistical question, Khan and colleagues looked at spatial transcriptomics in high-grade serous ovarian carcinoma and what predicts survival."
+    },
+    {
+      "speaker": "Leo",
+      "text": "H-G-S-O-C being the most lethal, most common ovarian cancer subtype, under fifty percent five-year survival, so there's real clinical weight behind finding better prognostic signatures."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Previous bulk transcriptomic work found expression signatures tied to survival, but bulk profiling mixes tumor and microenvironment signal, so you can't tell whether a prognostic gene is really acting in tumor cells or just correlating with how much immune infiltrate happens to be in that sample."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the fix is spatial resolution at single-cell level."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They used Xenium, an imaging-based spatial transcriptomics platform, with a custom four hundred eighty gene panel, across one hundred twenty-two treatment-naive patients. Treatment-naive matters because you're not looking at a tumor already reshaped by chemo."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And they can separate tumor-intrinsic expression from surrounding stroma and immune cells directly, cell by cell."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right. They found sixty-one genes nominally associated with overall survival in tumor cells specifically, and elastic net regression narrowed that to five genes tied to longer survival and nine to shorter survival as a more robust subset."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's the number that actually makes this interesting rather than just another signature paper?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Forty-six of those sixty-one associations dropped below nominal significance when they instead aggregated expression across all cells per patient, essentially simulating what bulk sequencing would have seen. That's a direct demonstration that pooling cell types erases most of the tumor-specific prognostic signal."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a strong argument for single-cell or spatial resolution as necessary, not just nice-to-have, if you're after tumor-cell-intrinsic biomarkers, since bulk averaging dilutes the exact signal you're after with microenvironmental noise."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They also looked at neighboring stroma and immune populations independently, several immune populations tracked with longer survival, two fibroblast populations with shorter survival, and combining tumor-intrinsic and neighborhood features showed survival associations actually depended on what was nearby, not purely additive."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Meaning the same tumor expression pattern could carry different prognostic weight depending on local microenvironment, exactly the context dependence spatial data is positioned to catch."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Pairwise Cox regression showed a lot of that prognostic information overlaps between tumor and microenvironment features, so you don't get fully independent signals to stack. They end with consensus clustering into four patient groups combining both axes, broadly splitting better and worse outcomes."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Reasonable caveats aside about multiple testing with sixty-one nominal associations, this is a rare cohort-scale spatial study, large enough to actually do survival analysis properly rather than just describing a handful of cases."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Quick brief now, paper six, McConnell and colleagues test whether matched H-and-E histology images can improve transcriptomic foundation model representations when used only during training. Across three different foundation models, the histology guidance gave no consistent improvement in transferring cell-type annotations across donors, even though histology alone transferred surprisingly well. The explanation offered is that spot-based spatial transcriptomics embeddings are already low-dimensional and dominated by slide identity, leaving little shared signal between gene expression and morphology to exploit."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven is a nice piece of applied statistics, Tran and Nguyen derive a closed-form formula for how many treated cells you need in a single-cell perturbation screen to reliably estimate the direction of a perturbation's effect in embedding space, not just detect that an effect exists. The key insight is that noise perpendicular to the effect direction, not along it, degrades your angular estimate, and the required cell count diverges below a magnitude floor set purely by control pool size. Across public atlases including Tahoe-100M, they find a majority of conditions are actually control-pool-limited rather than treatment-limited, meaning more vehicle cells, not more treated cells, would help."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight looks at how genetic background changes tumor biology given the identical oncogenic driver, Geng and colleagues compared two mouse strains with the same Neu-driven mammary tumor model. The PWK background accelerates tumor onset, and they show it comes with broad transcriptional reprogramming, redistributed heterochromatin marks like H-three-K-nine and H-four-K-twenty trimethylation, and strain-biased malignant cell states from single-cell multiome profiling. It's a solid demonstration that host genetic variation can rewire the chromatin landscape permissive for tumor development, not just tweak growth rate."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nine, from Chesnelong and colleagues, looks at glioblastoma stem cells and how they enter dormancy. They identify S-A-T-one, a polyamine-catabolism gene, as enriched in quiescent stem cells, and show pharmacologically inducing its enzyme triggers a reversible, chemoprotective growth arrest tied to reduced protein translation and a spike in double-stranded R-N-A that activates antiviral interferon signaling, viral mimicry without a virus. Knocking down the antiviral sensor M-A-V-S partly reverses the arrest, a nice causal link, and single-cell analyses suggest susceptibility depends on each cell's baseline inflammatory tone."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper ten, Ren and colleagues, tackles what they call pharmacodynamic intratumoral heterogeneity, different subclones within the same tumor responding differently to drugs. They link single-cell transcriptomes from over twelve hundred samples across twenty-four cancer types to drug response profiles for over twelve hundred compounds, landing on four hundred twenty-five hub genes, with a deeper multi-omic dive in lung adenocarcinoma. It's a big correlative resource with an accompanying web platform, more hypothesis-generating than mechanistically validated beyond that one case study."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eleven is a methods-relevant evolutionary genetics study, Ruckman and Long ran sixteen generations of selection on fly cuticle color in four populations, then used pooled sequencing to scan for allele frequency shifts. Even though large-effect pigmentation genes are known in Drosophila, the response was diffuse and genome-wide rather than localizing to those genes, and simulations show their design lacked power to detect major-effect loci. There's also a methodological warning, a strong peak on chromosome three-L turned out to be a pool-seq artifact from chorion gene amplification in adult females, a new source of false signal worth remembering if you work with pooled sequencing."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twelve addresses something that quietly affects a lot of microbiome and pathogen genomics work, Götsch and Baumdicker show public prokaryotic genome databases are heavily biased toward oversampled strains of particular interest, and this bias has been getting worse as collections grow. Their method, PhyloThin, uses phylogenetic relationships to estimate effective sample size, finding it's about forty-one percent lower than the raw genome count across four hundred two species in N-C-B-I. Correcting for this reveals more genomic diversity and more undiscovered genes than the raw numbers suggest."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper thirteen is a more conceptual systems biology piece, Millard and Portais formalize what they call the cellular electron economy, a genome-wide, reaction-resolved accounting of how cells generate, transfer, and dispose of electrons during metabolism. They find the carbon source sets the overall ceiling on electron flow, while a cell's capacity to dump electrons to terminal sinks determines where within that range it operates, and this held across five microorganisms with different redox routing strategies. A nice unifying lens if you think about metabolic modeling in redox terms rather than just flux balance on carbon."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper fourteen is a useful methodological caution for aging biomarker work, Che and colleagues stress-test DE-SWAN, a popular method for finding waves of accelerated biomarker change across the lifespan, originally reported as two to three peaks of aging-related change. Through simulation, they show the method is highly sensitive to the age distribution of your sample and the chosen window size, meaning those peaks can appear even with no true underlying acceleration. Worth remembering before citing DE-SWAN-based aging results at face value."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Last brief, paper fifteen, is pure theory from Yu and Sontag on dynamical systems, asking what network motifs are actually necessary for a non-monotonic steady-state response, where output rises then falls as input increases. Incoherent feedforward loops are the usual suspect, but they prove that for general systems you need either an incoherent feedforward loop or some combination of positive and negative feedback. They apply this to signaling pathways, gene regulation, and ecological consumer-resource models, where it gives a new proof of the competitive exclusion principle."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A quick round-up of today's shorter mentions. Kockelbergh and colleagues show how to reconstruct donor genotypes directly from single-cell R-N-A-seq for downstream eQTL and H-L-A-T-C-R work, useful when you only have expression data and no matched genotyping. Han and colleagues propose an explainable version of t-S-N-E for single-cell R-N-A-seq that attributes embedding structure back to cell-level information fusion. Showgan and colleagues describe how the herpesvirus K-S-H-V upregulates a long non-coding R-N-A called PURPL through p-seventy-three to suppress p-fifty-three. Greatens and colleagues deposit a haplotype-phased, chromosome-level genome assembly for the soybean rust pathogen, a resource paper for plant pathology."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Davison and Ward work out identifiability and spectral recovery conditions for community detection when you only have aggregated, not individual-level, relational data, a network statistics problem with potential relevance anywhere you only get coarse interaction data. Huang and colleagues show Notch-one and Notch-two receptors both mediate Jagged-one signaling in sensory development of the mammalian cochlea. Fontaine and Smirnov look at how the choice of metabolic assay coverage changes which pathway disturbances you'd diagnose in metabolic disease. Xiang and colleagues present trFlow, a fast all-atom protein conformational ensemble generator using conditional flow matching. And Bertgren and colleagues evaluate in-context learning and prompting strategies for generating synthetic tabular health data with transformer models."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the rundown for October sixth."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Mostly cancer spatial biology and generalization problems in perturbation modeling today, with a couple of good statistical cautions mixed in. See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.09.29.755279",
+      "title": "methylTFR: Computational quantification of transcription factor activity from DNA methylation",
+      "authors": [
+        "Gunduz, I. B.",
+        "Nitsch, R.",
+        "Murugan, S. K.",
+        "Mueller, F."
+      ],
+      "abstract": "DNA methylation modulates transcription factor (TF) binding, and plays an important role in regulating gene expression. We developed methylTFR, an R package for quantifying TF activity from DNA methylation across TF-binding sites, providing a low-dimensional and interpretable activity profile. Across 147 human immune cell methylomes, methylTFR identified cell-type-specific regulators, including CEBP and ETS family activity in myeloid cells. In CD4+ T cells, TF activity scores resolved the naive-to-memory trajectory and highlighted AP-1 factors as important memory regulators. We applied methylTFR to sparse single-cell methylome data, and we integrated derived activity scores with gene expression and accessibility into joint factor models yielding multimodal views of lineage regulators.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755279v1",
+      "tier": "deep",
+      "why": "methylTFR cleverly infers transcription-factor activity directly from DNA methylation patterns at binding sites, giving an interpretable regulatory readout that scales to sparse single-cell methylomes and resolves known immune/T-cell lineage regulators."
+    },
+    {
+      "id": "10.64898/2026.10.02.756297",
+      "title": "PIE: Generalizing perturbation effects across unseen perturbations, contexts and datasets",
+      "authors": [
+        "Verma, R.",
+        "Adduri, A.",
+        "Bevilacqua, B.",
+        "Eraslan, B.",
+        "Burke, D.",
+        "Goodarzi, H.",
+        "Roohani, Y."
+      ],
+      "abstract": "Predicting cellular response to perturbations is key to understanding biological mechanisms and selecting therapeutic targets. However, generalizing across cellular contexts, perturbations, and experimental datasets remains challenging due to incomplete representations of the system being perturbed and the difficulty of measuring true perturbation effects within that system. We introduce PIE, a model that addresses these limitations by reformulating the learning task around population level perturbation effects and incorporating auxiliary inputs that better characterize the biological system. PIE directly predicts differentially expressed genes and changes in gene expression for each (context, perturbation) pair, using external biological knowledge, baseline gene expression, and observed perturbation responses. Its architecture accommodates input sources with variable feature sets and predicts effects on genes seen and unseen during training. On the Replogle Nadig dataset, PIE achieves state of the art performance on most metrics across all tested generalization settings, including the most challenging setting where both the context and perturbation are unseen during training. For predicting differentially expressed genes, PIE achieves 1.2 to 3.2 times the AUPRC of the strongest baseline in each setting: across unseen contexts, perturbations, experimental datasets, and jointly unseen contexts and perturbations. Overall, PIE provides a framework for generalizing perturbation effects across diverse experimental conditions.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756297v1",
+      "tier": "deep",
+      "why": "PIE reformulates perturbation-response prediction around population-level differential expression with auxiliary biological context, achieving large gains in generalizing to unseen cell contexts, perturbations and datasets—directly relevant to perturbation-seq modeling."
+    },
+    {
+      "id": "10.64898/2026.10.02.756175",
+      "title": "Scalable and semi-automated Boolean network inference from multi-condition single-cell transcriptomes with scBOLT",
+      "authors": [
+        "Roncalli, T.",
+        "Remy, E.",
+        "Pauleve, L."
+      ],
+      "abstract": "Predictive logical models have made substantial contributions to biomedical research by facilitating the identification of regulatory mechanisms driving biological processes. Yet, their construction remains a major bottleneck, as it typically relies on extensive prior knowledge at the genome scale. The emergence of high-throughput omics technologies has opened new opportunities for data-driven logical model construction by providing high-resolution observations of biological states. In parallel, formal constraint-based approaches have emerged, reformulating executable model inference as a constraint-satisfaction problem. However, transforming omics observations into biologically meaningful Boolean state abstractions and dynamical constraints suitable for logical synthesis engines remains challenging, particularly for poorly understood biological systems and multi-condition experimental settings. To address these challenges, we introduce scBOLT, a semi-automated framework for Boolean constraint engineering and logical model inference from multi-condition single-cell transcriptomes. Beyond these methodological contributions, scBOLT substantially improves computational tractability, enabling the inference of Boolean networks comprising several hundred components within practical runtimes.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756175v1",
+      "tier": "deep",
+      "why": "scBOLT turns multi-condition single-cell transcriptomes into tractable Boolean regulatory network inference via constraint-satisfaction, tackling the long-standing bottleneck of data-driven logical model construction at scale."
+    },
+    {
+      "id": "10.64898/2026.10.02.754332",
+      "title": "Matched primary-metastasis single-nucleus and spatial profiling of leiomyosarcoma identifies antigen-presenting fibroblasts at the tumor-organ interface",
+      "authors": [
+        "Kuebler, A.",
+        "Bergmayr, L.",
+        "Knoesel, T.",
+        "Jurmeister, P.",
+        "Zhdanovich, Y.",
+        "Berclaz, L.",
+        "Hendriksen, J.",
+        "Karaoglu, D.",
+        "Zuber, R. L.",
+        "Hoberger, M.",
+        "Di Gioia, D.",
+        "Albertsmeier, M.",
+        "Grube, M.",
+        "Trepel, M.",
+        "Mogler, C.",
+        "Anger, F.",
+        "Fechner, K.",
+        "Keyl, P.",
+        "Froehling, S.",
+        "Klauschen, F.",
+        "Lindner, L. H.",
+        "Burkhard-Meier, A.",
+        "Mock, A."
+      ],
+      "abstract": "Leiomyosarcoma is an aggressive soft tissue sarcoma that metastasizes preferentially to lung and liver. Because matched primary and metastatic specimens are rarely available, the cellular changes that accompany metastatic progression remain poorly defined. Here we combined single-nucleus RNA sequencing of archival FFPE tissue from four matched primary-metastasis pairs (two lung, two liver metastases; 48,941 nuclei) with imaging-based spatial transcriptomics of an extended tissue microarray cohort of 21 patients (69 cores, 313,218 cells). Malignant cells, not assignable from transcriptomic references alone, were defined by inferred copy number profiles that were concordant with matched DNA methylation arrays and confirmed the clonal origin of each metastasis. Malignant metaprograms were organ-associated, with a stress- and hypoxia-associated program enriched in lung metastases and a proliferative, matrix-remodeling program enriched in liver metastases. Antigen-presenting cancer-associated fibroblasts (apCAFs) were enriched in metastases relative to matched primaries. This shift was reproduced in the spatial cohort (p = 0.001), where apCAFs formed a discrete band at the tumor-organ interface between malignant cells and adjacent parenchyma, whereas they were sparse and randomly distributed in primary tumors. Spatial transcriptomics further resolved the malignant compartment into three histomolecular phenotypes: (i) smooth-muscle-like with myxoid features, (ii) GPNMB with anaplastic features, and (iii) PDGFRB with vessel-rich stroma, each with a concordant immunohistochemical (-SMA, GPNMB, PDGFRB) and morphological correlate. Together, our data provide a matched primary-metastasis reference for leiomyosarcoma, identify apCAFs as a spatially organized, metastasis-associated stromal population, and delineate histomolecular phenotypes recognizable by routine immunohistochemistry, including a GPNMB phenotype potentially amenable to GPNMB-directed therapies.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.754332v1",
+      "tier": "deep",
+      "why": "A rare matched primary-metastasis single-nucleus and spatial atlas of leiomyosarcoma reveals organ-specific malignant programs and a spatially organized antigen-presenting fibroblast niche at the tumor-organ interface, directly informing tumor heterogeneity and metastatic evolution questions."
+    },
+    {
+      "id": "10.64898/2026.10.02.755833",
+      "title": "Spatial transcriptomics reveals tumour cell-intrinsic and microenvironmental features associated with survival in high-grade serous ovarian carcinoma",
+      "authors": [
+        "Khan, M. A. A. K.",
+        "Lin, W.",
+        "Denisenko, E.",
+        "Hou, R.",
+        "Bilic, S.",
+        "Yu, Y.",
+        "Huang, Y.",
+        "Liu, P.",
+        "Cohen, P. A.",
+        "Forrest, A. R. R."
+      ],
+      "abstract": "High-grade serous ovarian carcinoma (HGSOC) is the most common form of ovarian carcinoma and accounts for the majority of deaths from the disease, with fewer than half of patients surviving five years after diagnosis. Bulk transcriptomic profiling has identified molecular subtypes and gene-expression signatures associated with shorter or longer survival. However, because bulk profiling measures a composite of tumour and microenvironmental gene expression, the cellular origins of these signatures and their relationship to the tumour microenvironment remain unresolved. To address this, we applied Xenium spatial transcriptomics to treatment-naive HGSOC tumours from 122 patients using a custom 480-gene panel designed to measure tumour-intrinsic gene expression and distinguish immune and stromal cell populations in the surrounding microenvironment. Analysis of tumour-intrinsic gene expression identified 61 genes nominally associated with overall survival, from which Elastic-Net modelling prioritised five genes associated with longer survival and nine associated with shorter survival. Notably, 46 of the 61 associations did not reach the nominal significance threshold when expression was instead aggregated across all cells from the same patients, highlighting how whole-tissue expression can obscure tumour-cell-specific survival associations. Complementary analysis of tumour-proximal cell populations revealed that multiple immune populations were associated with longer survival, whereas two fibroblast populations were associated with shorter survival. Integrating these analyses revealed that survival-associated tumour-intrinsic gene expression was correlated with the abundance of neighbouring immune and stromal populations that were themselves associated with survival. Pairwise Cox regression demonstrated substantial overlap in the prognostic information captured by these features, while analysis of individual gene-cell combinations showed that survival associations differed according to the abundance of neighbouring populations. Consensus clustering further identified four patient groups with distinct combinations of tumour-intrinsic expression and microenvironmental composition, broadly separating patients with longer and shorter survival. Together, this cohort-scale spatial analysis identifies tumour-intrinsic and microenvironmental features associated with HGSOC survival and reveals how their correlated patterns and combined associations relate to patient outcome.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.755833v1",
+      "tier": "deep",
+      "why": "A 122-patient Xenium spatial transcriptomics study of ovarian cancer shows that bulk-profiling masks tumor-cell-intrinsic survival associations and that integrated tumor-microenvironment signatures stratify patient outcome, a strong methodological case for spatial over bulk analysis."
+    },
+    {
+      "id": "10.64898/2026.09.30.755585",
+      "title": "Slide-level batch structure limits histology-guided supervision of transcriptomic foundation models",
+      "authors": [
+        "McConnell, U.",
+        "Nonchev, K.",
+        "Koelzer, V. H.",
+        "Raetsch, G."
+      ],
+      "abstract": "Spatial transcriptomics pairs spatially resolved gene expression with tissue morphology in the same tissue section. Transcriptomic foundation models encode such expression profiles into general-purpose representations, but these representations can retain slide- and cohort-specific variation that obscures biological signal. Here, we test whether matched H\\&E histology can improve these representations as a training-time supervisory signal that is discarded at inference. Across three transcriptomic foundation models, histology-guided supervision provides no consistent aggregate improvement in cross-donor annotation transfer, despite substantially stronger transfer from histology alone. We find that gene-expression embeddings from spot-based spatial transcriptomics are low-dimensional and strongly structured by slide identity, limiting the shared gene–morphology signal available for cross-modal transfer. Guidance benefits some morphologically distinctive classes but reduces held-out gene predictivity broadly across the transcriptome. These results suggest that cross-modal supervision can reorganize information already encoded in a frozen representation but cannot recover information the representation does not retain, highlighting the importance of diagnosing slide-specific structure before applying such supervision. Code availability: https://github.com/ratschlab/vision-guided-transcriptomics-fm-2026",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755585v1",
+      "tier": "brief",
+      "why": "Shows that slide-identity batch structure in spatial transcriptomics confounds histology-guided training of transcriptomic foundation models, a cautionary methods result for anyone building multi-omic representation learners."
+    },
+    {
+      "id": "10.64898/2026.10.02.754788",
+      "title": "How many cells resolve a perturbation direction? A closed-form, control-aware cell quota for single-cell perturbation screens",
+      "authors": [
+        "Tran, L. T. H.",
+        "Nguyen, V. T."
+      ],
+      "abstract": "Single-cell perturbation screens increasingly infer mechanism from the direction of a treatment's displacement in a shared transcriptomic embedding, yet no sample-size rule states how many cells that direction needs. We derive a closed-form, anisotropic cell quota for the treated cells required to hold the angular error of an estimated perturbation direction at a chosen tolerance. Because noise aligned with the effect changes only its length, the quota depends on the noise perpendicular to the effect, on the effect magnitude and on the control-pool size, and it diverges below a magnitude floor set by the control alone. The deterministic core is machine-checked in Lean 4. Across four public atlases (six screens) reprocessed through one embedding, the per-cell noise variance is near 1.0 on chemical and genome-wide genetic platforms. On Tahoe-100M, referenced to its plate-shared DMSO vehicle of about 3,100 cells, 55% of 56,827 conditions are control-pool-limited and only 11% are over-sampled at a 5.7-degree tolerance. Genome-wide CRISPRi knockdowns are instead detection- and depth-limited. A downsample-and-measure test on every atlas recovers the parameter-free angular-error slope. The calculator turns a pilot covariance, an effect magnitude and a control design into a per-condition cell budget and flags conditions that no treated depth can resolve.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.754788v1",
+      "tier": "brief",
+      "why": "Derives a closed-form cell-count quota for resolving perturbation directions in single-cell screens, giving a practical statistical rule for experimental design in perturb-seq studies."
+    },
+    {
+      "id": "10.64898/2026.10.01.755936",
+      "title": "PWK genetic background reprograms heterochromatin and malignant epithelial states in Neu-driven mammary tumors",
+      "authors": [
+        "Geng, R.",
+        "Ray, R. R.",
+        "Jacob, J. B.",
+        "Kidder, B. L."
+      ],
+      "abstract": "Genetic background can alter the latency and behavior of cancers initiated by the same oncogenic driver, but how inherited variation reshapes the regulatory landscape that permits tumor development remains poorly understood. The PWK genetic background accelerates mammary tumor onset in the NeuT model. We compared PWK NeuT and BALB NeuT tumors using tumor-level RNA-seq, histone ChIP-seq, and single-cell multiome profiling. PWK tumors exhibited broad transcriptional reprogramming characterized by reduced immune-associated expression and increased epithelial differentiation and neuronal-like programs. Chromatin remodeling was spatially redistributed rather than uniformly increased or decreased. PWK tumors showed expansion of H3K9me3- and H4K20me3-associated chromatin, while both marks were depleted across many expressed genes and concentrated within selected intergenic and repeat-rich territories, revealing coordinated redistribution of constitutive heterochromatin. Single-cell multiome profiling showed that broad epithelial representation remained similar between strains, yet specific malignant states were strongly strain biased. Integrated RNA and accessibility analyses identified concordant strain-selective regulatory programs and candidate loci, while trajectory analysis revealed distinct epithelial state transitions between PWK NeuT and BALB NeuT tumors. Together, these findings indicate that inherited genetic background reshapes transcriptional programs, heterochromatin organization, and malignant epithelial state trajectories in NeuT mammary tumors, providing a regulatory framework for understanding strain-dependent differences in tumor onset.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.755936v1",
+      "tier": "brief",
+      "why": "Shows that genetic background reshapes heterochromatin organization and malignant cell-state trajectories in a mammary tumor model, linking inherited variation to epigenomic tumor evolution."
+    },
+    {
+      "id": "10.64898/2026.10.01.755088",
+      "title": "Metabolic rewiring induces a viral mimicry-mediated quiescence in glioblastoma",
+      "authors": [
+        "Chesnelong, C.",
+        "Desai, K.",
+        "Charton, C. S.",
+        "Kushida, M.",
+        "Yu, C.",
+        "Guilhamon, P.",
+        "Lee, L.",
+        "Agnihotri, S.",
+        "Dirks, P. B."
+      ],
+      "abstract": "Glioblastoma is a highly aggressive brain tumour driven by therapy-resistant glioblastoma stem cells (GSCs) that switch between dormant and proliferative states through poorly defined programs. In this study, we identify SAT1, encoding the rate-limiting polyamine-catabolic enzyme SSAT1, as enriched in quiescent GSCs, linking metabolic rewiring to dormancy. Pharmacologic induction of SSAT1 with the polyamine analogue N1,N11-Diethylnorspermine (DENSpm) triggers a chemoprotective, reversible growth arrest in patient-derived GSCs, independent of stemness, differentiation or senescence. SAT1-induced dormancy coincides with reduced eIF5A hypusination and global protein translation, and a marked rise in double-stranded RNA that activates type I interferon signalling. Knocking down the mitochondrial antiviral-signalling protein, essential for antiviral innate immunity, partially reverses this growth arrest, establishing viral mimicry as functionally required for dormancy. Single-cell and cohort analyses across GSCs and neural stem cells demonstrate that susceptibility to metabolically induced quiescence is set by an intrinsic inflammatory tone and lysosomal dependency, defining a context-dependent metabolic-immune axis which can be targeted to prevent GBM progression.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.755088v1",
+      "tier": "brief",
+      "why": "Identifies a polyamine-metabolism-driven viral-mimicry program that induces reversible dormancy in glioblastoma stem cells, connecting metabolic rewiring to innate immune signaling and therapy resistance."
+    },
+    {
+      "id": "10.64898/2026.10.01.756124",
+      "title": "Mechanistic Decoding of Pharmacodynamic Intratumoral Heterogeneity: A Pan-Cancer Regulatory Framework",
+      "authors": [
+        "Ren, Z.",
+        "Ren, Y.",
+        "Li, Z.",
+        "Ge, S.",
+        "Xu, Y.",
+        "Xu, H."
+      ],
+      "abstract": "Intratumoral heterogeneity (ITH) drives therapy failure through divergent drug response propensities among coexisting subclones - a phenomenon we term pharmacodynamic intratumoral heterogeneity (PharmITH). While single-cell technologies have catalogued transcriptional heterogeneity, which molecular programs shape differential drug responses remains unresolved. Here we decode PharmITH by linking single-cell transcriptomes from 1,279 samples across 24 cancer types with drug-response profiles for 1,218 compounds. We identify 425 hub genes consistently associated with predicted treatment-response heterogeneity and with potential therapeutic relevance and perform multi-omics network analysis in lung adenocarcinoma (LUAD) integrating transcriptional regulation, somatic mutations, cell-cell communication (CCC), and alternative splicing. This analysis identifies four classes of candidate regulatory associations observed in the LUAD case study: 3 transcription factors establishing pre-existing drug-response programs, 41 genomic alterations amplifying pathway signaling through intermediate networks, 5 ligand-receptor pairs coupling microenvironmental cues to intracellular circuits, and 8 genes producing opposing isoforms via differential splicing. These findings converge on 6 core pathways, revealing that PharmITH arises from tumor-intrinsic mechanisms. Experimental validation and an online platform PharmITH for pan-cancer therapy enable state-resolved drug-response analysis and candidate-gene exploration. This approach transforms ITH from descriptive phenotyping to mechanistic dissection, providing actionable targets to overcome therapy resistance.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.01.756124v1",
+      "tier": "brief",
+      "why": "A pan-cancer multi-omic framework links 425 hub genes and regulatory mechanisms to intratumoral pharmacodynamic heterogeneity, turning descriptive single-cell drug-response heterogeneity into mechanistic, targetable hypotheses."
+    },
+    {
+      "id": "10.64898/2026.09.29.755441",
+      "title": "Selection on cuticle color produces a genome-wide response that does not localize to known major genes in Drosophila",
+      "authors": [
+        "Ruckman, S. N.",
+        "Long, A. D."
+      ],
+      "abstract": "Complex traits are often deemed highly polygenic when a mapping study fails to localize the loci underlying them, but a result that fails to identify major genes can also reflect a lack of power. Cuticle color in Drosophila offers a natural test of this distinction, since genes of large effect segregate in natural populations. We selected for dark and light thoracic trident color for 16 generations in two populations of D. melanogaster and two of D. simulans, then used pooled sequencing to scan each genome for allele-frequency differentiation between selected and control lines. Selection produced a strong, genome-wide shift in allele frequencies in every population, exceeding the expectation under drift. Simulations demonstrate that our design has low power to detect major-effect genes, which may explain why we do not observe peaks localizing to known color genes. We further show that a highly significant peak in each genome, on chromosome 3L, is an artifact of chorion-gene amplification in the pooled adult females. A source of false signal in pool-seq studies that has not been reported before. Cosmopolitan inversions shifted in frequency under selection in the one population that carried them, but direct testing showed they did not inflate genome-wide noise, contradicting a common assumption in the field. Together, these results demonstrate that a diffuse, polygenic-type response can arise from a trait with known large-effect genes, and provide a quantitative account of why an evolve-and-resequence design can fail to localize even a well-characterized genetic architecture.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755441v1",
+      "tier": "brief",
+      "why": "An elegant evolve-and-resequence experiment in Drosophila shows a genome-wide polygenic selection response even for a trait with known major-effect genes, with a cautionary artifact (chorion-gene amplification) relevant to pool-seq methodology."
+    },
+    {
+      "id": "10.64898/2026.09.29.755372",
+      "title": "Hidden but Expanding Sampling Bias Distorts Prokaryotic Genome Collections",
+      "authors": [
+        "Götsch, H.",
+        "Baumdicker, F."
+      ],
+      "abstract": "Public genome collections underpin our understanding of bacterial diversity and the distribution of traits such as antibiotic resistance. Their growing size promises an increasingly complete view of microbial genetic variation. However, these collections combine studies with different sampling priorities, often overrepresenting subgroups of closely related strains of particular interest. The resulting bias reduces effective information, and its consequences for diversity estimates and the value of further sequencing remain insufficiently quantified. Here we show that sampling bias in prokaryotic genome collections is widespread, escalating in recent years, and distorts gene frequency estimates and the representation of genomic diversity. We propose to detect and reduce sampling bias based on phylogenetic relationships compared to expectations under random sampling, which, in contrast to dereplication and data reduction methods, accounts for sample size. Applied to 402 prokaryotic species in the NCBI genome database, our method PhyloThin indicates that the effective number of samples is 41% lower than the actual number. Oversampling varies substantially among species, showing that genome counts alone provide an incomplete measure of how well a species has already been characterized. Accounting for oversampling reveals greater genomic diversity and more genes awaiting discovery than current data suggest and improves gene frequency estimates with implications for pathogen surveillance and the discovery of novel genetic functions.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755372v1",
+      "tier": "brief",
+      "why": "Quantifies pervasive and worsening phylogenetic sampling bias in public prokaryotic genome databases and proposes a correction method, with implications for any comparative genomics or microbiome study relying on these resources."
+    },
+    {
+      "id": "10.64898/2026.10.02.755995",
+      "title": "Organizing principles of the cellular electron economy",
+      "authors": [
+        "Millard, P.",
+        "Portais, J.-C."
+      ],
+      "abstract": "Life runs on electron flow. Cells extract electrons from nutrients and transfer them through metabolism, coupling carbon use to energy conservation, biosynthesis and redox homeostasis. Yet how and even whether electron flow is organized at the system-level across metabolism remain unknown. Here we formalize the concept of the cellular electron economy: a quantitative, genome-wide, reaction-resolved representation of electron generation, transfer and disposal. This electron-centric perspective reveals a quantitative relationship governed by two distinct organizing factors: the carbon source sets the baseline and maximal rate of electron flow, whereas the capacity to dispose of electrons to terminal sinks determines where within this range the system operates. Carbon uptake can even increase as net electron flux falls. This system-level organization is shown to apply to five microorganisms with different intracellular electron routing pathways and predicts graded physiological responses to oxygen supply across carbon sources and respiratory architectures. The cellular electron economy thus links reaction-level redox chemistry to whole-cell metabolic organization and reveals how the same organizing principles govern electron flow across diverse metabolic architectures.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.755995v1",
+      "tier": "brief",
+      "why": "Formalizes a genome-wide 'cellular electron economy' showing that carbon source and electron-sink capacity jointly and separably set metabolic flux, a conceptually clean systems-biology organizing principle validated across five microbes."
+    },
+    {
+      "id": "10.64898/2026.09.29.754760",
+      "title": "DE-SWAN analysis of biomarker trajectories over the life course is highly sensitive to age distribution and model parameterization",
+      "authors": [
+        "Che, A.",
+        "Shah, P.",
+        "Tanner, K. T.",
+        "Cohen, A. A."
+      ],
+      "abstract": "DE-SWAN is a commonly used method to study how large ensembles of omics biomarkers change across the life course. It has been used to demonstrate apparent repeated accelerations and decelerations of aging rates across the life course, including 2-3 peaks of aging-related changes. This result contradicts what is expected based on the demography of aging and known biological mechanisms. Here, we use simulations to study the robustness of DE-SWAN to the age distribution of the study sample and to choice of window size. We show that under many realistic scenarios, DE-SWAN is highly sensitive to factors unrelated to the underlying rates of change in aging biology. This calls into question the results of previous analyses that have attributed DE-SWAN peaks to acceleration and deceleration of aging. We conclude that the method is unreliable for studying rates of change across the life course under most circumstances.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.754760v1",
+      "tier": "brief",
+      "why": "A rigorous simulation study shows the popular DE-SWAN method for detecting aging-rate accelerations is highly sensitive to sample age-distribution and window choice, undermining prior claims of multiple aging 'waves'."
+    },
+    {
+      "id": "2610.04029",
+      "title": "On non-monotonic steady state response curves",
+      "authors": [
+        "Polly Y. Yu",
+        "Eduardo D. Sontag"
+      ],
+      "abstract": "Non-monotonic steady state response curves can readily arise from an incoherent feedforward loop (IFFL), which has also been conjectured to be a necessary mechanism. In a previous work, we showed this conjecture to be false for systems where the control parameter directly influences only one state variable. Here, we extend this result to arbitrary systems. We show that a stable non-monotonic response requires either an IFFL or a combination of positive and negative feedback loops. Finally, we apply our theoretical findings to three network-structured biological contexts: signaling pathways, gene regulation, and ecological consumer-resource models. For the first two contexts, we identify necessary motifs for non-monotonic responses, while for consumer-resource models, we provide an alternative proof of the Competitive Exclusion Principle.",
+      "categories": [
+        "q-bio.QM"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.04029",
+      "tier": "brief",
+      "why": "Proves that stable non-monotonic dose-response curves require either an incoherent feedforward loop or combined positive/negative feedback, refining a long-standing systems-biology conjecture with applications to signaling and gene regulation motifs."
+    },
+    {
+      "id": "10.64898/2026.09.30.755703",
+      "title": "Reconstructing donor genotypes from scRNA-seq for downstream eQTL and HLA-TCR analysis",
+      "authors": [
+        "Kockelbergh, H.",
+        "Astley, J.",
+        "Kichula, K. M.",
+        "Zhang, Z.",
+        "Ng, E. S.",
+        "COvid-19 Multi-omics Blood ATlas (COMBAT) Consortium,",
+        "Dendrou, C. A.",
+        "Chong, A. Y.",
+        "Watson, R. A.",
+        "Fairfax, B. P.",
+        "Knight, J. C.",
+        "Band, G.",
+        "Norman, P. J.",
+        "Carrington, M. N.",
+        "Sansom, S. N.",
+        "Mentzer, A. J.",
+        "Jostins-Dean, L.",
+        "Luo, Y."
+      ],
+      "abstract": "Single-cell eQTL studies can reveal heterogeneous genetic effects on gene expression that vary with cell type, but their wider application has been constrained by the frequent absence of matched genotype data. Here, we present single-cell Transcriptome Allelic Prediction and Association Studies (scTAPAS), a bioinformatic framework for reconstructing donor genotypes directly from single-cell RNA-sequencing reads and downstream genetic analysis. Applying scTAPAS to 5' single-cell RNA-sequencing data from the COVID-19 Multi-omic Blood Atlas (COMBAT), we show that reference-based imputation of sparse RNA-derived genetic information generates genotype dosages sufficiently accurate for association testing. Despite testing only 18.0% of the variants available from conventional array-based genotyping and imputation, scTAPAS recovers 68.6% of cell type-eGene pairs identified using conventional array-based genotypes, with strong concordance in effect sizes. We further show that scTAPAS-derived variants can support imputation of classical HLA alleles and enable HLA-aware QTL analyses, including associations between HLA variation and TCR repertoire at single-cell resolution. Using matched single-cell TCR-sequencing data, we identify CD4+ T cell-specific associations between HLA class II alleles and T-cell receptor (TCR) Va; gene segment usage, highlighting the potential of analyses that complement TCR sequencing at single-cell resolution with HLA types. These results show that genetic information recovered from single-cell RNA sequencing data can support both regulatory and immunogenetic association analyses, expanding the discovery potential of single-cell cohorts for which conventional genotyping or HLA typing is unavailable.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.30.755703v1",
+      "tier": "mention",
+      "why": "scTAPAS reconstructs usable donor genotypes directly from scRNA-seq reads, enabling eQTL and HLA-TCR association analyses without separate genotyping."
+    },
+    {
+      "id": "10.64898/2026.09.29.755455",
+      "title": "Explainable t-SNE for Single-Cell RNA-seq Data Analysis: A Cell-DrivenInformation Fusion Framework",
+      "authors": [
+        "Han, H.",
+        "Zhang, T.",
+        "Niu, L.",
+        "Wang, J.",
+        "Han, F.",
+        "Li, C.",
+        "Li, J.",
+        "Cao, H."
+      ],
+      "abstract": "Single-cell RNA sequencing fundamentally depends on defining cell-to-cell similarity to resolve distinct cell states. However, conventional dimensional-reduction frameworks such as t-SNE and UMAP inherently rely on Euclidean geometry, a construct ill-suited for high-dimensional, sparse count matrices, and produce cluster boundaries that lack biological interpretability. Here, we introduce cell-driven information fusion, an end-to-end framework that constructs cell affinity directly from raw counts by integrating three biological signals: gene detection patterns, expression magnitude of dominant transcripts, and global profile correlation. A sparsity-adaptive operator merges these signals into a unified affinity matrix, while an entry-usage diagnostic traces which biological component governs local cluster boundaries. The framework comprises two complementary implementations: c-TSNE for low-to-moderate sparsity (below 80 percent), which consistently outperforms Euclidean baselines across six benchmarks, and c-UMAP for high-sparsity regimes. Evaluated across 29 datasets and two protocols against 11 baseline methods, c-UMAP achieved the highest mean normalized and adjusted mutual information (NMI and AMI) in every setting, with all improvements remaining significant after Bonferroni correction. Because a single fixed weight vector was applied across all 29 datasets per protocol, these gains reflect intrinsic algorithmic robustness rather than dataset-specific hyperparameter tuning. Furthermore, c-UMAP scales seamlessly to 1.14 million cells, running up to 22-fold faster than the leading baseline. Crucially, by operating directly on raw counts without variance-based gene selection, our approach avoids the median 46.9 percent loss of top differentially expressed genes per cell class, preserving essential lineage markers such as IAPP and FOXP3. Together, these results demonstrate that atlas-scale efficiency, raw-data preservation, and mechanistic interpretability are fully compatible.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755455v1",
+      "tier": "mention",
+      "why": "A non-Euclidean, count-aware affinity framework (c-TSNE/c-UMAP) improves scRNA-seq embedding quality and scales to over a million cells while better preserving lineage marker genes."
+    },
+    {
+      "id": "10.64898/2026.10.02.755609",
+      "title": "KSHV upregulates the long non-coding RNA PURPL via p73 to suppress p53",
+      "authors": [
+        "Showgan, S.",
+        "Meary, D.",
+        "Journo, G.",
+        "Gurevich, V.",
+        "Shamay, M."
+      ],
+      "abstract": "Long non-coding RNAs (lncRNAs) are a class of regulatory RNAs with lengths exceeding 200 nucleotides. The lncRNA PURPL (p53 upregulated regulator of p53 levels) is a p53-regulated gene. PURPL is an oncogenic lncRNA that represses p53 function; it is upregulated in many tumors and promotes cancer cell proliferation. Kaposi sarcoma-associated herpesvirus (KSHV) is the causative agent of all forms of Kaposi sarcoma (KS) and is tightly associated with primary effusion lymphoma (PEL). We found upregulation of PURPL in both de novo and chronically KSHV-infected cells. We found that p73 (a p53 homolog) associates with the PURPL promoter and upregulates PURPL expression. Previously, it has been shown that KSHV-encoded latency-associated nuclear antigen (LANA) stabilizes p73. We found that ectopic expression of LANA increased both p73 protein levels and PURPL expression. p73 knockdown abrogates PURPL upregulation following KSHV infection. Antisense oligonucleotides (ASO) targeting PURPL reduced PEL cell proliferation and increased acetylated p53 levels. In contrast to p53, p73 is not repressed by PURPL RNA. In summary, our study reveals how an oncogenic virus can utilize p73 to upregulate the oncogenic lncRNA PURPL as an additional way to repress p53. Moreover, we propose another mechanism by which p73 may promote tumor growth.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.755609v1",
+      "tier": "mention",
+      "why": "KSHV hijacks p73 to upregulate the oncogenic lncRNA PURPL as a new mechanism for viral suppression of p53 in Kaposi sarcoma-associated lymphoma."
+    },
+    {
+      "id": "10.64898/2026.09.29.755439",
+      "title": "Haplotype-phased, chromosome-level, annotated genome assembly of the soybean rust pathogen Phakopsora pachyrhizi",
+      "authors": [
+        "Greatens, N. F.",
+        "Elmore, M. G.",
+        "Ramachandran, S. R.",
+        "Wright, A.",
+        "Tallon, L. J.",
+        "Whitham, S. A.",
+        "Koch Bach, R. A.",
+        "Pedley, K. F."
+      ],
+      "abstract": "Phakopsora pachyrhizi, the causal agent of soybean rust, is among the most aggressive and economically impactful pathogens affecting soybean (Glycine max) production worldwide. As a dikaryotic rust fungus, P. pachyrhizi maintains its genetic information as two discrete haplotypes that are sequestered within separate nuclei for most of its life cycle as it reproduces asexually via the production of infectious urediniospores. Previous genomes of three P. pachyrhizi isolates collected in South America revealed a large genome with a high transposable element content, measuring up to 1.25 Gb and 93%, respectively. Although these efforts provided valuable foundational resources, the complexity of the genome resulted in highly fragmented assemblies. Here, we generated a highly contiguous, substantially improved, annotated genome resource from the P. pachyrhizi isolate LA04-1, collected during the initial outbreak of soybean rust in the continental United States in 2004. The assembly is haplotype-phased, with each haplotype assembled into 18 chromosomes totaling 572 Mb and 569 Mb in size. The isolate contains unique mating-type genes and does not share haplotype genomes with any available isolates with whole-genome sequencing datasets. This resource will be valuable to future investigations into the underlying mechanisms of virulence in this important plant pathogen.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.755439v1",
+      "tier": "mention",
+      "why": "A new haplotype-phased, chromosome-level genome assembly of the soybean rust fungus provides a major resource for studying this devastating crop pathogen's biology and virulence."
+    },
+    {
+      "id": "2610.03937",
+      "title": "Community Detection from Aggregated Relational Data: Identifiability and Spectral Recovery",
+      "authors": [
+        "Andrew Davison",
+        "Owen G. Ward"
+      ],
+      "abstract": "Aggregated relational data replaces a fully observed network with a compressed version, where survey respondents are asked questions such as ``How many of your friends belong to group G?''. We consequently only observe a matrix R = OA of the adjacency matrix A with a fixed design O. In this paper we understand the effects of this compression on community detection under degree-corrected stochastic block models. First, we give guarantees for when it is possible to recover the full network parameters, and then only just the communities under conditions on a diagonal corrected version of \\mathbbE[R], which can be used to inform experimental design. Secondly, we show that spectral clustering with single linkage exactly recovers communities when n\\rhon\\gtrsim K2+K\\log n when there are K balanced communities under ``uniformly spread'' or near-orthogonal designs, and characterize more generally how the design influences rates of convergence. We also introduce second-order ``friends-of-friends'' queries and develop the corresponding theory.",
+      "categories": [
+        "stat.ME",
+        "stat.AP"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.03937",
+      "tier": "mention",
+      "why": "Establishes identifiability and spectral-recovery guarantees for community detection from compressed 'aggregated relational data' network surveys, relevant to network inference methodology generally."
+    },
+    {
+      "id": "10.64898/2026.10.03.756416",
+      "title": "Notch1 and Notch2 receptors mediate the prosensory functions of the Notch ligand Jagged1 in the mammalian cochlea",
+      "authors": [
+        "Huang, H.",
+        "Li, X.",
+        "Venhaus, E.",
+        "Doetzlhofer, A."
+      ],
+      "abstract": "Mechanosensory hair cells in the cochlea of the inner ear are essential for sound detection. Previous studies have shown that loss of the Notch ligand Jagged1 (JAG1) disrupts maintenance of prosensory progenitors, from which hair cells and their surrounding supporting cells derive. However, the molecular and cellular mechanisms by which JAG1 regulates prosensory progenitor maintenance are poorly understood, and the Notch receptors that mediate this function in the developing cochlea remain unknown. To address this, we generated Jag1 conditional knockout mice and characterized their prosensory deficits using transcriptomic and phenotypic analyses. We show that JAG1 loss abolishes prosensory expression of CDKN1B (p27Kip1) and reduces expression of essential neurotrophic factors, thereby disrupting the stereotyped pattern of cell-cycle exit and innervation within the prosensory domain. Furthermore, conditional knockout of Notch1 and Notch2 (Notch1/2) receptors in supporting cells phenocopied the Jag1 deletion phenotype, showing both a severe reduction in outer hair cell formation and a disrupted pattern of cell-cycle exit and innervation, thereby confirming their essential roles in mediating the prosensory functions of JAG1.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756416v1",
+      "tier": "mention",
+      "why": "Notch1/Notch2 receptors are shown to mediate Jagged1's role in maintaining cochlear prosensory progenitors, clarifying a developmental signaling mechanism behind hair-cell formation."
+    },
+    {
+      "id": "10.64898/2026.10.03.756464",
+      "title": "Assay coverage reshapes metabolic diagnosis and the interpretation of pathway disturbance",
+      "authors": [
+        "Fontaine, C.",
+        "Smirnov, I."
+      ],
+      "abstract": "Metabolic profiles are used to quantify disturbance, classify disease and infer biochemical function, yet these endpoints retain different information. We combine secondary analysis of 386 metabolites in six Arabidopsis thaliana mutation accumulation lines, known-disease classification in 129 public human metabolic-disease profiles, and an analytically solvable kinetic model. A conditional occupancy model separates annotation-bin breadth from hit count and measured bin sizes: the plant low-versus-high fitness comparison changes from a two-sided exact permutation p = 0.10 to p = 0.30 after calibration. Unsigned metabolite profiles achieve mean macro recall of 0.911 and 0.895 in separate EDTA and heparin subsets, compared with 0.624 and 0.382 for a burden baseline. However, controlled loss of 50% of held-out measurements reverses representation ranking in heparin, giving signed profiles a recall advantage of 0.108 with a conditional bootstrap interval of 0.063-0.155. A spectral decomposition identifies the within-pathway contrasts attenuated by smoothing. The kinetic model then shows that lower concentration and faster relaxation can coexist with reduced desired product flux, while a null-space criterion states when observations identify a metabolic task. The results connect assay coverage, diagnostic information and functional identifiability. Human performance is internally validated, and the kinetic predictions remain uncalibrated to patients.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756464v1",
+      "tier": "mention",
+      "why": "A new humanized mouse model of the ARMS2 A69S AMD risk variant links it to retinal mitochondrial dysfunction, providing the first in vivo platform for a gene previously untestable in rodents."
+    },
+    {
+      "id": "10.64898/2026.10.03.756422",
+      "title": "trFlow: ultrafast all-atom protein conformational ensemble generation via conditional flow matching",
+      "authors": [
+        "Xiang, C.",
+        "Zhao, K.",
+        "Peng, Z.",
+        "Wang, W.",
+        "Yang, J."
+      ],
+      "abstract": "Generating diverse, all-atom protein conformations remains challenging, especially for recovering alternative functional states and modeling conformational ensembles. We present trFlow, an ultrafast approach for generating all-atom conformations using geometry-guided flow matching. trFlow leverages three core innovations: (1) a hybrid single- and multi-step sampling scheme that balances accuracy and speed; (2) a decoupled representation-generation architecture that maximizes computational efficiency; and (3) fine-tuning on NMR ensembles to better capture conformational heterogeneity. Extensive benchmarking across dual-conformation proteins, NMR ensembles, and a CASP16 dynamic target shows that trFlow outperforms competing methods in recovering challenging states and reproducing experimental heterogeneity, while being an order of magnitude faster than existing all-atom approaches. These results establish trFlow as a practical and scalable framework for large-scale generation of all-atom conformational ensembles.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.03.756422v1",
+      "tier": "mention",
+      "why": "trFlow generates all-atom protein conformational ensembles via flow matching an order of magnitude faster than existing methods, useful for structural systems-biology applications."
+    },
+    {
+      "id": "10.64898/2026.09.29.754354",
+      "title": "Evaluating in-context learning with prompting regimes for transformer-based synthetic health tabular data generation",
+      "authors": [
+        "Bertgren, A.",
+        "Ohberg, F.",
+        "Soda, P.",
+        "Naslund, U.",
+        "Wennberg, P.",
+        "Gronlund, C."
+      ],
+      "abstract": "Tabular synthetic data generation (SDG) can facilitate research and development in the health domain, as access to health data is restricted. To accommodate for its structural complexity, such as multimodal distributions and fragmentation, transformer models provides an alternative to conventional SDG methods since they are better equipped to infer global spatial coherence due to textual context of tabular records. However, methods for optimising their adaption to tabular SDG are still largely unexplored. We contribute to the understanding of transformer-based SDG by evaluating fidelity and privacy of three prompting regimes, zero shot, one shot and few shot training, for tabular health SDG using small transformer models. We evaluated llama 3.2 (1B and 3B parameters) and Phi (1.3B and 2.7B parameters), on a real clinical dataset. Our results showed that zero shot learning was less prone to hallucinations and performed overall better for fidelity, but at the loss of privacy in comparison to the other regimes. Our results showed no differences between model sizes and families. Future studies should extend the analysis to other models and datasets, and explore strategies to reduce hallucinations.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.09.29.754354v1",
+      "tier": "mention",
+      "why": "Benchmarks prompting strategies for transformer-based synthetic health tabular data generation, finding zero-shot learning trades privacy for fidelity with no model-size effect."
+    }
+  ]
+}

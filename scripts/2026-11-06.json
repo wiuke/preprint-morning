@@ -1,0 +1,831 @@
+{
+  "date": "2026-11-06",
+  "format": "dialogue",
+  "n_papers": 68,
+  "episode_title": "Sequence-grounded single-cell regulation, Hippo signaling in endothelial fate, and a reckoning for composition tests",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Morning Leo. It's November sixth, and across archive and bio archive today we're looking at roughly sixty eight new preprints."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Busy one. Where do we start?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Five deep dives. A sequence-grounded foundation model for single-cell gene regulation, a CRISPR screen that finds Hippo signaling sitting upstream of endothelial fate, a quantitative model of why bacteria regulate antibiotic resistance the way they do, a sobering benchmark of composition tests for population-scale single-cell data, and a simulator for benchmarking spatial transcriptomics methods in tumors. Plus a pile of briefs and quick mentions after that."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Let's get into it. Paper one, MUSS."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, this is from the Lotfollahi lab and collaborators. The pitch is that there are two families of single-cell regulation models, and both are missing something. Sequence-based models, the enformer-style architectures, read DNA and learn regulatory grammar, but they're blind to which cell type they're in. Single-cell omics models go the other way, they represent genes and peaks as fixed tokens from a vocabulary, with cell-level resolution but no actual DNA sequence underneath."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So MUSS tries to have both. How does it actually wire sequence into a cell-resolved model?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They take a frozen, pre-trained sequence encoder and use it to get representations for each accessible peak and each gene directly from DNA. Those get integrated through peak-to-peak self-attention, so peaks can inform each other, plus distance-biased peak-to-gene interactions, so a peak's influence on a gene is weighted by genomic distance, which is a sensible prior for enhancer action."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the cell-type specificity comes from training, not architecture."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly. They first do peak masked language modeling, then train on paired single-cell ATAC-seq and RNA-seq so the sequence-derived representations get aligned to actual cell-specific regulatory states. They test it on gene expression prediction, enhancer-gene linking, motif-guided regulatory prioritization, and zero-shot cell clustering, and report it beating both sequence-only and omics-only baselines across these."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's the part that would actually convince a skeptic this is more than a bigger model with more inputs?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Probably the generalization claim: it predicts expression for genes and peaks it never saw during task-specific training, which you can't do if you're just memorizing a fixed gene vocabulary. That's the whole argument for grounding in sequence in the first place."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth flagging as commentary, not from the abstract, that frozen pre-trained encoders plus a thin cell-specific head is becoming the default recipe across genomics foundation models. The interesting open question is always whether the frozen backbone is actually doing the regulatory reasoning or just giving you a decent k-mer embedding."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Fair. Code and checkpoints are up on GitHub if you want to poke at that yourself."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two is the one I was most excited about this morning. Endothelial differentiation and Hippo signaling."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is a big functional genomics effort. The core question is the classic developmental biology one: at a branch point, which regulators push a stem cell one way or the other, and when exactly do they act."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And they built new tooling to get at it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, they introduce circular capture Perturb-seq, CC-Perturb-seq, which fixes a practical problem: when you do CRISPR perturbations with single-cell RNA-seq readout using split-pool combinatorial indexing, guide RNA detection is usually the bottleneck. Their circular capture approach improves that, which lets them scale up the number of candidate regulators they can screen at once."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's the system and what did the screen find?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Human pluripotent stem cells differentiating into arterial endothelial cells. They tracked gene programs across three stages of differentiation and identified one hundred seventy four regulators that promote or inhibit endothelial fate, with the added value of knowing when in the trajectory each one acts, not just whether it matters."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the headline finding is Hippo pathway, which is usually talked about in the context of organ size control and mechanotransduction, not vascular specification."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, that's the surprise. During lateral mesoderm differentiation, Hippo mechanosignaling turns out to be required to switch on ETV2, which is the master transcription factor for endothelial identity. If you inhibit Hippo, ETV2 fails to turn on even when VEGF is present, and progenitors drift toward a mesenchymal fate instead."
+    },
+    {
+      "speaker": "Leo",
+      "text": "VEGF is usually the thing you'd expect to be sufficient for endothelial commitment, so that's a genuinely new dependency. Did they check it outside a dish?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, in developing zebrafish embryos, Hippo signaling was also required for maximal etv2 expression, so it's not just a cell-culture artifact. And going the other direction, pharmacologically activating Hippo signaling increased the purity of both arterial and venous endothelial differentiation in vitro."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That last part has an immediate practical payoff for anyone running stem-cell differentiation protocols, you could potentially use a Hippo-activating compound to clean up your endothelial yield. The broader point, and this is my own framing, is that this paper is really a template: genome-wide perturbation plus single-cell readout plus gene-program inference as a generalizable platform for mapping any branching decision in development, not just this one."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Which is exactly how they frame it too."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper three is a theory piece, Geng and Schultz on antibiotic resistance regulatory architecture. This is the kind of quantitative systems biology you'll appreciate given the physics background."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What's the question they're actually optimizing?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Bacteria face a timing trade-off with antibiotic resistance: turn resistance genes on too slowly and the drug accumulates and kills you, but express them all the time and you pay a constant fitness cost even when there's no drug around. The regulatory architecture, meaning which promoters and operators control which genes, determines how that trade-off gets resolved."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And they model this explicitly?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Yes. A dynamical model where a transcriptional repressor senses the drug and controls a resistance protein, coupled to how the drug affects cell growth and gene expression. They define a cost function weighing the burdens over the course of a response, then do in silico optimization of regulatory parameters for three architectures of increasing complexity: constitutive resistance expression, repression by a constitutively expressed repressor, and repression by a self-regulated repressor, meaning the repressor represses its own gene too."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What determines which architecture wins?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Strong, reliably present drug exposure favors just expressing resistance constitutively, no regulation needed. High cost of basal expression favors a simple constitutive repressor. Self-regulation of the repressor only becomes favorable when you need protection during exposure while also strongly restraining overexpression, which is a narrower regime."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the stochastic simulations add what exactly?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They show self-regulation specifically protects against noise in repressor levels, the kind of fluctuation that would otherwise cause premature induction of resistance before the drug even shows up, or failed induction right when you need it. So negative autoregulation isn't just a noise-suppression trick in the abstract sense we usually teach, here it's tied to a specific environmental statistic, how fluctuating versus sustained the drug exposure is."
+    },
+    {
+      "speaker": "Ava",
+      "text": "It's a nice example of linking environmental dynamics directly to the evolution of a regulatory motif, rather than treating motifs like negative autoregulation as generically good."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four is less fun and more necessary. Differential composition analysis benchmarking."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This is the problem of testing whether cell-type proportions differ between conditions in population-scale single-cell RNA-seq, so dozens to thousands of individuals, not just a handful of samples."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Why is this hard statistically? It sounds like it should just be a proportions test."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Because cell counts per sample are compositional, they sum to a fixed total so changes in one cell type mechanically affect the apparent abundance of others, plus you get lots of zeros for rare cell types, overdispersion relative to what a simple multinomial would predict, and confounding from technical and biological covariates like sequencing depth or age. It's basically the microbiome differential abundance problem again, with the same statistical headaches."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And apparently nobody had systematically checked which of the dozen or so existing methods actually handles this correctly."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, that's the gap they fill. They benchmark twelve methods on three real population-scale datasets, plus permutation and simulation experiments built from those real datasets to get at false discovery control specifically."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the result is not reassuring, going by the abstract."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Low agreement across methods on the real data, meaning different tools often don't even agree on which cell types changed, and most methods show excessive false discoveries under permutation and simulation, so their nominal p-values are not to be trusted at face value."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Was there a method that actually came out looking solid?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "LOCOM comes out on top, controlling false discovery rate while keeping reasonable power, with ANCOM-BC and a straightforward linear regression on centered log ratio transformed proportions as the next best options. If you've been running whatever composition test ships with your single-cell pipeline without checking its calibration, this is the paper to go read before your next cohort analysis."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Good one to actually bookmark, not just listen to. Paper five, OncoSpot."
+    },
+    {
+      "speaker": "Ava",
+      "text": "This tackles a different kind of evaluation problem: how do you benchmark methods that infer clonal architecture from spatial transcriptomics when real tumors never come with ground truth for copy number alterations, subclone identity, or how much of a spot is actually malignant tissue."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So they built a simulator instead."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A cancer-aware one, for Visium-style spot-based spatial data specifically. It layers a spatial evolutionary scaffold from an existing tool called DEMON, copy number alterations generated along that clonal phylogeny using CNAsim, cancer-type-specific transcriptional programs, and spatially clustered normal cell types, then aggregates simulated cells into spots with fully known malignant fraction, subclone identity, and copy number profile."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Which cancers did they simulate, and does the simulator itself hold up?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "High-grade serous ovarian carcinoma, colorectal cancer, and hepatocellular carcinoma, chosen because they represent genuinely distinct modes of tumor evolution. Simulated subclones were more spatially clustered and showed stronger agreement between physical space and phylogenetic distance than an existing simulator, scCube, under matched subclone numbers, which is a reasonable sanity check that the spatial structure isn't arbitrary."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And then they used it to stress-test real methods."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They benchmarked CopyKAT, CancerFinder, Clonalscope, and RCTD, and performance turned out to be cancer-dependent: Clonalscope was better at recovering copy number signal in ovarian and colorectal cancer, CopyKAT did better in hepatocellular carcinoma, which they trace to differences between each method's assumptions and the actual copy number landscape of each cancer type."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Any actual bugs caught, not just relative performance differences?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, that's the nice payoff of having ground truth. They found a failure mode in Clonalscope where tumor and normal spot labels got inverted, and because they know the true labels, they could trace exactly why that happened. That's the kind of error you'd never catch with real data, because you'd have no way to know the labels were flipped in the first place."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A solid argument for simulators as diagnostic tools, not just performance leaderboards. Let's move to the briefs."
+    },
+    {
+      "speaker": "Ava",
+      "text": "First up, paper six, on reliability of foundation-model perturbation predictors like STATE. They find the decoder's first attention layer effectively has a low-rank bottleneck, and they show that how far a predicted perturbation response sits from anything seen in training strongly predicts how trustworthy that particular prediction is. The useful bit is a confidence score built from this distance that transfers across different encoders, cell lines, and even drug perturbations, which matters if you're using these models to prioritize real experiments rather than just reporting average accuracy."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper seven looks at natural variation in C. elegans embryonic lineages using a label-free deep learning lineage tracer called embGAN, across seventy eight embryos and eight genetic backgrounds. The finding is that cell-cycle timing differs reproducibly between strains, but unlike species-level differences which tend to be a global rescaling of developmental tempo, these within-species differences are localized to specific divisions and track with cell fate. A nice reminder that even the textbook invariant lineage of this worm sits on a genotype-specific landscape underneath."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eight is a colorectal cancer methylation study across over a thousand multiregional tumor samples. Most strongly methylation-linked genes fit the familiar story of promoter hypermethylation silencing genes in CIMP tumors, but they also find two separate hypomethylation-driven subgroups, marked by APOLD1 and ELF5 overexpression, tied to stem-like states, with APOLD1 tumors more proliferative and ELF5 tumors slower-growing with better early-stage survival. ELF5 metastases also showed sensitivity to PI3K mTOR inhibition in ex vivo organoid testing."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper nine proposes a latent cell-state model for trajectory reconstruction from single-cell RNA-seq, treating cell-state transitions as a Markov chain so you can infer gene expression at timepoints you never actually sampled. It's addressing the fundamental destructive-sampling problem in scRNA-seq, where you can never follow the same cell across its whole trajectory, by learning a hidden state that's explicitly separate from the observed expression snapshot."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten refines kinase activity inference from phosphoproteomics. The Kinase Library resource expands candidate substrates based on sequence specificity, but broadly expanding substrate sets this way, while covering more kinases, actually hurts discrimination and directional accuracy when benchmarked against two hundred twenty two perturbation phosphoproteomic samples. Filtering those expanded substrate sets using real protein-protein association evidence fixes a lot of that, and extends usable inference to two hundred kinases that curated databases don't cover, many of them so-called dark kinases that are understudied."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven, MorphoProt, predicts spatial protein abundance from RNA expression plus histology images, using RNA-guided attention over multiple zoom levels of the tissue image. Tested on tonsil, spleen, and liver, it beats RNA-only and histology-only baselines, and interestingly the gain comes specifically from combining multiple image scales rather than picking one, with different scales apparently capturing different tissue compartments like white pulp versus red pulp in spleen."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twelve is a cute numerical trick from the Khammash lab: for inferring reaction networks from noisy single-cell data, a problem that's normally brutal computationally because you need particle filtering for these nonlinear stochastic systems, they notice that taking a Fourier transform of the data can make the likelihood approximately Gaussian for certain systems. That turns a slow particle-filter-based Bayesian inference into something much faster, demonstrated on a gene transcription model."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper thirteen speeds up functional clustering, the kind used to group coordinated molecular profiles across conditions, by replacing numerical covariance optimization with closed-form updates under a structured antedependence covariance model. They report roughly ninety to two hundred-fold speedups with identical results to the slower numerical version, tested on gut microbiota and multi-omics time series data."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fourteen, MODAE+, tries to transfer drug response measured in cancer cell lines onto real patient tumors, using a domain adaptation framework that jointly optimizes for alignment, deconfounding, drug response, survival, and preserving cancer lineage structure, across close to ten thousand TCGA tumors and over a thousand cell lines. Predicted sensitivity was significantly linked to actual patient survival for a substantial fraction of drug-cancer pairs, and predictions also correlated reasonably well with independent breast cancer response signatures for paclitaxel and doxorubicin."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And paper fifteen is a single-cell immunology study in myelodysplastic syndrome and chronic myelomonocytic leukemia, looking at response to azacitidine combined with the TIM-3 inhibitor sabatolimab. Baseline antigen-presentation states, specifically HLA class II expression across progenitor and myeloid populations, and specific CD8 T cell and NK cell programs, were associated with who responded, and responders showed coordinated remodeling of both myeloid and lymphoid compartments on treatment. More clinical than most of what we cover, but the single-cell dissection of checkpoint response is relevant if you work anywhere near immuno-oncology."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick round-up of the rest. Paper sixteen, FeatureMAP, for network-guided interpretation of untargeted metabolomics data. Paper seventeen, memVar, a resource cataloguing human membrane protein variation in molecular and disease contexts. Paper eighteen, a protein language model aimed at domain, functional site, and variant effect prediction."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper nineteen, TRACE, a framework for building traceable biomedical data resources, demonstrated on single-cell glaucoma data. Paper twenty asks how well mouse gene knockout phenotypes actually transport to human complex traits, a methods question with implications for how much we should trust mouse models for GWAS follow-up. Paper twenty-one, AlphaEnzyme, uses catalytic knowledge to guide enzyme discovery and engineering."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twenty-two, RPI-Zero, zero-shot prediction of RNA-protein interactions. Paper twenty-three, Protify, a benchmarking platform that exposes task dependence and homology leakage, meaning inflated performance from train-test overlap, in how protein language models get evaluated. Worth a look if you ever benchmark a PLM yourself."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twenty-four maps genome-wide chromatin accessibility during early embryogenesis in a generalist cichlid fish. And paper twenty-five is a B-cell biology study showing that BCL-ten gain-of-function mutations impair naive B cells from participating in germinal centers and cooperate with BCL-six to drive an extrafollicular form of diffuse large B-cell lymphoma."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the roundup. Busy day, but the composition-analysis benchmark and the Hippo signaling result are probably the two worth remembering past breakfast."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Agreed. See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "2611.08086",
+      "title": "MUSS: A Multi-scale and Sequence-based Model for Single-cell Gene Regulation",
+      "authors": [
+        "Kangjie Zheng",
+        "Amirhossein Vahidi",
+        "Liying Jin",
+        "Joseph Clarke",
+        "Vijaya Baskar MS",
+        "Connor Rogerson",
+        "Mengji Zhang",
+        "Muzlifah Haniffa",
+        "Anshul Kundaje",
+        "Mo Lotfollahi"
+      ],
+      "abstract": "Modeling gene regulation in single cells requires jointly representing DNA sequence, chromatin accessibility, and gene expression across regulatory scales. Sequence-based models capture DNA-level regulatory grammar but often lack cell-level resolution, whereas many single-cell omics models represent genes and peaks as fixed-vocabulary tokens without their underlying sequence. Here, we present MUSS, a sequence-based multi-scale model for single-cell gene regulation that preserves both DNA-level and cell-level resolution. MUSS derives peak- and gene-level representations from DNA using a frozen pre-trained sequence encoder and integrates them through peak-peak self-attention and distance-biased peak-gene interactions. Peak masked language modeling followed by training on paired scATAC-seq and scRNA-seq aligns these representations with cell-specific regulatory states. Across gene expression prediction, enhancer-gene linking, motif-guided regulatory prioritization, and zero-shot cell clustering, MUSS achieves strong performance against sequence-based and single-cell omics baselines. It further predicts expression for genes and peaks unseen during task training. These results support sequence-grounded, multi-scale representations for decoding cell-type-specific regulatory programs. Code, datasets, and model checkpoints are available at https://github.com/Lotfollahi-lab/MUSSneurips26.",
+      "categories": [
+        "cs.AI",
+        "q-bio.GN"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2611.08086",
+      "tier": "deep",
+      "why": "A sequence-grounded multi-scale model that jointly represents DNA, chromatin accessibility and expression to decode cell-type-specific regulatory programs sits squarely at the intersection of gene regulation and single-cell methods."
+    },
+    {
+      "id": "10.64898/2026.11.04.763740",
+      "title": "Mapping the regulatory wiring of endothelial cell differentiation reveals a critical role for Hippo mechanosignaling",
+      "authors": [
+        "Nguyen, T. C.",
+        "King, H. D.",
+        "Amgalan, D.",
+        "Pushkarev, O.",
+        "Mo, Y. A.",
+        "Munger, C. J.",
+        "McCreery, C.",
+        "Gupta, R.",
+        "Zeng, T.",
+        "Zhou, R.",
+        "Conley, S. D.",
+        "Batta, S. P. R.",
+        "Sheth, M. U.",
+        "Mattei, E.",
+        "Masaltseva, A.",
+        "Kang, H. Y.",
+        "Ma, X. R.",
+        "Tran, N.",
+        "Gaskell, L.",
+        "Shoresh, N.",
+        "Orlova, V.",
+        "Kundaje, A.",
+        "Sumanas, S.",
+        "Ang, L. T.",
+        "Loh, K. M.",
+        "Engreitz, J. M."
+      ],
+      "abstract": "At each step of development, stem cells encounter a branching decision to differentiate into one type of cell or another. This decision is executed through the action of competing gene programs that specify different cellular identities. Consequently, creating a comprehensive map of the gene programs that drive each branching step of human cell differentiation remains a long-sought goal of developmental and stem cell biology. Here, we introduce a framework combining genome-wide CRISPR screens, single-cell readouts, and gene program inference to systematically discover and characterize regulators of cell differentiation. This framework includes a method for CRISPR perturbations paired with single-cell RNA-seq called circular capture Perturb-seq (CC-Perturb-seq), which improves gRNA detection from split-pool combinatorial indexing protocols and enables perturbing many candidate regulators to map their effects on gene programs. We applied this framework to map how human pluripotent stem cells differentiate into arterial endothelial cells (ECs), and identified 174 regulators that promote or inhibit EC differentiation. By tracking gene programs across three stages of differentiation, we resolved when and how regulators divert cells toward alternative fates. This map revealed an unexpected requirement for the Hippo mechanosignaling pathway in EC specification. During lateral mesoderm differentiation, Hippo mechanosignaling was required to activate ETV2, the master transcriptional regulator of endothelial identity. Inhibiting Hippo blocked ETV2 even in the presence of VEGF and diverted progenitors to a mesenchymal fate in vitro. Likewise, Hippo signaling was required for maximal etv2 expression in developing zebrafish embryos. Conversely, pharmacologically activating the Hippo pathway increased the purity of both arterial and venous EC differentiation in vitro. Our framework thus identifies novel regulators of endothelial cell differentiation, improves stem-cell differentiation protocols via manipulation of mechanosignaling, and provides a generalizable platform for mapping the regulatory wiring of human development.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.763740v1",
+      "tier": "deep",
+      "why": "A genome-wide CRISPR + single-cell Perturb-seq framework maps the regulatory wiring of endothelial differentiation and uncovers an unexpected requirement for Hippo mechanosignaling in activating the master regulator ETV2."
+    },
+    {
+      "id": "10.64898/2026.11.03.764017",
+      "title": "Gene regulatory architecture in antibiotic resistance is optimized for specific dynamic regimens",
+      "authors": [
+        "Geng, H.",
+        "Schultz, D."
+      ],
+      "abstract": "Cellular responses to antibiotics face a fundamental trade-off: resistance must be deployed quickly enough to prevent the accumulation of drug inside the cell, but expression of resistance genes is costly in the absence of the drug. Therefore, antibiotic responses are typically regulated, controlling not only whether resistance is expressed, but also when, how strongly, and for how long. These regulatory strategies are implemented through the strength and arrangement of promoters and operators. However, it is still not clear how the dynamics of drug exposure select for specific regulatory strategies. Here, we develop a dynamical model of a typical antibiotic response, where a transcriptional repressor senses the drug and regulates expression of a resistance protein, coupled to the effects of the drug on cell growth and gene expression. We define a cost function that weighs the different burdens imposed on the cell over the course of the response, and perform in silico optimization of the regulatory parameters under different selective pressures for three architectures of increasing complexity: constitutive expression of resistance, repression by a constitutively expressed repressor, and repression by a self-regulated repressor. We find that strong drug exposures favor constitutive expression of resistance, high costs of basal expression favor repression by a constitutive repressor, and self-regulation of the repressor is favored only when the response must provide protection while also restraining overexpression of resistance. Stochastic simulations further show that self-regulation of the repressor protects cells against fluctuations in repressor levels, which cause unnecessary induction of resistance before exposure and failed induction after exposure. This framework links the dynamics of the environment to the evolution of gene regulation, providing a basis to predict which regulatory strategies are expected to arise under specific selective pressures.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.764017v1",
+      "tier": "deep",
+      "why": "A quantitative dynamical systems model of transcriptional regulation shows how the temporal structure of drug exposure selects for specific gene-regulatory architectures (constitutive, repressed, self-regulated), linking environment dynamics to regulatory evolution."
+    },
+    {
+      "id": "10.64898/2026.11.04.764099",
+      "title": "Benchmarking Statistical Methods for Differential Composition Analysis in Population-Scale Single-Cell Data",
+      "authors": [
+        "Wu, W.",
+        "He, M.",
+        "Hu, Y.",
+        "Su, C."
+      ],
+      "abstract": "Population-scale single-cell RNA sequencing (scRNA-seq) data capture cellular composition across cohorts ranging from several dozen to thousands of individuals, enabling the detection of cell-type composition differences between conditions. These differences reveal cellular shifts in disease pathogenesis and suggest potential targets for therapeutic intervention. However, differential composition analysis in scRNA-seq data is challenged by the unique features of cell count data, such as compositionality, prevalence of zeros, overdispersion, and confounding by technical and biological covariates. While this analysis is routinely performed, no study has yet systematically evaluated existing methods. Here, we benchmarked 12 methods for differential composition analysis using three population-scale scRNA-seq datasets with diverse and representative characteristics. Analyses of real data revealed low agreement across methods, while permutations and simulations based on the real data demonstrated excessive false discoveries for most methods. Overall, LOCOM emerged as the top-performing method that controls the false discovery rate while maintaining good statistical power, followed by ANCOM-BC and linear regression with centered-log-ratio transformation. Integrating evidence from real-data analyses and data-informed permutation and simulation experiments, we provide practical guidance tailored to common real-world challenges in differential composition analysis.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764099v1",
+      "tier": "deep",
+      "why": "The first systematic benchmark of 12 differential cell-composition methods for population-scale scRNA-seq reveals widespread false discoveries and gives concrete practical guidance that is directly actionable for the listener's core methods work."
+    },
+    {
+      "id": "10.64898/2026.11.01.763496",
+      "title": "OncoSpot enables benchmarking of cancer spatial transcriptomics methods across tumor evolutionary modes",
+      "authors": [
+        "Bhattarai, P.",
+        "Yuan, W.",
+        "Zhou, X. M.",
+        "Mallory, X."
+      ],
+      "abstract": "Spatial transcriptomics (ST) is increasingly used to map clonal architecture within tumors, yet methods for analyzing cancer ST data are difficult to evaluate because real tumors lack ground truth for copy-number alterations (CNAs), subclonal identity, and malignant cell fraction. Existing ST simulators model normal tissue and do not represent tumor evolution, CNA-driven expression, or the spatial organization of malignant subclones. We present OncoSpot, a cancer-aware simulator of Visium-like spot-based ST data. OncoSpot combines a spatial evolutionary scaffold from DEMON, CNAs generated along the resulting clonal phylogeny with CNAsim, cancer-type-specific malignant transcriptional programs, and spatially clustered nonmalignant cell types, and aggregates cells into spots with known malignant fraction, subclone, and copy-number profiles. We demonstrate OncoSpot on high-grade serous ovarian carcinoma, colorectal cancer, and hepatocellular carcinoma, which represent three distinct modes of tumor evolution. Simulated subclones were spatially clustered and showed stronger phylogeny-space concordance than those generated by scCube under matched subclone populations. Benchmarking CopyKAT, CancerFinder, Clonalscope, and RCTD revealed cancer-dependent performance: Clonalscope recovered copy-number signals more accurately in ovarian and colorectal cancer, whereas CopyKAT performed better in hepatocellular carcinoma, reflecting both the assumptions of each method and the copy-number landscapes of the three cancers. OncoSpot's ground truth also exposed a failure mode in Clonalscope's malignant spot identification, in which tumor and normal labels were inverted, and allowed us to trace its cause. These method-dependent behaviors would be difficult to detect in real data. OncoSpot provides a framework for benchmarking CNA inference, subclone detection, malignant spot identification, and normal spot deconvolution, and its modular design and guidelines allow extension to additional cancer types. OncoSpot is freely available at https://github.com/compbio-mallory/OncoSpot.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.01.763496v1",
+      "tier": "deep",
+      "why": "A cancer-aware spatial transcriptomics simulator with known ground-truth clonal architecture exposes method-dependent failure modes (e.g., inverted tumor/normal labels in Clonalscope) in CNA and subclone inference tools relevant to tumor heterogeneity research."
+    },
+    {
+      "id": "2611.05849",
+      "title": "A low-rank decoder bottleneck bounds reliability in foundation-model perturbation prediction",
+      "authors": [
+        "Zheyu Zhang",
+        "Yuanhao Huang",
+        "Fan Feng",
+        "Jie Liu"
+      ],
+      "abstract": "Foundation-model predictors of perturbation response are evaluated primarily by aggregate accuracy. Using their predictions to prioritize experiments requires assessing each prediction's reliability. We audit the state-transition (ST) decoder used in STATE across three encoders (SE-600M, scGPT, and Tahoe-x1) and four cell lines under CRISPRi. The decoder's first attention layer has a low-rank output. Projecting this output onto 4-32 fixed directions estimated from training activations preserves mean per-perturbation Pearson delta correlation (PDC). This low-rank attention bottleneck bounds the decoder's reliability by distance to training responses: PDC declines as the cosine distance from a perturbation's observed response to its nearest training response increases. We propose predicted-NN-distance, the cosine distance from a predicted response to its nearest training response, as a per-prediction confidence score. The score has a mean absolute Spearman correlation of 0.81 with PDC, close to the 0.88 obtained with the observed response. Thresholds calibrated on this score transfer across encoders and cell lines, and the score remains predictive of PDC for drug perturbations.",
+      "categories": [
+        "cs.LG",
+        "q-bio.QM",
+        "stat.ML"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2611.05849",
+      "tier": "brief",
+      "why": "Audits a state-of-the-art perturbation-prediction foundation model and finds a low-rank attention bottleneck that bounds reliability, proposing a practical per-prediction confidence score based on distance to training data."
+    },
+    {
+      "id": "10.64898/2026.11.03.764073",
+      "title": "Variation in the embryonic cell lineages of Caenorhabditis elegans natural populations",
+      "authors": [
+        "Weymer, C.",
+        "Johnson, R. L.",
+        "Helou, J. O.",
+        "Deeds, E. J.",
+        "Andersen, E. C.",
+        "Shah, P. K."
+      ],
+      "abstract": "Developmental variation has often been appreciated as a major phenotypic substrate of evolutionary innovation in multicellular organisms. Although quantification of developmental variation in isogenic populations has a long history, it has been difficult to accomplish across natural populations until recently. Given its invariant cell lineage, Caenorhabditis elegans represents an ideal model system for studying how natural diversity in development is expressed at the resolution of single cells, cell lineages, and the whole embryo. Using embGAN, a deep-learning pipeline that enables label-free lineage tracing without the bottleneck and potential confounding effects of generating transgenic strains, we reconstructed the early embryonic lineage of 78 embryos spanning eight genetic backgrounds, including six wild strains, and quantified cell-cycle timing with a lineage-aligned graph metric that separates global rescaling of developmental rate from localized changes in lineage structure. We found that cell-cycle timing differs reproducibly among genotypes, with between-strain variation consistently exceeding within-strain variation. The magnitude of this variation was itself genotype-specific and not correlated with levels of genetic divergence. Unlike the global shifts in the tempo of development that dominate divergence between species, these differences are predominantly in lineage patterning, changing the timing of specific divisions, and they align to cell fate. Thus, the invariant lineage of C. elegans is built on a structured, genotype-specific landscape of developmental variation, a potential source of trait variation from which drift in developmental systems can emerge.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.764073v1",
+      "tier": "brief",
+      "why": "Deep-learning lineage tracing across wild C. elegans strains reveals genotype-specific, lineage-structured developmental variation in cell-cycle timing beyond simple rate rescaling."
+    },
+    {
+      "id": "10.64898/2026.11.04.763625",
+      "title": "Epigenetic reprogramming by promoter hypomethylation is linked to aberrant gene expression and transcriptomic plasticity in colorectal cancer",
+      "authors": [
+        "Nunes, L.",
+        "Eilertsen, I. A.",
+        "Pinto, R.",
+        "Vedeld, H. M.",
+        "Bolstad, I. M.",
+        "Saeed, U.",
+        "Sjo, O. H.",
+        "Yaqub, S.",
+        "Nesbakken, A.",
+        "Kryeziu, K.",
+        "Lind, G. E.",
+        "Lothe, R. A.",
+        "Sveen, A."
+      ],
+      "abstract": "Colorectal cancer (CRC) has high phenotypic plasticity, but regulatory mechanisms of aberrant cell states are not well described. We investigated DNA methylation-based regulation of cancer cell-intrinsic transcriptomic heterogeneity in 1,183 multiregional primary tumor samples, liver metastases and tumor organoids. Most genes with strong methylation-transcriptomic association reflected canonical promoter hypermethylation and expression repression related to the CpG island methylator phenotype (CIMP). However, promoter hypomethylation and overexpression of APOLD1 and ELF5 identified two largely non-overlapping subgroups of canonical CIMP-negative CRCs enriched with stem-like and transit-amplifying cell states. APOLD1 tumors were further highly proliferative while ELF5 tumors were slow-cycling and associated with good survival in early-stage disease. Target genes showed patient-specific expression changes in matched primary-metastasis samples, and ELF5 aberrant metastases showed ex vivo sensitivity to putative targeting of stem cells by PI3K/mTOR inhibition, fetal de-differentiation and transition into non-canonical intestinal states. This implicates focal promoter hypomethylation in phenotypic plasticity in CRC metastasis.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.763625v1",
+      "tier": "brief",
+      "why": "Large multiregional methylome-transcriptome profiling of colorectal cancer identifies promoter hypomethylation driving two distinct transcriptomic plasticity subgroups with different proliferation and survival phenotypes."
+    },
+    {
+      "id": "10.64898/2026.11.03.763902",
+      "title": "Reconstruction of Cellular Trajectories with Biologically Interpretable States",
+      "authors": [
+        "Wang, Y.",
+        "Rattray, M.",
+        "Barber, D."
+      ],
+      "abstract": "Elucidating the trajectories of cellular evolution provides biologists with deeper insights into biological systems and disease progression, ultimately facilitating more informed discovery of mechanisms and therapeutic design. Single-cell RNA sequencing (scRNA-seq) is widely used to study cellular evolution. However, it faces two primary limitations. First, because the process destroys cells during gene-expression measurement, it is impossible to track the gene-expression profile of the same cell throughout the entire trajectory. Second, because scRNA-seq captures cells at discrete time points, it provides only static snapshots rather than continuous trajectories, limiting its ability to resolve the full dynamics of cellular transitions. Consequently, various computational approaches have been developed to address these challenges. However, existing models fail to capture the hidden state of each cell, which is essential for reconstructing gene expression at unobserved time points. As the gene expression profiles depend on the cell state, and may vary according to time, we propose a Latent Cell-State Model, where we approximate cell state transition as a Markov chain and obtain the gene expression of each cell at unobserved timepoints depending on the cell state, time, and a latent variable that represents the high-dimensional gene expression profile of a cell. Our model is able to infer biologically meaningful cell states and generate high-quality gene expression profiles at unobserved timepoints, showing potential for accurate trajectory reconstruction.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.763902v1",
+      "tier": "brief",
+      "why": "A latent cell-state Markov model addresses the destructive, snapshot nature of scRNA-seq to reconstruct biologically interpretable continuous cellular trajectories."
+    },
+    {
+      "id": "10.64898/2026.11.04.764166",
+      "title": "Improving phosphoproteomic kinase activity inference by contextual refinement of Kinase Library relationships",
+      "authors": [
+        "Zhang, Y.",
+        "Zhang, M."
+      ],
+      "abstract": "Kinase activity inference from phosphoproteomic data relies on kinase-specific substrate sets defined by kinase-substrate relationship (KSR) priors. Kinase Library (KL) expands candidate substrate coverage using experimentally derived kinase specificity profiles, but its predictions reflect sequence compatibility rather than established intracellular regulation. We benchmarked KL-expanded KSR priors using 222 perturbation phosphoproteomic samples covering 396 annotated activation or inhibition events across 78 kinases. Broad KL expansion increased the number of scoreable kinases from 108 to 391, but reduced perturbed-kinase discrimination, directional accuracy and ranking performance. Higher error rates occurred among kinases with limited curated substrate support, while broad expansion also increased redundancy among inferred activity profiles. To improve the reliability of motif-derived relationships, we constrained KL-derived KSRs using predicted protein co-localization and protein-association evidence. Protein-association filtering consistently improved inference performance, reduced activity redundancy and provided a more favorable accuracy-coverage balance than co-localization filtering. The selected protein-association-filtered prior retained activity estimates for 308 kinases with an area under the receiver operating characteristic curve (AUROC) above 0.75 and extended inference to 200 kinases not scoreable using curated KSRs, which were significantly enriched for dark kinases. These newly scoreable kinases showed structured activity patterns across perturbation contexts and interpretable signaling associations. Our results show that protein-association evidence can refine motif-derived KSR priors while preserving broad kinome coverage, providing a practical framework for more reliable phosphoproteomic kinase activity inference.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764166v1",
+      "tier": "brief",
+      "why": "Shows that naive expansion of kinase-substrate priors using sequence motifs hurts phosphoproteomic kinase activity inference, and that protein-association filtering gives a better coverage-accuracy tradeoff, including for understudied 'dark' kinases."
+    },
+    {
+      "id": "10.64898/2026.11.04.764238",
+      "title": "MorphoProt: RNA-Conditioned Integration of Multiscale Histology for Spatial Protein Inference",
+      "authors": [
+        "Xu, L.",
+        "Zheng, L.",
+        "Zhan, Y.",
+        "Zhang, Y.",
+        "Zhang, K."
+      ],
+      "abstract": "Spatially resolved protein abundance reveals cellular states and tissue organization that RNA expression cannot fully capture, yet direct spatial protein profiling remains costly and limited in coverage. Histology images routinely accompany spatial transcriptomics and offer complementary morphological information for protein inference. Here, we introduce MorphoProt, a multimodal framework that jointly predicts spatial protein abundance from RNA expression, multiscale histology and tissue neighborhoods. MorphoProt uses RNA-guided cross-attention over five histological fields of view, so that the morphological context read for each spot is conditioned on its molecular state. The fused representation is refined by gated aggregation of RNA-derived information from physical and transcriptomic neighborhoods before joint protein prediction. On held-out sections of human tonsil, mouse spleen and human liver, MorphoProt achieves mean proteinwise Spearman correlations of 0.652, 0.604 and 0.372, outperforming matched RNA-only and graph-based baselines and the histology-based HIPI and multimodal SPRINT baselines in all three tissues. Combining fields of view, rather than any single one, carries the histology gain: in spleen and liver, the multiscale model outperforms every single-field model, and its learned scale preference separates white-pulp from red-pulp compartments. Predicted proteins preserve protein-defined tissue domains and their marker identity, and recover pathologist-annotated germinal centers as accurately as measured proteins.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764238v1",
+      "tier": "brief",
+      "why": "RNA-guided cross-attention over multiscale histology enables accurate spatial protein inference from transcriptomics data, recovering pathologist-defined tissue domains without direct protein measurement."
+    },
+    {
+      "id": "2611.07684",
+      "title": "Accelerating reaction network identification via frequency-domain analysis",
+      "authors": [
+        "Zhou Fang",
+        "Wenying Sun",
+        "Xiaoyu Zhang",
+        "Mustafa Khammash"
+      ],
+      "abstract": "The identification of intracellular reaction networks from single-cell data lies at the heart of many biological studies, as it can unravel key mechanisms in living organisms and provide insights for their rational engineering. However, the stochastic and nonlinear nature of these reacting systems poses significant challenges for this identification problem, making the state-of-the-art methods (e.g., particle-filtering-based approaches) computationally demanding. This paper reports a noteworthy numerical observation that for certain systems, the Fourier transform can render the likelihood of the measurement data approximately Gaussian, therefore resulting in a substantially accelerated Bayesian inference algorithm. A gene transcription example is presented to illustrate this finding and demonstrate the efficiency of the proposed Fourier-based method.",
+      "categories": [
+        "q-bio.MN"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2611.07684",
+      "tier": "brief",
+      "why": "A Fourier-domain trick renders single-cell reaction-network likelihoods approximately Gaussian, substantially accelerating Bayesian inference of intracellular biochemical networks."
+    },
+    {
+      "id": "2611.08227",
+      "title": "Fast Functional Clustering via Closed-Form Covariance Updates",
+      "authors": [
+        "Yu Wang",
+        "Jiaze Guo",
+        "Yao Chen",
+        "Tianxiang Hao",
+        "Rongling Wu"
+      ],
+      "abstract": "Functional clustering identifies coordinated molecular profiles, but repeated numerical covariance optimization can make mixture-model fitting computationally demanding. We develop a fast functional clustering procedure for joint analysis across conditions, combining linear mean profiles on a standardized log niche coordinate with first-order structured antedependence (SAD(1)) covariance. Weighted residual statistics yield closed-form conditional covariance updates under four parameter-sharing specifications, while an innovation representation simplifies likelihood evaluation. In same-R comparisons with numerical optimization of identical conditional objectives, the closed-form solver was 91.5–201.4 times as fast, with objective agreement in all 60 targets. Under matched complete mixture fits, it achieved a 1.87–2.37-fold speedup with identical cluster assignments. Recovery simulations showed higher module classification accuracy and lower mean-curve error than K-means and a Gaussian mixture with shared full covariance when the mean structure was correctly specified. SAD(1) provided an additional recovery gain under strong residual correlation, whereas curved-mean controls identified the importance of an appropriate mean family. Applications to single-condition gut microbiota, paired leaf–root microbiota and three-visit human gut multi-omics illustrate the framework across different numbers of conditions. Closed-form covariance estimation makes joint functional clustering substantially faster while retaining the fitted model's likelihood and assignments.",
+      "categories": [
+        "stat.CO",
+        "stat.AP"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2611.08227",
+      "tier": "brief",
+      "why": "Closed-form covariance updates give a 90-200x speedup for functional clustering of molecular trajectories while preserving likelihood and cluster assignments, demonstrated on multi-omics microbiome data."
+    },
+    {
+      "id": "10.64898/2026.11.04.764164",
+      "title": "Multi-objective domain adaptation for pan-cancer transfer of pharmacogenomic drug response to patient tumours",
+      "authors": [
+        "Fortino, V.",
+        "Rintala, T. J."
+      ],
+      "abstract": "Large-scale pharmacogenomic screens provide rich drug-sensitivity measurements in cancer cell lines, but transferring these measurements to patient tumours remains limited by biological heterogeneity and cross-domain distribution shift. Existing machine learning approaches, including adversarial autoencoder and domain adaptation, address this gap by learning shared latent representations between preclinical models and patient samples. However, alignment without explicit biological constraints can produce unreliable representations when cancer lineage structure and clinically relevant patient heterogeneity are not preserved. Here, we introduce MODAE+, a pan-cancer multi-objective deep learning domain adaptation framework that jointly balances domain alignment, deconfounding, drug-response prediction, survival prediction, and cancer-lineage classification across 9,696 TCGA tumours, 1,293 CCLE cancer cell lines, and CTRP sensitivity profiles for 544 compounds in 738 matched cell lines. This multi-objective design improved cross-domain alignment while preserving cancer-lineage organization and patient heterogeneity. For drugs shared between the pharmacogenomic screen and TCGA treatment records, MODAE+ predicted sensitivity was significantly associated with overall survival among patients who received each drug in 46.3% of evaluated cancer-drug pairs by log-rank testing and 41.5% by multivariable Cox analysis. Biological validation across four curated drug-gene resources identified significant expression differences exceeding 1.5-fold for 34.9-64.4% of drugs in pan-cancer analyses, based on the lowest-p-value annotated gene per drug. Drug-class-specific patterns involved intended molecular targets for targeted therapies and predominantly transport, metabolism, detoxification and resistance-related genes for classical chemotherapies. As an additional validation, we derived pretreatment responder-nonresponder gene-expression signatures from 13 external breast cancer datasets and evaluated their concordance with MODAE+ predictions across 69 signature-drug comparisons in TCGA patients treated with paclitaxel or doxorubicin. Consensus signature scores showed Spearman correlations of 0.791 with predicted paclitaxel sensitivity and 0.724 with predicted doxorubicin sensitivity, averaging 0.758 across the two drugs. Together, these complementary analyses provide supporting evidence for the clinical relevance and biological consistency of MODAE+ predictions, suggesting their potential to identify drug-sensitive tumour subgroups and generate hypotheses about mechanisms of drug resistance.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764164v1",
+      "tier": "brief",
+      "why": "A multi-objective domain-adaptation framework transfers pharmacogenomic drug response from cell lines to TCGA patient tumors while preserving cancer-lineage structure, with survival-validated predictions across many cancer-drug pairs."
+    },
+    {
+      "id": "10.64898/2026.11.04.764360",
+      "title": "Response to azacitidine and the TIM-3 inhibitor, sabatolimab, in MDS and CMML is associated with distinct immune and antigen-presentation states",
+      "authors": [
+        "Dey, A.",
+        "Smith, N.",
+        "Tirard, A.",
+        "Arnold, B.",
+        "Chan, T.",
+        "Lombardi-Story, J.",
+        "Casson, T.",
+        "Behnan, T. T.",
+        "Aguilar-Fernandez, S.",
+        "Fathi, A. T.",
+        "Hobbs, G. S.",
+        "Hock, H.",
+        "Amrein, P. C.",
+        "Reeves, P.",
+        "Jan, M.",
+        "Bod, L.",
+        "Graubert, T. A.",
+        "Brunner, A. M.",
+        "Narayan, R.",
+        "Villani, A.-C."
+      ],
+      "abstract": "Targeting the immune checkpoint TIM-3 is of interest in myeloid neoplasms, yet the hematopoietic and immune changes associated with anti-TIM-3 therapy remain poorly characterized. We used single-cell RNA sequencing to profile bone marrow (BM) and peripheral blood from patients with myelodysplastic syndrome (MDS) and chronic myelomonocytic leukemia (CMML) treated with the hypomethylating agent azacitidine combined with sabatolimab, a monoclonal antibody targeting TIM-3, and integrated Human Cell Atlas reference datasets for comparison. CITE-seq profiling showed that TIM-3 was predominantly expressed on dendritic cells and NK cells, with variable expression across other populations, including CD34 cells and CD8 T cells. At baseline, we identified a population of CD34 myeloid-biased progenitors specific to MDS/CMML samples (\"HSPC-like\") characterized by inflammatory gene expression programs and features of impaired differentiation. In MDS, elevated baseline HLA class II expression across hematopoietic stem and progenitor cells (HSPCs), HSPC-like cells, and multiple myeloid populations was associated with response. Consistent with this finding, trajectory analysis suggested that nonresponders bypassed HLA class II-high states during myeloid differentiation. In MDS, the presence of distinct CD8 T-cell populations and increased interferon-response programs in CD8 T and NK cells at baseline was also associated with response. In both MDS and CMML, treatment among responders was associated with contraction of BM CD8 and CD4 T-cell populations characterized by type I interferon-responsive and inflammatory programs, including IFIT1, IFIT2, and TNF, along with expansion of a distinct GZMH/IFITM1-expressing cytotoxic CD8 T-cell population. Together, these findings identify baseline antigen-presentation and immune-response programs associated with therapeutic response and reveal coordinated remodeling of myeloid and lymphoid compartments during azacitidine/sabatolimab treatment in MDS and CMML.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764360v1",
+      "tier": "brief",
+      "why": "Single-cell profiling of MDS/CMML patients on azacitidine plus a TIM-3 inhibitor links baseline antigen-presentation and immune states to treatment response, with coordinated myeloid-lymphoid remodeling in responders."
+    },
+    {
+      "id": "10.64898/2026.11.04.764165",
+      "title": "FeatureMAP enables network-guided interpretation of untargeted metabolomics",
+      "authors": [
+        "Wang, Y.",
+        "Zhang, F.",
+        "Peng, G.",
+        "Qiu, L.",
+        "Zeng, L.",
+        "Liu, Y.",
+        "Kinchagawat, J.",
+        "Yang, X.",
+        "Liu, C.",
+        "Johnson, C.",
+        "Su, Q.",
+        "Wang, C.",
+        "Shen, X."
+      ],
+      "abstract": "Untargeted liquid chromatography-mass spectrometry (LC-MS) metabolomics generates thousands of features, but incomplete metabolite annotation and reliance on predefined pathways limit their biological interpretation. Here we present FeatureMAP, an LC-MS feature-centric computational framework that integrates multi-evidence metabolite annotation, network-guided refinement, metabolic module discovery, and structured large language model-based functional interpretation. Across ten public datasets, FeatureMAP improved MS1-based metabolite candidate prioritization while reducing annotation redundancy. In semi-synthetic benchmarks, FeatureMAP recovered coordinated metabolic perturbations, achieving 92% recovery of a simulated perturbation, and distinguished concurrent metabolic processes. Controlled benchmarks further evaluated functional interpretation under competing metabolite-level signals. Based on FeatureMAP, we additionally developed PhenoMAP, a phenotype-aware knowledge graph comprising 12,929 dysregulated metabolic modules from 501 human metabolomics studies spanning 326 phenotypes. Module-level comparisons revealed reproducible metabolic similarities across independent studies and biologically supported relationships among phenotypes. Application to Alzheimer's disease cerebrospinal fluid and cellular datasets identified convergent membrane-lipid alterations and implicated galactose-linked glycosphingolipid remodeling. Together, FeatureMAP and PhenoMAP enable network-grounded interpretation of incompletely annotated LC-MS metabolomics data and systematic investigation of metabolic dysregulation across biological conditions.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764165v1",
+      "tier": "mention",
+      "why": "FeatureMAP/PhenoMAP provide network-guided functional interpretation of untargeted LC-MS metabolomics despite incomplete annotation, applied to Alzheimer's lipid signatures."
+    },
+    {
+      "id": "10.64898/2026.11.04.764121",
+      "title": "memVar: an integrated resource for interpreting human membrane protein variation in molecular and disease contexts",
+      "authors": [
+        "Xu, Y.",
+        "HUANG, S.",
+        "Zhao, J.",
+        "Sun, J."
+      ],
+      "abstract": "Interpreting membrane protein variation requires connecting clinical evidence to the membrane environments and molecular interactions that govern protein functions. Here, we introduce memVar (https://memvar.sunnylab.org), an integrated database of 10,906,688unique single-nucleotide variants from ClinVar, COSMIC, and gnomAD across 7,732 human membrane-associated proteins. memVar reconciles genomic, transcript, and protein coordinates to link variants with membrane topology, bilayer depth, lipid contacts, functional sites, partner-specific interaction interfaces, and variant-effect predictions, alongside disease, tissue-expression and regulatory annotations. Coordinated sequence, structure and variant views retain source provenance and distinguish clinical assertions, experimental observations, and computational predictions. Our analysis reveals that pathogenic/likely pathogenic missense substitutions are enriched in transmembrane segments and predicted protein-protein interaction sites relative to benign/likely benign substitutions, with pooled odds ratios of 2.47 and 6.67, respectively. IntAct-derived interaction loss or decrease was experimentally recorded for 57.9% of pathogenic/likely pathogenic substitutions versus 7.4% of benign/likely benign substitutions. CFTR examples contextualize the established G551D gating defect and prioritize W202R, a variant of uncertain significance, for tests of protein maturation, surface abundance and channel activity. By connecting variant records to specific molecular questions, memVar potentially supports mechanism-oriented investigation and prioritization of functional experiments.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764121v1",
+      "tier": "mention",
+      "why": "memVar links millions of membrane-protein variants to structural context and shows strong enrichment of pathogenic variants in transmembrane/interaction regions."
+    },
+    {
+      "id": "10.64898/2026.11.03.764008",
+      "title": "A protein language model for domain, functional site, and variant effect prediction",
+      "authors": [
+        "Wang, P.",
+        "Ahsan, M. U.",
+        "Chen, T.",
+        "Wang, K."
+      ],
+      "abstract": "Protein sequence databases are growing far faster than experimentally curated annotations, limiting functional interpretation of newly identified proteins and coding variants. We developed PALM, a protein annotation language model that jointly predicts domain and functional-site occurrence, while preserving overlapping and nested annotations through a soft-target objective. PALM integrates ESM2 with low-rank adaptation (LoRA), learned layer aggregation, and a bidirectional long short-term memory (BiLSTM) encoder. PALM was trained on ~15 million InterPro-annotated UniRef50 sequences spanning 17,951 domain and 1,383 site classes. Across 2.3 million held-out proteins, PALM achieved domain- and site-occurrence F1 scores of 0.941 and 0.877, respectively, and retained substantial performance in proteins with <20% sequence identity to the training and validation data. PALM also substantially outperformed ESM3 annotation baseline. Without training on variant-pathogenicity labels, PALM embedding disruption distinguished 151,823 ClinVar missense variants more accurately than ESM2 embedding disruption (AUROC 0.835 versus 0.710), and combining PALM embedding disruption with the ESM2 likelihood-ratio signal reached an AUROC of 0.877. The same combined zero-shot score outperformed AlphaMissense on a benchmark dataset on 128,161 missense variants, that were derived from literature but not present in ClinVar database. At the protein level, PALM embeddings showed stronger CATH-Gene3D superfamily organization than frozen ESM2 and ESM3 embeddings, and improved prediction of experimental activation and repression effects when combined with ESM2. In a downstream case study, we demonstrated the ability to use PALM-derived embedding as proxy of deep mutational scanning (DMS), showcasing the broad application of PALM. Together, PALM converts curated residue-level knowledge into transferable and mechanistically interpretable representations that connect protein sequence, function, and variant consequence.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.764008v1",
+      "tier": "mention",
+      "why": "PALM, a protein annotation language model, achieves strong zero-shot variant-effect and domain prediction by combining ESM2 with curated InterPro annotation knowledge."
+    },
+    {
+      "id": "10.64898/2026.11.04.764154",
+      "title": "TRACE: a framework for traceable biomedical resource construction demonstrated through single-cell glaucoma data",
+      "authors": [
+        "Liang, X.",
+        "Jayakumar, R.",
+        "Strbenac, D.",
+        "Torkel, M.",
+        "Bian, B.",
+        "Lee, E.",
+        "Gu, J.",
+        "Phan, V. T. N.",
+        "Crowston, J.",
+        "Yang, J. Y. H.",
+        "Shim, H."
+      ],
+      "abstract": "The growing availability of public omics datasets presents opportunities for biomedical research, yet constructing research question-driven resources from distributed studies remains challenging due to heterogeneous data, incomplete metadata and limited documentation of curation decisions. Here, we present TRACE (Traceable Resource Assembly and Curation Ecosystem), a general framework that links systematic knowledge discovery, data curation and resource delivery while preserving provenance throughout resource construction. We demonstrate TRACE through TRACE-scGlaucoma, a curated single-cell transcriptomics resource for glaucoma and optic nerve biology. Systematic screening identified 57 eligible studies, of which 42 provided accessible datasets comprising approximately 3.3 million cells. The resource provides harmonised metadata, standardised cell-type annotations and reusable expression objects while retaining original study information and curation provenance. We demonstrate its analytical utility through cellular enrichment of glaucoma GWAS-associated genes, comparing candidate drug-repurposing signals across distinct biological contexts and assessment of cell-type annotation reliability. TRACE provides a systematic and traceable approach to transforming fragmented public datasets into reusable biomedical resources, supporting reproducible analyses and future extensions across disease areas and data modalities.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764154v1",
+      "tier": "mention",
+      "why": "TRACE offers a provenance-preserving framework for assembling curated single-cell resources, demonstrated on a 3.3M-cell glaucoma dataset."
+    },
+    {
+      "id": "10.64898/2026.11.04.764243",
+      "title": "Transportability of mouse gene knockout models to human complex phenotypes",
+      "authors": [
+        "Howe, L. J.",
+        "Wells, S.",
+        "Davies, N. M.",
+        "Lockhart, S. M.",
+        "Davey Smith, G."
+      ],
+      "abstract": "Mouse gene knockout studies are a valuable resource for understanding human gene function and the mechanisms underlying disease. However, translating insights to humans requires causal similarities between mouse and human phenotypes. A mouse model is transportable if gene perturbations that impact the mouse phenotype also affect (in orthologous genes) the corresponding human phenotype of interest, with consistent directionality. To assess the transportability of mouse models to human complex traits we combined laboratory mouse gene perturbation data from the high-throughput International Mouse Phenotyping Consortium with predicted loss-of-function data from the UK Biobank within the Gene Perturbation Analysis for Transportability (GPAT) framework. Applying GPAT to 30 matched mouse-human phenotype pairs, we found evidence of transportability for 12 mouse phenotypes including biochemical (e.g. total cholesterol), cellular (e.g. lymphocyte counts) and anthropometric (e.g. length/height) phenotypes. In contrast, there was limited evidence for others such as fat mass and body mass index in the context of the murine experimental conditions. We also found some evidence of transportability of mouse glucose measurements to diabetes mellitus in humans. Genome-wide perturbation effects on matched phenotypes were on average positively correlated between mice and humans (meta-analysis GPAT P = 2.3x10-27). However, the degree of correlation was generally modest and heterogeneous across phenotypes with some gene perturbations strongly associated in both species in opposite directions. Our framework illustrates how perturbation data can be used to quantitatively validate experimental models for understanding human disease aetiology and highlights the need for a range of orthogonal model systems, which may include challenges and perturbations to the mouse knockouts, to interrogate the mechanistic basis of human genetic associations.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764243v1",
+      "tier": "mention",
+      "why": "A cross-species framework (GPAT) quantitatively tests whether mouse knockout phenotypes transport to matched human complex traits, finding modest and heterogeneous correlation."
+    },
+    {
+      "id": "10.64898/2026.11.04.764416",
+      "title": "Harnessing catalytic knowledge to guide enzyme discovery and evolution with AlphaEnzyme",
+      "authors": [
+        "Liu, Y.",
+        "Zheng, S."
+      ],
+      "abstract": "Retrieving an enzyme for a target reaction provides a starting point for evolution, but predicting how to improve it remains difficult. This requires connecting evolutionary information with the structural and chemical context of catalysis. Here we present AlphaEnzyme, an enzyme foundation model built on a structure-grounded representation of an enzyme paired with its reaction, from which catalytic compatibility, kinetics and mutational response are read out together. On a time-separated benchmark, AlphaEnzyme achieves a top-1 catalyst retrieval success rate of 30.1%, against 17.2% for the strongest baseline. Michaelis constant predictions achieve the highest rank correlations among the compared methods, reaching 0.64 for enzymes sharing at most 40% identity with the kinetic training set. The model also enriches high-fitness TrpB variants at a budget of 16 candidates without target-specific fitness training. In prospective transaminase engineering, several prioritized variants exceed the parent, with the best design yielding a 30.4-fold increase in product signal in a lysate-based assay while retaining (R)-selectivity. Together, AlphaEnzyme provides a common molecular basis for selecting starting enzymes and prioritizing sequence changes for their improvement.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764416v1",
+      "tier": "mention",
+      "why": "AlphaEnzyme, a structure-grounded enzyme foundation model, improves catalyst retrieval and guides transaminase engineering with experimentally validated gains."
+    },
+    {
+      "id": "10.64898/2026.11.04.764286",
+      "title": "RPI-Zero: Zero-shot RNA-Protein Interaction Prediction",
+      "authors": [
+        "Eren, K.",
+        "Esendemir, E. I.",
+        "Shukueian Tabrizi, S.",
+        "Hashemi Aghdam, H.",
+        "Cicek, A. E."
+      ],
+      "abstract": "In vivo protein-RNA interactions are mapped almost exclusively by CLIP-seq, which profiles one protein in one cell type per experiment and needs a specific antibody; only about 10% of the roughly 2,000 human RNA-binding proteins have been assayed, and the Protein Data Bank holds around 5,000 protein-RNA complexes, a quarter of them ribosomes. Sequence-based prediction could extend coverage to unprofiled, newly discovered, or designed molecules, but existing predictors are not built for that case. One family trains a separate model per protein and cannot move beyond proteins with CLIP data; the other scores pairs but targets a single RNA class. Most are evaluated with random splits and randomly paired negatives that leave near-identical sequences on both sides of the split, and many require structure or read only short windows, discarding the context around a binding site. Their accuracy falls sharply when whole molecules are held out. We address this with two contributions. First, a strict benchmark of 2.1 million examples built from 11.6 million peaks of CLIP experiments targeting 209 proteins, taken from four public databases, in which each RNA is a spliced transcript with nucleotide-level labels, and sequence-similarity clusters are assigned whole to training, validation, and test sets, giving separate slices for unseen RNAs, unseen proteins, and unseen pairs. Negatives are matched to positives in length and in the number of other proteins binding the transcript, removing the shortcut by which a model predicts binding from how popular a transcript is without reading the protein. Second, RPI-Zero, a sequence-only model that reads any full-length protein and RNA jointly in up to 4,096 tokens, so the RNA representation is conditioned on the protein, and describes every protein as a mixture of shared motif prototypes, placing unseen proteins in the same terms as training ones. One model covers all proteins and RNA classes, uses no structure, and needs no interaction data for a new molecule. Compared with five state-of-the-art methods, it achieves the highest score in eight different metrics on unseen RNAs, unseen proteins, and unseen pairs. The model and data are available at https://github.com/ciceklab/RPI-Zero and https://zenodo.org/records/23748141, respectively.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764286v1",
+      "tier": "mention",
+      "why": "RPI-Zero offers a sequence-only, zero-shot RNA-protein interaction predictor with a rigorous homology-controlled benchmark exposing shortcut learning in prior methods."
+    },
+    {
+      "id": "10.64898/2026.11.04.764373",
+      "title": "Protify: A Benchmarking Platform Revealing Task Dependence and Homology Leakage in Protein Language Model Evaluation",
+      "authors": [
+        "Rafailidis, N.",
+        "Hallee, L. P.",
+        "Peleg, T.",
+        "Horger, C.",
+        "Haviland, L.",
+        "Gleghorn, J. P."
+      ],
+      "abstract": "Protein Language Models (pLMs) have become essential tools for computational protein analysis, and the rapid proliferation of architectures, training objectives, and pretraining corpora has produced a diverse and expanding model landscape. Evaluation practices, however, remain fragmented: studies use different datasets, preprocessing pipelines, and reporting conventions, so results rarely transfer between publications. Here we introduce Protify, an open-source platform that standardizes pLM benchmarking across zero-shot, supervised, and transferlearning settings through a unified, low-code interface. Protify currently supports 35 pretrained models and 61 curated datasets and it is easy to add custom versions of each. Leveraging Protify's high throughput pipelines, we benchmarked 23 models on ProteinGym, discovering that DPLM3B is currently the top-performing self-supervised encoder. Another large-scale supervised evaluation across 32 diverse tasks, spanning enzyme classification, gene ontology annotation, protein-protein interaction, subcellular localization, and other functional properties, found that no single pLM dominated: 14 different models took the top score on at least one dataset, and the margins between the best and second-best models fell within run-to-run variability. On enzyme optimal pH prediction, a general-purpose probe pipeline matched or exceeded EpHod, a specialized model selected from 11,550 training runs, after 50 hyperparameter trials (R2 = 0.482 versus 0.425). Under a homology-controlled split of the same data, every pooled-embedding probe collapsed to near-zero R2, and only a transformer probe over full residue embeddings recovered appreciable signal (R2 = 0.248). Model rankings therefore depend as much on evaluation design as on the models themselves. Protify makes those design choices explicit, controlled, and replayable, and is freely available at https://github.com/Gleghorn-Lab/Protify.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764373v1",
+      "tier": "mention",
+      "why": "Protify is a standardized benchmarking platform revealing that protein language model rankings are highly task-dependent and vulnerable to homology leakage."
+    },
+    {
+      "id": "10.64898/2026.10.30.762802",
+      "title": "Genome-wide chromatin accessibility during early embryogenesis in a generalist cichlid fish",
+      "authors": [
+        "Midhukrishna,",
+        "Smith, A. M.",
+        "Joyce, D.",
+        "Di-Palma, F.",
+        "Haerty, W.",
+        "Mehta, T. K."
+      ],
+      "abstract": "Background Lake Malawi's haplochromine cichlids are one of the most rapid and species-rich vertebrate adaptive radiations known, generating hundreds of species within < 1 million years, yet how regulatory regions shape their embryonic development remains poorly understood. Astatotilapia calliptera, a generalist riverine lineage and proxy for the ancestral stock that seeded this radiation, offers a developmental chromatin baseline against which regulatory divergence in specialised lineages can be compared. Results We generated genome-wide ATAC-seq profiles of A. calliptera embryos across three developmental stages (3, 7 and 12 days post-fertilisation, dpf), identifying 550,876-701,889 accessible chromatin peaks per stage. Accessible chromatin was enriched at gene promoters and at both highly conserved and accelerated conserved noncoding elements at every stage. The functional repertoire of accessible-promoter genes shifted across development, from early patterning at 3 dpf to the broadest regulatory repertoire at 7 dpf, and an increasingly neural- and locomotory-behaviour-enriched repertoire by 12 dpf, coinciding with post-hatching motor maturation. Differential accessibility showed that chromatin opening, rather than closing, dominates the earliest transitions (3 vs 7 and 3 vs 12 dpf), driven mostly by general metabolic genes, whereas the smaller, later 7 vs 12 dpf transition combined targeted gains at tissue-remodelling and apoptosis genes with losses at genes governing early neural and retinal patterning; almost all of these losses (96%) were at promoters that had opened between 3 and 7 dpf, indicating transient rather than sustained opening. Transcription factor (TF) footprinting identified stage-specific regulatory activity among developmentally important TFs, while the broader TF-promoter network remained topologically stable across all three stages, built around conserved hub regulators of core neural and sensory patterning genes e.g., SOX2, FOXG1, PTF1A, SOX10. This suggests that wiring is established early and largely maintained, following the hourglass model, with developmental progression driven by changes in activity of this conserved programme. Conclusions Together, these findings establish the first embryonic epigenomic resource for A. calliptera, revealing a developmental chromatin landscape of broad early opening and progressive functional specialisation, and providing a comparative framework for understanding how regulatory evolution has shaped Lake Malawi cichlid diversification.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.30.762802v1",
+      "tier": "mention",
+      "why": "First embryonic ATAC-seq atlas in a cichlid fish reveals stage-specific chromatin dynamics and a stable hourglass-model transcription factor network underlying rapid adaptive radiation."
+    },
+    {
+      "id": "10.64898/2026.11.03.764037",
+      "title": "BCL10 Gain-of-Function Impairs Germinal Center Participation by Naive B Cells and Cooperates with BCL6 to Drive Extrafollicular Diffuse Large B-Cell Lymphoma",
+      "authors": [
+        "Chahar, D.",
+        "Youssfi, A. A.",
+        "Coughlin, C. A.",
+        "Huang, H.-T.",
+        "Kuan, V. L. S.",
+        "Saralamma, V. V. G.",
+        "Lekakis, M.",
+        "Huynh, D.",
+        "Maura, F.",
+        "Amador, C.",
+        "Bilbao Cortes, D.",
+        "Chaudhuri, J.",
+        "Schatz, J. H."
+      ],
+      "abstract": "BCL10 gain-of-function (GoF) mutations occur in diffuse large B-cell lymphoma (DLBCL) cases of the BN2/C1 molecular subgroup. These alterations activate CARD11-BCL10-MALT1 (CBM) signaling and drive resistance to multiple drug classes, but their role in disease pathogenesis is incompletely understood. In particular, interactions between BCL10 GoF and additional DLBCL oncogenes are undefined. Here, we show BCL10 GoF in naive B cells blocks their participation in germinal center (GC) reactions and permits transformation to DLBCL with a non-GC B-cell phenotype. Most clinical cases with BCL10 GoF also carry translocation of the BCL6 proto-oncogene, and we show that co-activation of these two lesions together promotes pronounced oncogenic synergy. Detailed single-cell analyses of underlying premalignant B-cell populations revealed expansion of extrafollicular memory B cells whose gene-expression program remains prominent in resulting lymphomas in both the mouse and corresponding human tumors. We therefore define a novel role for BCL10 activating mutations in enabling BCL6 lymphomagenesis.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.764037v1",
+      "tier": "mention",
+      "why": "Single-cell analysis shows BCL10 gain-of-function mutations block germinal center participation and cooperate with BCL6 translocation to drive an extrafollicular lymphoma phenotype."
+    }
+  ]
+}

@@ -1,0 +1,776 @@
+{
+  "date": "2026-11-11",
+  "format": "dialogue",
+  "n_papers": 148,
+  "episode_title": "Time-resolved cardiogenesis screens, limb evolution networks, and uncertainty-aware TWAS",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Good morning, it's the eleventh of November. Roughly a hundred and forty-eight new preprints landed across archive and bio-archive overnight, which is a big day even by our standards."
+    },
+    {
+      "speaker": "Leo",
+      "text": "We picked five for deep dives and a longer list of briefs. Today's thread is really about context dependence: when a gene matters, not just whether it matters, whether that's in a developing heart, a growing limb, or a disease-affected cell buried in a case-control cohort."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's start with the big one. Paper one, Lindenhofer and colleagues, on the dynamic regulatory architecture of human cardiogenesis. This is a timing problem. Congenital heart disease starts in early embryogenesis, but nobody knows exactly when a given disease gene actually acts, because fetal heart atlases miss early time points and perturbation screens usually only sample one or two moments."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So how did they get around sampling just a snapshot?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They used cardioids, these are stem-cell-derived three-dimensional heart organoid models, and ran single-cell crisper screens against four hundred disease-relevant genes, but sampled daily across seven days of differentiation. That's roughly nine hundred seventy-five thousand cells total, so a genuinely time-resolved perturbation atlas, paired with a matched multiome reference, meaning joint R-N-A and chromatin accessibility profiling of the unperturbed system."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the headline is that phenotypes depend heavily on the day you perturb."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly. Perturbations that reshaped cell-fate allocation or expression were enriched for known C-H-D genes, and most of these effects fired during progenitor stages, before cells had committed to cardiac lineages. Interestingly, the timing of a gene's functional importance didn't track its own expression level. A gene could be weakly expressed yet still be the moment a cell state becomes dependent on it, and some effects lingered even after expression of the perturbed gene had already dropped."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the part that should worry anyone building a simple model where you knock down expression and read out effect size at the same moment. If dependency and expression decouple like that, a static multiome snapshot will systematically miss when a regulator actually matters."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and they push this further with consensus gene regulatory networks that integrate the perturbation outcomes with the multiome data, recovering known stage-specific regulators and nominating hox-B-two and hox-B-three as new candidate cardiac regulators, which is a nice validation that the approach can surface things beyond the obvious cardiac transcription factors."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's the catch, though? Cardioids are still an in vitro proxy for a three-dimensional, multi-lineage organ. Convergence and divergence of downstream programs across differentiation, which they also report, where perturbation effects correlated in progenitors can split apart, merge with other perturbations, or vanish entirely later on, is exactly the kind of context-dependence that's hard to generalize from one model system to in vivo development."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Fair, but the honest framing in the abstract is that this is a resource for building context-dependent in silico models of perturbation effects, not a final answer on C-H-D mechanism. For anyone doing perturbation prediction work, this is a reminder that time since perturbation, not just cell state, has to be a model input."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two moves from a organoid model to actual cross-species comparison. Alcaina-Caro and colleagues looked at limb evolution by comparing mouse and pig limb development with single-cell transcriptomics and chromatin accessibility, plus cross-species label transfer and gene regulatory network inference."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Why pig specifically?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Pigs are artiodactyls, hoofed mammals with reduced, fused digits, so they're a natural comparison for studying how a conserved limb program gets rewired to produce a different adult morphology. The finding is that cellular organization during limb development is broadly conserved between the two species, but there's discrete divergence specifically in the hox, F-G-F, and S-H-H regulated programs, which are the three signalling systems that pattern proximal-distal and anterior-posterior limb axes."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And they don't stop at description, they test causality."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, they inhibit F-G-F-receptor signalling in mouse limb buds and it phenocopies the distal expansion of G-R-E-M-one expression normally seen in pig, so that's a direct experimental link between a pathway-level difference and the pig-specific pattern. They also trace altered S-H-H responses and anterior-posterior polarity down to the P-T-C-H-one regulatory landscape, and functionally dissect it to find degeneration of one limb regulatory module in artiodactyls, alongside conservation of an additional distal enhancer and a lot of redundancy among the cis-regulatory inputs feeding that locus."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That redundancy point is the one I'd flag for anyone thinking about enhancer grammar. It's not that the artiodactyl locus lost regulatory inputs cleanly, it's a messier picture of degeneration in one module compensated by robustness elsewhere, plus allele-specific analyses showing reduced Ptch1 dosage gets buffered by transcriptional compensation from the other allele."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So morphological evolution here isn't one enhancer breaking, it's a multilayered buffering system reorganizing while the pathway's net output stays developmentally viable. That's a useful mechanistic frame if you're thinking about how cis-regulatory robustness constrains, or doesn't constrain, evolvability."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three is a pure methods paper, scGPL, for gene regulatory network inference from single-cell R-N-A-seq. The motivating tension is familiar: graph-based G-R-N methods model the whole network jointly but tend to overfit because they're trained on a single graph, while pairwise methods, which just score individual transcription-factor-target pairs, have abundant training examples but throw away global topology."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So scGPL tries to get both. What's actually new here, beyond stapling two existing paradigms together?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "The specific mechanism is a dynamic, importance-guided subgraph sampling step. Instead of using the whole graph or decomposing fully into pairs, they extract macro-level features from the global network and then sample local subgraphs weighted by importance, fusing those local, subgraph-enhanced features with the global representation. The claim is state-of-the-art performance across seven benchmark datasets, with up to a thirteen-point-seven percent improvement over the strongest baseline."
+    },
+    {
+      "speaker": "Leo",
+      "text": "My question with any G-R-N benchmark paper is always what ground truth they're testing against, since real regulatory networks aren't fully known. The abstract doesn't specify, so I'd want to check whether these benchmarks are curated chip-seq-derived gold standards or synthetic networks before trusting the thirteen percent number across the board."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Agreed, that's the standard caveat for this entire subfield. Still, architecturally the idea of letting subgraph sampling be importance-guided rather than random is a sensible way to inject topology awareness without just overfitting to one fixed graph, and code and data are archived, so it's at least reproducible."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four is ATTICUS, from Styll, Di, and Cai, and this one's about linking genetic variation to disease through predicted gene expression. Sequence-to-function models try to predict regulatory effects of variants directly from sequence, and when trained on personal genomes they start to capture real inter-individual expression differences, but two problems remain: the predicted direction of effect, up or down, is often wrong, and there's no quantified uncertainty on these predictions."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So what's the actual fix?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "ATTICUS combines personalized sequence representations, meaning the model conditions on an individual's actual genome sequence rather than a reference, with uncertainty-aware prediction of expression, and transfers regulatory knowledge learned from bulk expression pretraining into cell-type-specific prediction, without needing genotypes paired with single-cell expression, which is a real practical bottleneck since matched single-cell-genotype cohorts are rare and expensive."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the validation is against scPrediXcan, which is the existing standard for this kind of cell-type-specific expression imputation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right, across blood and brain cell types in the OneK1K and ROSMAP cohorts, ATTICUS roughly doubles the prediction correlation relative to scPrediXcan and substantially improves sign accuracy, meaning it gets the direction of the genetic effect right more often, which matters enormously for downstream interpretation."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Where does the uncertainty quantification actually pay off, though, rather than just being a nice add-on?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "In transcriptome-wide association studies. Applied to systemic lupus erythematosus and Alzheimer's disease, propagating the prediction uncertainty into the T-W-A-S gives more associations, with greater cell-type specificity, stronger directional concordance, and reduced statistical inflation, which is the usual worry with T-W-A-S, that you get false positives from poorly calibrated imputation models masquerading as significant hits."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That inflation point is the one I'd highlight for anyone running T-W-A-S routinely. A model that's only validated on correlation, without calibrated uncertainty, can look powerful while silently inflating your false discovery rate. This is a methodologically careful way of extending T-W-A-S to single-cell resolution without needing the ideal but currently unavailable matched genotype-single-cell datasets."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Last deep dive, paper five, IDC from Chang and Duren, tackles a really practical case-control single-cell problem. In diseases like diabetes or Alzheimer's, only a subset of cells of a given type are actually affected within each patient. If you just pool all patient cells against all control cells, you dilute the real signal with the unaffected majority, and donor-level batch effects can get confounded with disease status anyway."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So how do you find the affected cells without labels telling you which cells are sick?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "The key trick is using within-donor covariance. If a patient has a mix of affected and unaffected cells, disease-associated genes will show coordinated variation across cells within that one donor, because some cells are in the disease program and some aren't. But a global batch shift that hits every cell in a donor equally doesn't create that within-donor covariance pattern. IDC contrasts within-donor gene-gene covariance between patients and controls to learn the disease program itself, without ever needing batch labels, and then uses positive-unlabeled learning, a semi-supervised approach for when you only have confidently-labeled positives mixed in with unlabeled data, to score each cell's disease-like state and estimate per-donor disease burden."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What's the evidence it actually works rather than just being a clever idea?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "In simulations it identified affected cells and donor burden more accurately than deep generative and label-refinement baselines, stayed robust even under strong unrecorded batch effects, which is the scenario it's specifically designed for, and detected differentially expressed genes more sensitively than standard case-control pseudobulk testing while still controlling false discoveries. In real data, held-out donor disease-burden scores separated type two diabetes from non-diabetic donors in beta cells, and late-stage Alzheimer's from non-A-D donors in astrocytes and inhibitory neurons, with prediabetic and early-A-D donors landing at intermediate burden, which is biologically exactly what you'd hope for a disease continuum."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the genes IDC flags as high-contribution were more enriched for the relevant KEGG pathways than genes from standard pseudobulk differential expression. That's a meaningful comparison, because pseudobulk is the default most people reach for, and this suggests there's real signal left on the table when you don't model within-donor heterogeneity. The obvious caveat is that the whole method leans on the assumption that disease-associated genes covary coordinately within a donor, which should hold for genuinely discrete cell states but might be weaker for more continuous disease gradients."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Now a run of briefs. Paper six, Hou and colleagues, ran in situ single-cell crisper screens inside live mouse brains to study glioma. Using an RCAS-TVA delivery system for cell-type-restricted tumor initiation, they show tumor suppressor loss produces distinct genotype-dependent states, and that a fixed Cdkn2a loss changes how other tumor suppressor perturbations play out, suggesting it relieves a genetic barrier that otherwise constrains which mutations a cell can tolerate."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven is HERACLES, from Persad and Morris, a lineage reconstruction method for crisper-based lineage recording. It optimizes cell coordinates in hyperbolic space under a quartet-based likelihood, which lets it keep an explicit evolutionary model of crisper editing while scaling to a hundred fifty thousand cells in about four hours on one G-P-U, which is the real contribution here, since full likelihood tree search normally doesn't scale anywhere close to that."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight is a lineage tracing study of the adipose organ in mice using in utero crispr barcoding. The surprising result is that classic brown fat depots don't cluster by their shared developmental lineage markers, and some white and brown depots share unexpected clonal ancestry despite very different adult transcriptomes, arguing that anatomical niche, not just embryonic origin, shapes adipose identity."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nine, scHiR, is a joint representation learning method for paired single-cell transcriptome and Hi-C chromatin contact data, using a hyperspherical variational autoencoder. Across six paired datasets it improves clustering, resolves finer subclusters, and gives better pseudotime ordering than treating either modality alone, which is relevant if you're working with any of the newer joint 3D-genome-and-expression protocols."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper ten, SigDoTS, addresses something that's been nagging a lot of spatial transcriptomics users: when you test whether detected spatial domains are statistically real, testing on the same data used to detect them biases the p-values toward false positives. SigDoTS fixes this with hierarchical testing and simulation under a proper null, and in the human cortex it correctly merges some candidate layer-three domains while keeping distinct layer-six domains separate."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eleven, spSheaf, skips cell segmentation entirely and works directly on raw transcript locations using sheaf theory, a branch of topology for tracking locally consistent structure across a space. That matters because standard segmentation pipelines discard twenty to sixty percent of transcripts, and on the MERFISH hypothalamus benchmark it ranks first on one clustering metric among twelve competing methods, though results are more mixed on other tissue sections."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twelve, MorphoANOVA, gives a statistical framework for linking histology image features to spatial gene expression, using nested spatially varying coefficient models to separate genes whose expression tracks tissue morphology from genes with additional spatial pattern beyond morphology. In HER2-positive breast cancer, invasive cancer marker genes consistently show the strongest location-specific links to morphology."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper thirteen is a nice conceptual nudge for anyone doing routine single-cell preprocessing. McDermott and colleagues show that cell cycle phase and epithelial-to-mesenchymal transition are inversely coupled, with G-one cells showing stronger E-M-T signatures than cycling cells, and they argue this is routinely lost because people regress out cell cycle effects by default."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a genuinely useful warning. Regressing out cell cycle as a nuisance covariate is nearly automatic in a lot of pipelines, and this paper is saying that for specific biological questions like E-M-T, that nuisance variable is actually the signal."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fourteen is a sharp benchmarking critique of AlphaGenome, the sequence-to-function model. Sreenivasan and colleagues systematically disrupted over two thousand promoters in silico and found that AlphaGenome's predicted C-A-G-E signal, a readout of transcription start site activity, collapses appropriately, but predicted R-N-A-seq signal barely moves, so the model's own internal readouts of gene expression disagree with each other after the same perturbation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a concrete, checkable failure mode, not a vague complaint. If a model can't keep two readouts of the same underlying transcriptional event consistent under promoter disruption, that's a real limitation for using it to prioritize noncoding variants, which is exactly the use case everyone wants these models for."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fifteen is a methodological caution from Nguyen and Vafaee on cross-cancer survival prediction. Across thirteen T-C-G-A cancers they show that how you choose your model checkpoint and how you weight cancers in the evaluation can produce apparent concordance gains as large as the gains papers actually report as their main result, including a reimplementation of VAECox that showed no real pretraining benefit once evaluated fairly."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth remembering any time a benchmarking table reports a small absolute improvement in concordance. The evaluation protocol itself can manufacture that exact magnitude of difference."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Quick round-up of the rest of today's list. A tiger shark genome paper reporting genomic and epigenomic signatures of shark evolution and demographic history. A study showing E-R-V-derived double-stranded R-N-As trigger stress granules that push cells toward a neural crest fate as an early step in melanoma initiation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A drug-combination paper on ultra-low-dose same-target combinations for controlling resistance across disease stages. A virology paper on host control of human anellovirus persistence. A synthetic chromatin engineering paper reactivating STAT1 to restore cisplatin sensitivity in breast cancer."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A population genetics paper estimating mutation and recombination rates in free-ranging polar bears. A developmental paper dissecting human embryonic patterning that identifies a rostral midline progenitor population driving mesoendoderm induction. A lung biology paper showing alveolar and airway progenitors converge on a shared epigenetically encoded profibrotic state."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And finally PRISM, a probabilistic method for simultaneous ambient R-N-A decontamination and doublet correction tailored to spatial transcriptomics data."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's today's briefing. A lot of the common thread was timing and context, when a perturbation matters, which cells within a donor are actually diseased, whether a model's two outputs agree with each other under the same input change."
+    },
+    {
+      "speaker": "Leo",
+      "text": "See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.11.03.764059",
+      "title": "Time-resolved single-cell screening reveals the dynamic regulatory architecture of human cardiogenesis",
+      "authors": [
+        "Lindenhofer, D.",
+        "Mikulik, K.",
+        "Mantz, S.",
+        "Jung, H.",
+        "Ueltzhoeffer, K.",
+        "Kueblbeck, M.",
+        "Rueda-Gensini, L.",
+        "Munoz-Verdu, A.",
+        "Haas, J.",
+        "Meder, B.",
+        "Schraivogel, D.",
+        "Mall, M.",
+        "Huber, W.",
+        "Pettet, A.",
+        "Reddington, J.",
+        "Clarke, B.",
+        "Stegle, O.",
+        "Steinmetz, L. M."
+      ],
+      "abstract": "Congenital heart disease (CHD) originates during early embryogenesis, yet when disease genes act cannot be determined from existing data. Human fetal heart atlases lack critical time points, and perturbation screens that systematically assess gene function currently profile at most a few time points. Here we combined single-cell CRISPR screening of 400 disease-relevant genes in cardioids, sampled daily over seven developmental days (~975,000 cells), with a matched multiome atlas. Perturbation phenotypes were strongly dependent on developmental stage. Perturbations that reshaped cell-fate allocation or gene expression were enriched for CHD-linked genes, and most acted already during progenitor stages. Timing was largely independent of the target gene's own expression, marking instead when a cell state became functionally dependent on it, and some effects persisted after expression declined. Consensus gene regulatory networks integrating perturbation and multiome data recovered stage-specific regulators and nominated HOXB2 and HOXB3 as candidate cardiac regulators. Many perturbations converged on shared downstream programmes, which were reorganised through differentiation. Effects correlated in progenitors were maintained in differentiated cells, split into distinct programmes, converged with other perturbations or disappeared entirely, indicating that gene function is highly context dependent. Beyond advancing our understanding of the developmental regulatory logic underlying CHD, our work provides a resource for developing context-dependent models for in silico prediction of perturbation effects.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.764059v1",
+      "tier": "deep",
+      "why": "A nearly million-cell, time-resolved CRISPR screen of 400 disease genes across cardioid development reveals stage-dependent perturbation effects and nominates new cardiac GRN regulators, directly bridging gene regulation and development."
+    },
+    {
+      "id": "10.64898/2026.11.07.765081",
+      "title": "Network inference at single-cell resolution reveals morphoregulatory divergence and multilayered buffering in limb evolution",
+      "authors": [
+        "Alcaina-Caro, A.",
+        "Sospedra-Arrufat, I.",
+        "Tissieres, V.",
+        "Salvador-Martinez, I.",
+        "Almorox, L.",
+        "Pawluk, J. J.",
+        "Diaz-Rueda, A.",
+        "Fernandez-Minan, A.",
+        "Hurtado, A.",
+        "Martinez Real, F.",
+        "Lupianez, D.",
+        "Pernaute, B.",
+        "Visel, A.",
+        "Osterwalder, M.",
+        "Heyn, H.",
+        "Tena, J. J.",
+        "Nusspaumer, G.",
+        "Lopez-Rios, J."
+      ],
+      "abstract": "How changes in conserved developmental genetic programs contribute to morphological evolution remains poorly understood, particularly in non-conventional model species. Here, we combine single-cell transcriptomic and chromatin-accessibility profiling with cross-species label transfer and gene regulatory network inference to compare mouse and pig limb development. Our analyses identify broadly conserved cellular organization but discrete divergence in HOX-, FGF- and SHH-regulated programs. FGFR inhibition in mouse limb buds phenocopies the distal expansion of pig GREM1 expression, while altered SHH responses and anterior-posterior polarity converge on the PTCH1 regulatory landscape. Its functional dissection reveals degeneration of a limb regulatory module in artiodactyls, conservation of an additional distal enhancer, and extensive redundancy among cis-regulatory inputs. Allele-specific analyses further show that reduced Ptch1 dosage is buffered by transcriptional compensation. Together, these findings reveal how cis-regulatory and pathway-level robustness can accommodate distributed regulatory change while preserving developmental function, providing a mechanistic framework for the evolution of artiodactyl limb morphology.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.07.765081v1",
+      "tier": "deep",
+      "why": "Single-cell multi-omic GRN inference across mouse and pig limb development pinpoints specific HOX/FGF/SHH regulatory divergences and reveals cis-regulatory redundancy buffering morphological evolution."
+    },
+    {
+      "id": "2611.13801",
+      "title": "Bridging Graph and Pairwise Learning for Gene Regulatory Network Inference from scRNA-seq Data",
+      "authors": [
+        "Hang Li",
+        "Jiaxin Qi",
+        "Yan Cui",
+        "Yuhua Zheng",
+        "Jianqiang Huang"
+      ],
+      "abstract": "Motivation: Gene regulatory networks (GRNs) capture the underlying interactions through which transcription factors (TFs) regulate genes. Based on gene expression data, existing GRN inference approaches generally fall into two categories: graph-based methods, which model the GRN as a whole graph, and pairwise-based methods, which decompose the GRN into individual TF-target gene pairs for modeling. However, each approach exhibits limitations that are precisely the strengths of its counterpart. Graph-based methods tend to overfit due to their reliance on a single training graph, whereas pairwise-based methods benefit from abundant TF-target training pairs. In contrast, pairwise-based methods overlook the global topological structure, which is essential for comprehensively capturing regulatory mechanisms. Results: To address these limitations, we propose scGPL, an end-to-end unified framework that jointly models global regulatory topology and local interactions. scGPL extracts macro-level features from the global regulatory graph and introduces a dynamic, importance-guided subgraph sampling mechanism to capture fine-grained local dependencies. By fusing global representations with subgraph-enhanced local features, our framework bridges the gap between the two paradigms, incorporating essential whole-graph topological dependencies while retaining the data abundance advantage of pairwise methods. Extensive experiments on seven benchmark datasets demonstrate that scGPL consistently achieves state-of-the-art performance, with up to 13.7% improvement over the strongest baseline, validating the effectiveness of our integrative design. Availability and implementation: The source code is maintained on GitHub (https://github.com/talent-hang/scGPL), and the datasets and versioned releases are archived at https://doi.org/10.5281/zenodo.21608485 for reproducibility.",
+      "categories": [
+        "q-bio.GN",
+        "cs.AI"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2611.13801",
+      "tier": "deep",
+      "why": "A unified graph+pairwise learning framework for GRN inference from scRNA-seq that addresses a real methodological gap between global topology and local TF-target modeling, with strong benchmark gains."
+    },
+    {
+      "id": "10.64898/2026.11.06.764604",
+      "title": "Uncertainty-Aware Personalised Gene Expression Prediction Improves Cell-Type-Specific Association Testing",
+      "authors": [
+        "Styll, P.",
+        "Di, Y.",
+        "Cai, N."
+      ],
+      "abstract": "Linking genetic variation to disease requires accurate prediction of its effects on gene expression in relevant cell types. Sequence-to-function models offer a way to predict these effects and, with training on personal genomes, have begun to capture inter-individual expression differences. However, effect sign accuracy remains limited, and predictive uncertainty is unquantified. Here we introduce ATTICUS, which combines personalised sequence representations with uncertainty-aware expression prediction. ATTICUS transfers regulatory information learned in bulk expression pretraining to cell-type-specific expression prediction without requiring genotypes paired with single-cell expression data. Across blood and brain cell types in OneK1K and ROSMAP, ATTICUS approximately doubles expression prediction correlations relative to scPrediXcan and substantially improves sign accuracy. Moreover, ATTICUS enables uncertainty-aware transcriptome-wide association studies (TWAS). Applied to systemic lupus erythematosus and Alzheimer's disease, ATTICUS identifies more associations, with greater cell-type specificity and stronger directional concordance, and reduced statistical inflation. Together, our results demonstrate that personalised training makes predictions more directionally consistent, and uncertainty propagation improves the calibration of TWAS and the prioritisation of disease genes. ATTICUS provides a framework for both, enabling the use of single-cell expression datasets without matched genotypes to inform uncertainty-aware TWAS, expanding their use in prioritising disease-associated genes and cell types.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764604v1",
+      "tier": "deep",
+      "why": "ATTICUS combines personalized sequence representations with uncertainty quantification to roughly double cell-type-specific expression prediction accuracy and meaningfully improve TWAS calibration for disease gene prioritization."
+    },
+    {
+      "id": "10.64898/2026.11.06.764894",
+      "title": "Contrasting within-donor gene covariation identifies disease-associated cells and genes in case-control single-cell studies",
+      "authors": [
+        "Chang, F.",
+        "Duren, Z."
+      ],
+      "abstract": "In case-control single-cell studies, disease often affects only a subset of cells of a given type within each patient. Comparing all cells from patients with all cells from control donors therefore dilutes disease signals, while donor variation and recorded or unrecorded batch effects can be confounded with disease status. We present IDC (Identification of Disease-associated Cells), which uses this cellular heterogeneity as signal. A mixture of affected and unaffected cells creates coordinated variation among disease-associated genes within each patient, whereas shifts shared by all cells of a donor leave this within-donor covariance unchanged. IDC therefore contrasts within-donor gene-gene covariance between patients and controls to learn disease-associated expression programs without batch labels, then applies positive-unlabeled learning to score each cell's disease-like state and estimate each donor's disease burden. IDC also computes, in closed form, gene contribution scores and leave-gene-out cell scores that exclude each tested gene, enabling within-donor differential expression testing and cross-donor meta-analysis without retraining. In simulations, IDC identified affected cells and estimated donor burden more accurately than deep generative and label-refinement methods, remained robust to strong unrecorded batch effects, and detected differentially expressed genes more sensitively than case-control pseudobulk methods while controlling false discoveries. In human pancreatic islets and prefrontal cortex, disease burden in held-out donors separated type 2 diabetes (T2D) from non-diabetic donors in beta cells, and late-stage Alzheimer's disease (AD) from non-AD donors in astrocytes and inhibitory neurons, while placing prediabetic and early-AD donors at intermediate levels. Genes with the highest IDC contribution scores were more strongly enriched for the KEGG T2D and AD pathways than case-control pseudobulk rankings, and within-donor testing revealed coordinated metabolic, cell-adhesion and synaptic changes along the inferred disease axis.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764894v1",
+      "tier": "deep",
+      "why": "IDC cleverly uses within-donor gene covariance instead of batch-confounded case-control comparisons to identify disease-associated cells and genes, validated in diabetes and Alzheimer's single-cell data."
+    },
+    {
+      "id": "10.64898/2026.11.08.765171",
+      "title": "In situ single-cell CRISPR screens uncover context-dependent rewiring of glioma states and immune recruitment",
+      "authors": [
+        "Hou, N.",
+        "Lia, I.-T.",
+        "Giglio, R. M.",
+        "Van, B. T.",
+        "Pallais-Aks, S.",
+        "Vaikunthan, M.",
+        "Lu, V.",
+        "Guo, J.",
+        "Williams, D.",
+        "Nieto, T. C.",
+        "Shi, L.",
+        "Slater, C.",
+        "Azizi, E.",
+        "McFaline-Figueroa, J. L."
+      ],
+      "abstract": "In vivo single-cell CRISPR screens can resolve perturbation effects in native tissues, but few combine cell-type-restricted delivery, somatic tumor initiation, and combinatorial perturbation. Here we developed an RCAS-TVA-based single-cell CRISPR screening approach coupling oncogenic transformation with single- or dual-guide perturbation in defined neural progenitors. In glioma, tumor suppressor loss produced distinct genotype-dependent transcriptional states, including an NF1-loss-associated increase in mesenchymal programs. Introducing a fixed Cdkn2a(ARF) perturbation altered malignant-cell state composition, immune-cell abundance, and the effects of additional tumor-suppressor perturbations, including increased representation of Pten- and Rb1-deficient cells, suggestive of the relief of an ARF-dependent genetic barrier. These perturbations converged on transcriptional states resembling pharmacologic p53 activation in human glioblastoma. Across mouse tumors and human glioblastoma models, this response was associated with increased astrocyte-like state representation. These findings establish a framework for single-cell analysis of context-dependent somatic perturbations during tumor initiation in vivo.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.08.765171v1",
+      "tier": "brief",
+      "why": "In vivo single-cell CRISPR screening in glioma reveals how a fixed Cdkn2a(ARF) perturbation reshapes tumor-suppressor epistasis and immune recruitment, linking somatic genetics to cell-state composition."
+    },
+    {
+      "id": "10.64898/2026.11.06.764882",
+      "title": "HERACLES for fast and accurate likelihood-based reconstruction of massive lineages",
+      "authors": [
+        "Persad, S. C.",
+        "Morris, Q."
+      ],
+      "abstract": "CRISPR-based lineage recording technologies can trace the ancestry of hundreds of thousands of cells, yet reconstructing accurate phylogenies at this scale remains computationally challenging. Likelihood-based methods employ explicit evolutionary models of CRISPR editing that improve tree accuracy but require computationally expensive searches over tree topologies, whereas distance-based alternatives scale efficiently but rely on distances that may not faithfully represent the editing process, introducing biases whose magnitude and direction are unknown. Here, we introduce HERACLES, which optimizes cell coordinates in hyperbolic space under a quartet-based composite likelihood of CRISPR editing. By recovering local branching structures directly from embedded distances, HERACLES guides continuous optimization with an explicit evolutionary model without repeatedly constructing and evaluating complete phylogenies. Across simulated benchmarks, HERACLES improves reconstruction accuracy over existing methods and scales to lineages containing 150,000 cells in about four hours on a single GPU. On experimental KP-tracer and PEtracer datasets, HERACLES reconstructs phylogenies consistent with independent anatomical annotations and temporal lineage markers. Its flexible likelihood framework also accommodates different recording mechanisms: incorporating sequential editing improves reconstruction of simulated DNA Typewriter lineages. Together, these results establish continuous optimization of local evolutionary relationships as a scalable and flexible approach to probabilistic lineage reconstruction.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764882v1",
+      "tier": "brief",
+      "why": "HERACLES brings explicit likelihood-based evolutionary modeling to CRISPR lineage reconstruction at 150,000-cell scale via hyperbolic embedding, a major scalability advance for lineage tracing."
+    },
+    {
+      "id": "10.64898/2026.11.05.762308",
+      "title": "Unbiased lineage tracing across the adipose organ decouples developmental origin from anatomical and transcriptomic identities",
+      "authors": [
+        "Inoue, O.",
+        "Singh, A.",
+        "Ginugu, M.",
+        "Ahn, C.",
+        "Secchi, M. A.",
+        "Bowling, S. J.",
+        "Lim, H.-W.",
+        "Sanchez-Gurmaches, J."
+      ],
+      "abstract": "The developmental origins of individual adipose depots and whether embryonic lineage dictates adult function remain unresolved. Here, we apply in utero CRISPR-mediated barcoding lineage tracing to construct the first unbiased clonal map of adipose organ development in mice. The developmental hierarchy we uncover challenges several conventions. Remarkably, interscapular brown fat, used as the prototypical brown fat, is the most developmentally isolated brown fat; depots sharing Myf5/Pax3 lineage markers fail to cluster together; mesenteric white fat shares unexpected high clonal ancestry with brown fats despite a radically divergent transcriptome; and subcutaneous white adipose tissues converge transcriptomically despite distant developmental origins. These findings call for a reinterpretation of single-marker lineage tracing data across the adipose organ and propose that adipose depot identity is not solely encoded by embryonic lineage but is substantially shaped by the anatomical niche.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.762308v1",
+      "tier": "brief",
+      "why": "Unbiased CRISPR lineage barcoding across the mouse adipose organ overturns assumptions that embryonic lineage dictates adult depot identity, a surprising developmental result with methodological rigor."
+    },
+    {
+      "id": "10.64898/2026.11.06.764816",
+      "title": "scHiR learns joint cellular representations from paired single-cell transcriptome and 3D genome data",
+      "authors": [
+        "Zhao, Y.",
+        "Jia, P.",
+        "Hill, M. C.",
+        "Tang, L.",
+        "Fang, Z.",
+        "Zheng, R.",
+        "Li, M."
+      ],
+      "abstract": "Simultaneously sequenced scRNA-seq and scHi-C technologies provide matched measurements of gene expression and three-dimensional (3D) genome organization within individual cells, offering complementary insights into cellular state. However, integrative analysis remains challenging due to the heterogeneous structures and characteristics of these modalities. To realize the full potential of such data, we need effective computational methods to learn joint cellular representations. Here, we present scHiR, a framework based on a hyperspherical variational autoencoder (S-VAE) for learning co-embeddings from paired gene-expression profiles and chromatin contact maps. The framework facilitate downstream analyses such as cell clustering, fine-grained cell-state characterization, and developmental trajectory inference, while modality-specific decoders enable the signal recovery of input profiles. We evaluated scHiR across six paired datasets generated by HiRES, GAGE-seq, and LiMCA. scHiR captured cell-type-specific information and achieved improved clustering performance compared with representative single-omics methods. It was also capable of resolving fine-grained subclusters and revealed discordant and distinct cellular profiles. In developmental biological datasets, scHiR preserved trajectory-related structure and improved pseudotime in agreement with known developmental progression. Finally, scHiR generated reconstructed transcriptomic and chromatin contact profiles with reduced noise, enhanced cell-type-related signals, and improved recovery of held-out chromatin contacts. These results demonstrate that scHiR provides an effective method for learning joint cellular representations from paired scRNA-seq and scHi-C data.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764816v1",
+      "tier": "brief",
+      "why": "scHiR learns joint cellular representations from paired scRNA-seq and scHi-C via a hyperspherical VAE, improving clustering and trajectory inference across multi-omic single-cell data."
+    },
+    {
+      "id": "10.64898/2026.11.07.765075",
+      "title": "Statistical significance testing for spatial domain detection in spatial transcriptomics",
+      "authors": [
+        "Wang, H.",
+        "Cao, F.",
+        "Shen, H.",
+        "Liu, Y.",
+        "Yan, G."
+      ],
+      "abstract": "In spatial transcriptomics, domain-detection methods group platform-specific spatial measurement units–cells, bins or multicellular spots–into spatial domains for comparing molecular programs, cellular composition and interactions among tissue regions. However, the number of candidate domains detected in the same tissue can vary with user-specified parameters or model-selection criteria. Whether candidate domains should be merged can be framed as a test of a single-domain null hypothesis, under which each gene has constant mean expression across all spatial units in the combined region. However, testing candidate domains on the same gene-expression data used to detect them may induce post-selection bias and yield anti-conservative p-values, increasing the risk of oversegmentation. To address these challenges, we introduce SigDoTS (statistical Significance testing for Domain deTection in Spatial transcriptomics), a hypothesis-testing framework for spatial domain detection. SigDoTS uses hierarchical testing to determine which candidate domains to retain or merge, with adjustment for family-wise error control. It accounts for gene-gene covariance and spatial dependence and computes p-values by rerunning the upstream domain-detection pipeline on datasets simulated under the fitted single-domain null. In simulations, SigDoTS controlled the type I error rate at the root node under the single-domain null and improved recovery of the true spatial domains when multiple domains were present. In human dorsolateral prefrontal cortex, SigDoTS retained superficial and deep Layer 6 domains but merged Layer 3 candidate domains across different initial numbers of candidate domains. In ovarian and colorectal cancers, SigDoTS retained epithelial domains with different gene-expression programs and local immune environments, together with immune, stromal and vascular domains.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.07.765075v1",
+      "tier": "brief",
+      "why": "SigDoTS introduces a rigorous hierarchical hypothesis-testing framework to decide when spatial transcriptomics domains should be merged, addressing post-selection bias that plagues current pipelines."
+    },
+    {
+      "id": "10.64898/2026.11.09.765244",
+      "title": "spSheaf: sheaf-theoretic spatial domain inference from raw molecules without cell segmentation",
+      "authors": [
+        "Paluzo-Hidalgo, E.",
+        "Maehara, K.",
+        "Imoto, Y."
+      ],
+      "abstract": "Spatial-transcriptomics pipelines usually require cell segmentation and discard 20-60% of transcripts. We introduce spSheaf, a segmentation-free spatial domain inference method built on cellular sheaf theory. Within a domain, neighbouring regions have compatible local expression structure; across a transition between programs they remain discordant after alignment of their local subspaces. spSheaf quantifies this alignment-adjusted disagreement and attenuates transitions during clustering. On the MERFISH hypothalamus benchmark it attains mean ARI 0.571 and NMI 0.655, ranks first of twelve on NMI, and leads SSAM, Points2Regions and FICTURE by 0.16 ARI on held-out slices. On three further annotated sections, every method tuned, it leads on one, ties on one and trails SSAM by 0.06 ARI. The sheaf weighting adds +0.102 ARI where domains are distinct programs and is neutral on laminar cortex. One domain above the annotated count, it divides the BST into the territories of two atlas neuronal populations on both adjacent sections.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.09.765244v1",
+      "tier": "brief",
+      "why": "spSheaf applies cellular sheaf theory to infer spatial transcriptomic domains directly from raw molecules without cell segmentation, outperforming established segmentation-free methods."
+    },
+    {
+      "id": "10.64898/2026.11.05.764699",
+      "title": "MorphoANOVA: Dissecting Histology-Gene Expression Relationships in Spatial Transcriptomics",
+      "authors": [
+        "Chen, P.-W.",
+        "Yan, G.",
+        "Yu, S.",
+        "Li, J. J."
+      ],
+      "abstract": "Spatial transcriptomics (ST) measures the expression of hundreds to thousands of genes within tissue architecture, often accompanied by histology images. However, it remains challenging to systematically characterize which genes exhibit associations with tissue morphology, whether these associations vary spatially, and which genes show additional spatial expression patterns beyond those captured by morphology. Here we introduce MorphoANOVA, a gene-wise statistical framework for characterizing morphology–expression relationships across genes measured by ST. Using nested spatially varying coefficient models and sequential ANOVA, MorphoANOVA assesses slide-wide associations with an H\\&E-derived morphology feature, location-specific changes in these associations, and additional spatial variation after accounting for the selected feature. The resulting statistics enable gene prioritization and pathway enrichment analysis, while spatial component maps support the interpretation of individual genes. Simulations demonstrate MorphoANOVA's ability to distinguish the modeled components and recover their spatial patterns. Applications to human cortex and breast cancer identify biological programs associated with different morphology–expression patterns and reveal distinct relationships with cell composition. Across three HER2-positive breast cancer patients, invasive-cancer marker genes consistently exhibit stronger evidence of location-specific morphology associations. MorphoANOVA thus provides a framework for systematically interpreting spatial gene-expression patterns in relation to tissue morphology.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764699v1",
+      "tier": "brief",
+      "why": "MorphoANOVA offers a gene-wise spatially varying coefficient model to systematically dissect which genes' spatial expression is explained by tissue morphology versus independent spatial variation."
+    },
+    {
+      "id": "10.64898/2026.11.05.764762",
+      "title": "Cell cycling throttles epithelial–mesenchymal transition",
+      "authors": [
+        "McDermott, M.",
+        "Dey, A.",
+        "Mehta, R.",
+        "MacLean, A. L."
+      ],
+      "abstract": "Cell cycle phase is an understudied source of variation in gene expression. EMT is a case in point: this cell state transition that drives metastasis has been studied widely across tissue, stimulus, and microenvironmental conditions, yet cell cycle effects are routinely regressed out of single-cell EMT analyses. Here, we compare EMT between G1 and cycling (S/G2/M) cell states in two independent scRNA-seq datasets of TGF-beta-stimulated MCF10A mammary epithelial cells (varying dose and timepoint). G1 cells consistently show higher expression of EMT genes and upregulated RNA velocities than cycling cells, with the strongest upregulation in G1 EMT intermediate states. Consistent with the go-or-grow hypothesis, EMT and cell cycle programs inversely correlate; moreover, this anticorrelation extends to RNA velocity and strengthens with TGF-beta dose. We identify a 77-gene G1-specific EMT signature enriched for actin cytoskeletal and extracellular matrix genes that would otherwise be lost by regressing out cell cycle effects. This gene set prompts the hypothesis that, unconstrained by the cytoskeletal demands of mitosis, G1 cells have greater capacity to execute EMT. Further, we developed an EMT gene regulatory model coupled with a cell cycle module, and found through simulation that the model recapitulated this inverse EMT–cell cycle relationship. Using this model, we predict that cycle-selective chemotherapy enriches for the G1 intermediate state, which has high metastatic potential. Cell cycle phase thus ought not be regressed out of EMT states, given its influence on EMT.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764762v1",
+      "tier": "brief",
+      "why": "Shows that cell-cycle phase, routinely regressed out of EMT analyses, actually gates EMT execution, with a coupled GRN model predicting that cycle-selective chemotherapy enriches a more metastatic G1 state."
+    },
+    {
+      "id": "10.64898/2026.11.06.764851",
+      "title": "Systematic promoter perturbation reveals limitations of AlphaGenome gene expression predictions",
+      "authors": [
+        "Sreenivasan, V. K. A.",
+        "Aksu, E. D.",
+        "Spielmann, M."
+      ],
+      "abstract": "Sequence-to-function (S2F) models promise to facilitate the interpretation of noncoding variants by predicting their effects on gene regulation directly from genomic sequence. However, whether these models recapitulate fundamental principles of transcriptional biology remains unclear. Here, we tested whether AlphaGenome recognizes the expected consequences of promoter disruption on predicted gene expression. We systematically perturbed annotated promoter elements in silico for 2,111 promoter-gene pairs using dinucleotide shuffling, GC-adjusted random base substitution, and N-masking. We then compared AlphaGenome-predicted CAGE and RNA-sequencing signals across 20 tissues for reference and promoter-disrupted sequences. While CAGE and RNA-sequencing predictions were strongly correlated for reference sequences, promoter disruption markedly reduced predicted CAGE activity, with N masking producing reductions of approximately three orders of magnitude. By contrast, the predicted RNA-sequencing signals were substantially less affected, resulting in an uncoupling of two molecular readouts of gene expression. Exon-level analyses showed that AlphaGenome predicted reduced RNA-sequencing signal when exonic sequences are within the disrupted region, but frequently failed to propagate this effect to downstream exons. This divergence between the CAGE and RNA-sequencing readouts was apparent from the second exon onward and was more pronounced in longer genes. Although alternative transcription initiation and shared downstream exons may explain individual cases, it is unlikely to account for the systematic discordance between CAGE and RNA-sequencing predictions. These findings indicate that AlphaGenome can recognize the local loss of promoter activity without consistently capturing its consequences across the corresponding transcript. More broadly, our results show that predictions from individual S2F output tracks do not necessarily reflect a coherent model of transcription. Systematic biological benchmarking and experimental validation therefore remain essential before such predictions can be used to prioritize or classify noncoding variants in research or diagnostic settings.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764851v1",
+      "tier": "brief",
+      "why": "Systematic in silico promoter perturbations expose a striking inconsistency in AlphaGenome's CAGE versus RNA-seq predictions, a cautionary benchmark for anyone using sequence-to-function models to interpret noncoding variants."
+    },
+    {
+      "id": "10.64898/2026.11.05.764739",
+      "title": "Evaluation effects can rival reported concordance gains in cross-cancer survival prediction",
+      "authors": [
+        "Nguyen, R.",
+        "Vafaee, F."
+      ],
+      "abstract": "Studies of cross-cancer learning for survival prediction from tumour omics have reported concordance gains of 0.020 and 0.045, but how such gains compare with evaluation effects remains unclear. We examined these effects across 13 TCGA cancers (5,761 patients, 1,526 disease-specific deaths), using five repeats of five-fold cross-validation and paired bootstrap intervals. When model selection did not use test data, our borrowing model gained 0.009 (95% interval 0.001 to 0.016) over its target-fitted reference when cancers received equal weight (post hoc). Random-effects pooling gave a gain of 0.002 (-0.002 to 0.006), with most weight assigned to cancers where the model made little use of the pretrained score. Choosing the fusion weight on test splits raised the apparent equal-weight gain to 0.017. We reimplemented a published method, VAECox, which showed no pretraining gain over random initialisation at the last or validation-selected training step. Choosing each network's best test step, as the published code does, raised concordance by 0.03 to 0.05 across the 13-cancer and ten-cancer overall-survival settings, but barely changed the difference between networks. In a constructed post hoc experiment, choosing the best test step only for the pretrained network changed the equal-weight mean difference from -0.004 to +0.045 (+0.035 to +0.054). Across seven multi-omics comparisons, estimates from single five-fold runs differed from their cancer's five-run mean by at least 0.02 in 11% to 42% of runs. Concordance was about 0.02 lower at held-out tissue source sites. Interpreting a reported gain therefore requires each model's selection rule, variation across repeated partitions, the weighting of cancers and the evaluation population.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764739v1",
+      "tier": "brief",
+      "why": "A sobering methodological audit showing that model-selection and evaluation choices in cross-cancer survival prediction can rival or exceed the concordance gains reported for the actual biological methods."
+    },
+    {
+      "id": "10.64898/2026.11.05.764724",
+      "title": "The tiger shark, Galeocerdo cuvier (Peron & Lesueur, 1822), genome reveals genomic and epigenomic signatures of shark evolution and demographic history",
+      "authors": [
+        "Pearce, J. R.",
+        "Doran, A.",
+        "De Jong, E.",
+        "Kwong, S.",
+        "Jewell, O.",
+        "D'Antonio, B.",
+        "Fraser, M. W.",
+        "Corrigan, S.",
+        "Thomas, L.",
+        "Edwards, R. J."
+      ],
+      "abstract": "Cartilaginous fishes (Chondrichthyes) represent one of the oldest extant vertebrate lineages, persisting for over 450 million years, yet genomic resources remain limited for many species despite widespread conservation concern. The tiger shark, Galeocerdo cuvier (Peron & Lesueur, 1822), the sole surviving member of the family Galeocerdonidae, is a circumglobally cosmopolitan predator vital in ecosystem regulation but is experiencing population declines. Here, we generated the first chromosome-scale haplotype-phased reference genome for the tiger shark and integrated comparative and population genomics with methylomics to characterise its genome architecture and evolutionary history. This assembly presented the first evidence of male heterogamety in this species. Comparative analyses revealed lineage-specific transposable element expansions across the chondrichthyan class suggesting ongoing genome restructuring in Carcharhiniform sharks. We report the first hydroxymethylome in a chondrichthyan, higher than that of other vertebrates, hinting at novel DNA evolutionary and regulatory pathways in an early-diverging lineage of jawed vertebrates. We identified genomic signatures of prolonged population decline that correlated with historical climate fluctuations and have resulted in sustained low levels of genetic heterozygosity in this species. These findings offer new insights into shark and broader vertebrate genomic and epigenomic evolution while providing valuable resources for conservation genomics of one of the world's most widespread top-order predators in the face of accelerating environmental change.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764724v1",
+      "tier": "mention",
+      "why": "First chromosome-scale tiger shark genome reveals male heterogamety and the first chondrichthyan hydroxymethylome, broadening vertebrate epigenomic evolution context."
+    },
+    {
+      "id": "10.64898/2026.11.06.764901",
+      "title": "ERV-derived dsRNAs induce stress granules that drive neural crest fate to initiate melanoma",
+      "authors": [
+        "Drake, K. D.",
+        "Formato, E.",
+        "Hakobyan, S.",
+        "Hongo, R. A.",
+        "Yang, S.",
+        "Porat, J.",
+        "Sanborn, O.",
+        "Robertson, A. L.",
+        "Kretov, D. A.",
+        "Zhou, Y.",
+        "Cifuentes, D.",
+        "Kunz, M.",
+        "Binder, H.",
+        "Flynn, R. A.",
+        "Zon, L. I."
+      ],
+      "abstract": "Melanoma arises when melanocytes are oncogenically reprogrammed into neural crest-like cells, but what initiates this switch is unknown. Here we show that endogenous retrovirus (ERV)-derived double stranded RNAs (dsRNAs) induce stress granules (SGs) that drive this fate change. In zebrafish, melanoma progresses through a stage-specific ERV switch: zferv marks precursor cells before crestin activates in tumor cells. Both elements generate dsRNA that triggers eif2ak2-dependent SGs within precursor lesions and through transformation. SGs are tumorigenic as G3BP1 overexpression accelerates melanoma onset, whereas mosaic, melanocyte-specific g3bp1/2 knockout delays it. Small molecule-mediated inhibition of G3BP1/2 eliminates precursor lesions and reduces tumor burden. Similarly, blocking dsRNA sensing prevents SG formation and lowers melanoma incidence. Human nevi and melanomas show analogous, stage-specific ERV programs and SG assembly. In human melanoma cells, SGs sequester and translationally repress SOX10-regulating mRNAs, including the tumor suppressor KMT2D. Mosaic knockout of kmt2d in vivo enhances SOX10-driven neural crest reactivation. Thus, an ERV-SG axis establishes an oncogenic translatome that enables melanoma fate, with diagnostic and therapeutic potential.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764901v1",
+      "tier": "mention",
+      "why": "Endogenous retrovirus-derived dsRNAs trigger stress granules that translationally repress SOX10-regulating mRNAs, mechanistically linking ERV reactivation to melanoma initiation."
+    },
+    {
+      "id": "10.64898/2026.11.08.764983",
+      "title": "Ultra-low-dose same-target combinations control drug resistance across stages",
+      "authors": [
+        "Zhao, Z.-G.",
+        "Cai, S.-Q.",
+        "Tan, R.",
+        "Cai, W.",
+        "Zhao, Q.",
+        "Wang, X.",
+        "Xu, F."
+      ],
+      "abstract": "The emergence of drug resistance continues to limit the long term effectiveness of cancer therapies [1], as tumour cells adapt to therapeutic selective pressure through diverse genetic and non-genetic routes [2,3]. Despite advances in more potent and next generation inhibitors and mechanism based combination therapies [4,5], durable disease control remains difficult to achieve. Here we tested an alternative strategy: combining multiple inhibitors directed against the same oncogenic driver, each at ultra low doses with minimal individual activity, to delay resistance emergence. In epidermal growth factor receptor (EGFR) driven cancer models, such ultra low dose same target combinations (ULDCs) distributed individually weak perturbations across multiple inhibitors directed against the same target and achieved substantial growth inhibition in vitro and antitumour activity in vivo despite weak effects of the corresponding single agents. Under similar levels of growth inhibition (~50%), single-agent EGFR inhibitors generated resistant outgrowth, whereas a five drug ULDC delayed resistance emergence. Increasing the number of inhibitors further delayed resistance emergence, with no detectable resistant outgrowth observed for combinations containing 8 to 14 inhibitors within the experimental timeframe. The five drug ULDC also retained measurable growth inhibitory activity against gefitinib resistant PC-9/GR cells, and resistant cells arising under five drug ULDC treatment exhibited markedly greater reversibility following drug withdrawal than those arising under single agent treatment. Although pharmacological additivity or synergy may contribute to the collective growth inhibitory effects of ULDCs, the divergent long term resistance outcomes observed under similar levels of growth inhibition indicate that resistance behaviour is not determined by inhibitory strength alone. Instead, our findings support a model in which increasing same target inhibitor diversity progressively constrains the adaptive trajectories available during resistance evolution, while therapeutic perturbation architecture may also influence the stability of resistant states that emerge. More broadly, these findings support the concept of same target collective suppression, in which multiple individually weak perturbations directed against the same target can collectively produce substantial antitumour activity and constrain resistance evolution across multiple stages. We propose that increasing same target inhibitor diversity may restrict accessible adaptive trajectories, while therapeutic perturbation architecture may also influence the stability of resistant states.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.08.764983v1",
+      "tier": "mention",
+      "why": "Combining many ultra-low-dose inhibitors against the same oncogenic driver substantially delays resistance evolution compared to single potent agents, a provocative therapeutic strategy."
+    },
+    {
+      "id": "10.64898/2026.11.05.764726",
+      "title": "Host control and regulation of human anellovirus persistence",
+      "authors": [
+        "Gutierrez, J. C.",
+        "Ali, T. A.",
+        "Honeycutt, C. C.",
+        "Neo, J. H.",
+        "Helmsauer, K.",
+        "Nyeo, S. S.",
+        "Le, A.",
+        "Vela, A. J.",
+        "Kida, L. C.",
+        "Varela, A. A.",
+        "Ardy, R. C.",
+        "Metzner, E.",
+        "Ulirsch, J. C.",
+        "Dhindsa, R. S.",
+        "Fiziev, P. P.",
+        "Chikhi, R.",
+        "Norman, T. M.",
+        "Dey, K. K.",
+        "Lareau, C. A."
+      ],
+      "abstract": "Anelloviruses are the most abundant and diverse eukaryotic viruses known to infect humans and can persist throughout our lifetimes. Despite their ubiquity, the host factors governing their physiologic distribution and abundance remain poorly understood. Here, we construct a viral pangenome of 2,023 strains to quantify anellovirus DNA in >1.1 million participants spanning three genetic biobanks. Genome-wide association studies identify 121 loci linked to viral persistence, predominantly via immune regulation by NF-kB signaling. Further, we associate variable anellovirus detection with conditions characterized by immune dysfunction, including lymphoid malignancies. By screening 3.2 petabases of human single-cell sequencing data, we identify myeloid progenitors in the bone marrow as a prominent site of anellovirus transcription in vivo. Finally, Perturb-seq of anellovirus proteins reveals that anellovirus ORF2, particularly from Alphatorquevirus, attenuates TNF-a-induced NF-kB signaling, connecting host genetic variation, cellular context, and viral immunomodulation to characterize the persistence of the eukaryotic human virome's most abundant component.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764726v1",
+      "tier": "mention",
+      "why": "A viral pangenome GWAS across >1.1 million people links anellovirus persistence to NF-kB immune regulation and identifies ORF2 as an immunomodulator, illuminating the human virome's most abundant component."
+    },
+    {
+      "id": "10.64898/2026.11.05.764738",
+      "title": "Synthetic chromatin engineering for STAT1 reactivation toward restoring cisplatin sensitivity in breast cancer",
+      "authors": [
+        "Park, I.-G.",
+        "Kwon, M.",
+        "Yoo, T. h.",
+        "Lee, J. M."
+      ],
+      "abstract": "Chemoresistant cancers acquire transcriptomic and epigenetic alterations through changes in transcription factor activity and chromatin accessibility. Integrative in silico analyses identified STAT1 as a recurrently suppressed transcription factor in cisplatin-resistant breast cancer. Using cisplatin-resistant triple-negative breast cancer (TNBC) MDA-MB-231 cells, we further confirmed reduced STAT1 expression and activity, accompanied by defective nuclear translocation, indicating that suppression of STAT1 signaling contributes to cisplatin resistance in breast cancer. To restore STAT1 activity, we sought to promote its nuclear localization and transcriptional activation through chromatin engineering. Based on the identification of PHF6 as a direct STAT1-binding protein through in silico and in vitro analyses, we engineered Dual Reader 3 (DR3), a PHF6-derived synthetic chromatin regulator designed to enhance both STAT1 interaction and chromatin engagement through histone H2B ubiquitination. DR3 induced STAT1-associated transcriptional programs, including inflammatory and tumor-suppressive miRNAs. Mechanistically, DR3 physically promoted STAT1 nuclear translocation, activated STAT1 through a non-canonical S727-dependent mechanism independent of Tyr701 phosphorylation, and enhanced chromatin accessibility at STAT1-responsive regulatory regions through histone H2B ubiquitination. CUT&RUN analysis further revealed coordinated transcriptional and epigenetic remodeling associated with DR3-mediated STAT1 activation, including upregulation of HIPK2, which enhanced cellular sensitivity to cisplatin by strengthening the intrinsic DNA damage response. Finally, we investigated whether STAT1 reactivation could alleviate acquired cisplatin resistance. In vivo delivery of DR3 restored cisplatin sensitivity in resistant breast tumors. By coupling STAT1 nuclear translocation with chromatin remodeling, DR3 reactivated STAT1-dependent transcriptional programs and restored cisplatin sensitivity in breast cancer. Together, this study establishes transcription factor reactivation through synthetic chromatin engineering as a potential therapeutic strategy for overcoming chemoresistance in solid tumors.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764738v1",
+      "tier": "mention",
+      "why": "A synthetic chromatin regulator reactivates STAT1 via non-canonical nuclear translocation and histone ubiquitination, restoring cisplatin sensitivity in resistant breast cancer."
+    },
+    {
+      "id": "10.64898/2026.11.05.764675",
+      "title": "Mutation and Recombination Rates in Free-Ranging Polar Bears",
+      "authors": [
+        "Desai, D.",
+        "Rivkin, R. L.",
+        "Newediuk, L.",
+        "Northrup, J. M.",
+        "Richardson, E. S.",
+        "Garroway, C. J.",
+        "Shafer, A. B."
+      ],
+      "abstract": "Mutation rate () and recombination rate (r) are fundamental population-genetic parameters, yet demographic and conservation inference in polar bears (Ursus maritimus) has relied on values borrowed from humans and other mammals. Known values vary by an order of magnitude across mammals, and inaccuracies in these estimates propagate into downstream analyses, such as inferences of demographic history. To address this, we used high-coverage whole-genome resequencing of eight parent-offspring trios from the Western Hudson Bay subpopulation of polar bears. We identified 329 de novo mutations and estimated a pedigree-based germline mutation rate of 1.22 x 10?? per site per generation, which is within the mammalian range and close to values previously assumed for this species. Trio-based phasing yielded 522 crossovers across 16 meioses (32.6 per meiosis), and a pedigree-inferred recombination rate of 1.50 cM/Mb. From 44 unrelated individuals sampled from the same subpopulation, we inferred a demography-aware recombination map with a length-weighted genome-wide recombination rate of 3.03 cM/Mb (median 1.28 cM/Mb). We also identified 8,515 recombination hotspot regions covering 2.10% of the genome, accounting for 43.8% of total map length, a 20.9-fold concentration. Crossovers overlapped LD-defined hotspots 5.06-fold more often than expected by chance (p < 0.001). Nucleotide diversity was low and positively rank-correlated with recombination rate, consistent with linked selection. Genomic features explained only ~3% of recombination rate variation, with GC content and SINE abundance the only significant predictors. These species-specific parameters provide an empirical foundation for future demographic reconstruction and population projection in this vulnerable, ice-obligate species.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764675v1",
+      "tier": "mention",
+      "why": "First pedigree-based mutation and recombination rate estimates for polar bears replace borrowed mammalian defaults, refining demographic inference for this vulnerable species."
+    },
+    {
+      "id": "10.64898/2026.11.07.765055",
+      "title": "Dissecting human embryonic patterning during organogenesis reveals a rostral midline progenitor population for mesoendoderm induction",
+      "authors": [
+        "Yang, Y.",
+        "Ren, H.",
+        "Lu, M.",
+        "Tan, G.",
+        "Wang, Y.",
+        "Cai, Q.",
+        "Jiang, J.",
+        "Guo, C.",
+        "Li, Y.",
+        "Chen, N.",
+        "Chen, H.",
+        "Han, F.",
+        "Zhou, N.",
+        "Lan, X.",
+        "Li, R.",
+        "Yamada, S.",
+        "Sheng, G.",
+        "Pei, W.",
+        "Liu, T.",
+        "Yu, L.",
+        "Liu, L."
+      ],
+      "abstract": "Understanding how human organogenesis is accomplished via intricate spatiotemporal patterning of organ primordia requires spatial atlases at cellular resolution. However, existing human embryo spatial atlases are built using sequencing-based platforms such as Stereo-seq, which have limited spatial resolution and blurred anatomical boundaries, leading to misclassification across adjacent cells. Here, we integrate in situ imaging-based transcriptomics (Xenium) with transcriptome-wide spatial profiling (Visium-HD) of Carnegie stages 9-12 embryos to delineate the patterning of core embryonic tissues at single-cell resolution, including the brain, spinal cord, somites, neural crest, notochord, heart, and gut tube. A new finding enabled by spatial single-cell resolution is the identification of rostral midline progenitors (RMPs), a cell population co-expressing SOX2, TBXT, and OTX2. Transcriptionally, RMPs are distinct from both neuromesodermal progenitors (NMPs) and prechordal mesoderm, and in vivo clonal barcoding in mice indicates that RMPs share a common developmental origin with rostral neural ectoderm. To interrogate their functional significance, we leveraged our spatial transcriptome data to recapitulate RMP-like cells from human pluripotent stem cells and showed that these cells can induce epiblast-like cells to acquire mesendodermal and endodermal fates, while themselves adopting an ectodermal fate consistent with their in vivo counterparts. This work provides a 3D, stage-resolved molecular cell atlas of tissue patterning in human embryo that serves as a reference for in vitro models.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.07.765055v1",
+      "tier": "mention",
+      "why": "High-resolution spatial transcriptomics of human embryos identifies a novel rostral midline progenitor population capable of inducing mesendodermal fate, recapitulated from human pluripotent stem cells."
+    },
+    {
+      "id": "10.64898/2026.11.08.765110",
+      "title": "Alveolar and airway progenitors converge on an epigenetically encoded profibrotic state",
+      "authors": [
+        "Liang, J.",
+        "Zhang, X.",
+        "Genova, R.",
+        "Basyal, A.",
+        "Foster, K.",
+        "Shen, Q.",
+        "Ting, C.",
+        "Pan, H.",
+        "Dickson, R. P.",
+        "Falkowski, N.",
+        "Franzen, J.",
+        "Spence, J. R.",
+        "Frum, T.",
+        "Ostgaard, C.",
+        "Weber, C.",
+        "Konopka, K.",
+        "Tuder, R.",
+        "Knudsen, L.",
+        "Ayers, L.",
+        "Lee, C.-Y.",
+        "Kotton, D. N.",
+        "Zemans, R. L."
+      ],
+      "abstract": "During organ regeneration, epithelial transitional states arise from progenitors and instruct the mesenchyme to remodel the extracellular matrix. However, the identity of the progenitors, the mechanisms underlying this transition, and why these states persist in tissue fibrosis often remain elusive. Here, using lineage tracing in mice, we show that the profibrotic KRT5-/KRT17+ state in pulmonary fibrosis arises convergently from alveolar type (AT) 2 and airway secretory cells. AT1 cells generate neither KRT5-/KRT17+ nor AT2 cells. TGF-beta/SMAD3 acts through KMT2A and p300 to epigenetically reprogram human AT2 cells into the KRT5-/KRT17+ state. In human pulmonary fibrosis, KRT5-/KRT17+ cells slough off, and transitional cells re-epithelialize the denuded basement membrane. Transcriptionally convergent states arise in injured kidney, skin, and intestine. This work reframes fibrogenesis as the accumulation of a conserved profibrotic transitional state via ongoing turnover, not persistence alone, and nominates the state transition and its epigenetic regulators as therapeutic targets.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.08.765110v1",
+      "tier": "mention",
+      "why": "Lineage tracing shows alveolar and airway progenitors converge on a shared epigenetically encoded profibrotic transitional state, reframing fibrosis as a dynamic turnover process rather than static persistence."
+    },
+    {
+      "id": "10.64898/2026.11.07.765042",
+      "title": "PRISM: probabilistic cell-type resolution with integrated spatial modelling for simultaneous ambient RNA decontamination and doublet correction in spatial transcriptomics",
+      "authors": [
+        "Cupaioli, F.",
+        "Merelli, I."
+      ],
+      "abstract": "Spatial transcriptomics count matrices are confounded by ambient RNA contamination and cell-segmentation doublets, two artifacts that co-occur but are rarely modelled jointly. We present PRISM, an Expectation-Maximization framework that simultaneously (i) assigns each cell a probabilistic cell-type identity, (ii) detects doublets via log-likelihood ratio testing of two-component mixtures, and (iii) estimates a per-cell contamination fraction anchored to a spatially resolved ambient profile. In an in silico benchmark of 40,800 simulated cells, PRISM recovers with Pearson r=1.000 across all contamination levels (0.05 to 0.50) and UMI depths (500 to 5,000), with zero doublet false positives and 100% singlet accuracy. Applied to a Visium HD mouse cerebellum dataset (four samples, 125,289 cells, 17 reference types) from a metachromatic leukodystrophy (MLD) model, PRISM identifies a median =0.60, flags 67.4% doublets (driven by the densely packed cerebellar granule layer), eliminates spurious myelin signal from microglia (0.82% to 0.00%), and doubles oligodendrocyte myelin purity (2.8% to 5.6%). PRISM runs on commodity CPUs in under 15 minutes and returns decontaminated integer count matrices for every measured gene.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.07.765042v1",
+      "tier": "mention",
+      "why": "PRISM jointly models ambient RNA contamination and segmentation doublets in spatial transcriptomics with an EM framework, cleanly separating these two usually conflated artifacts."
+    }
+  ]
+}

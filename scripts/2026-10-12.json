@@ -1,0 +1,776 @@
+{
+  "date": "2026-10-12",
+  "format": "dialogue",
+  "n_papers": 156,
+  "episode_title": "Bidirectional state-space genome models, the MAPK pathway under massive mutational scrutiny, and chromatin-opening transcription factors",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "It's October twelfth. Somewhere around a hundred and fifty-six new preprints landed on the archive and bio-archive overnight, which is a lot to wade through before coffee, so we picked out the ones worth your limited morning attention."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Today's a good one for anyone who likes sequence-to-function models and variant effects. We've got a new architecture challenging transformer-based genome models, a truly massive mutational scan across the MAPK pathway, a screen for transcription factors that can open chromatin on their own, a method for dating extrachromosomal DNA, and a GRN inference tool that skips cell-type annotation entirely."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's start with the architecture paper, Kelley and colleagues, paper one in the show notes, called Cerberus. Quick context: models like Borzoi take a long stretch of DNA sequence and predict genomic tracks like coverage or expression, using self-attention to capture long-range interactions, say an enhancer talking to a promoter fifty kilobases away. The problem is the reference genome only gives you one sequence to train on, so you can't just throw more diverse sequence at these models the way you would in language modelling."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So what did they actually change?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They swapped out Borzoi's transformer blocks for Hydra blocks, a bidirectional state-space architecture built on Mamba-2, while holding everything else, the rest of the architecture and the training data, fixed. State-space models process sequence with a cost that scales linearly with length, instead of the quadratic cost of attention. That let them run at thirty-two base pair resolution, drop the U-net decoder Borzoi needed to recover resolution, and still end up with a smaller, faster model."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Faster is nice, but does it actually predict better, or is this just an efficiency trade?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Both, apparently. Hydra blocks ran about five point seven times faster on long inputs and were more accurate at predicting held-out coverage and classifying fine-mapped expression quantitative trait loci. They scaled this up into an ensemble of eight models called Cerberus, trained over seven hundred eighty-six kilobases of input, and benchmarked it on GTEx eQTL, splicing QTL, and polyadenylation QTL data, with negative controls matched on allele frequency and expression level so the comparison isn't confounded by trivial properties."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the numbers held up against Borzoi?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, mean eQTL area under the precision-recall curve of zero point six nine two versus zero point six six eight for Borzoi across forty-eight tissues, and better correlation with measured effect sizes. Against AlphaGenome it's more of a trade: Cerberus wins further from the transcription start site, AlphaGenome wins closer in and in coding sequence. The interpretability angle is the part I find genuinely useful: looking at the trained blocks, the range of interactions each block captures grows with depth, from under a kilobase in the first block to about seventy-nine kilobases by the seventh, with the deepest blocks anchoring on promoters, enhancers and CTCF sites."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a nice sanity check that the model is learning something like real regulatory architecture rather than just memorizing position. Worth remembering for anyone building on Borzoi or Enformer-style models: state-space blocks might be a drop-in upgrade, not just a curiosity from the language-modelling world."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They released the models, training data, and benchmarks, so this is the kind of paper people will quietly build on rather than cite for headline numbers."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Next up, paper two, Simon and a long author list doing something almost absurd in scale: mutational scanning across the entire RAS-MAPK signalling pathway."
+    },
+    {
+      "speaker": "Ava",
+      "text": "How absurd are we talking?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "One hundred eighty-six thousand variants across seventeen proteins in the pathway, measured for effects on protein abundance and on pathway activity itself, under multiple conditions, for half a million total variant-effect measurements. The motivating question is simple but important: a variant's effect on, say, protein stability is usually measured in isolation, but in a real cell that protein sits inside a signalling cascade with dozens of partners, so does the surrounding network change what a mutation actually does?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the answer is yes, context matters a lot?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Strongly yes. They found over fourteen thousand dominant negative variants across twelve of the proteins, nearly all previously uncharacterized, meaning mutant protein that interferes with the wild type rather than just losing function on its own. These cluster in specific domains or interfaces and are depleted from the human population, consistent with them being functionally costly. The HSP90 experiment is the one that struck me: by measuring abundance of over a hundred thousand variants under HSP90 inhibition, a chaperone that helps proteins fold, they show HSP90 shapes the effect of about two-thirds of missense variants across the pathway, buffering destabilizing mutations in both strongly and weakly dependent client proteins."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So a huge fraction of what looks like an intrinsic biophysical effect of a mutation is actually conditional on chaperone availability. That's a serious caveat for anyone trying to predict variant pathogenicity from structure alone."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Exactly, and they push it further mechanistically, using the data to resolve how KRAS's switch II helix, a promiscuous binding surface, accommodates overlapping interactions with LZTR1 and SOS1 through distinct allosteric networks rather than simple competition. For anyone doing variant effect prediction or interpreting cancer mutation data, the takeaway is that cellular context, not just the protein in a test tube, has to be part of the model."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three, from Keith, Domcke and colleagues at the Shendure lab, asks a question that's been nagging the field for a while: of the roughly one thousand six hundred mammalian transcription factors, which ones can actually open new chromatin when you turn them on, and which just ride along on chromatin someone else opened?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "How do you even screen that at scale?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Pooled CRISPR activation, so instead of overexpressing transgenes you use CRISPRa to upregulate the endogenous gene to roughly physiological levels, in mouse embryonic stem cells. They screened guides against two hundred forty developmental transcription factors for a transcriptional response, narrowed to sixty, and then jointly profiled gene expression and chromatin accessibility in about one hundred forty thousand single cells, so each cell tells you both which TF was activated and what happened to the chromatin landscape."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And some TFs are self-sufficient chromatin openers?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Some, like CDX2 and SOX10, open new accessible sites largely on their own, mostly at distal sites that are closed in embryonic stem cells but match cell-type-specific enhancers that appear later in development, as if the TF is pre-emptively marking a future enhancer landscape. Others need a partner. GRHL1 only opens sites if the cell happens to already express TFAP2C, exploiting existing heterogeneity in the starting population. And SOX7 and GATA6 show hierarchical activation, where SOX7 turns on GATA6, and together they open sites carrying either motif."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So two transcription factors with near-identical consensus motifs can behave completely differently depending on what network they land in. That's a pretty direct answer to a question anyone doing reprogramming or direct differentiation has run into: why does overexpressing your favorite TF sometimes just do nothing."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and it's a caution for synthetic biology ambitions around engineering cell fate in silico: you can't just rank TFs by motif strength or binding affinity, you need to know the chromatin and regulatory context they're dropped into."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four moves to cancer genomics, Dameracharla and colleagues on extrachromosomal DNA, or ecDNA, those circular pieces of DNA that break off the chromosome and can amplify oncogenes outside normal control. The open question: can you tell, from a single tumor biopsy, when the ecDNA first arose during tumor evolution?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "That sounds like it should be unanswerable from one snapshot."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the clever part. They built ecEvol, a method that infers ecDNA emergence time, strength of positive selection, mutation rate, and how dominant the ecDNA-carrying clone has become, purely from the allele frequency spectrum in bulk whole-genome sequencing, the distribution of how common each mutation is across reads. The logic is population-genetic: an ecDNA that emerged early and swept through the tumor leaves a different signature in that spectrum than one that arose late and is still a minority."
+    },
+    {
+      "speaker": "Ava",
+      "text": "How do they know it actually works, rather than just producing plausible-looking numbers?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They validate on simulated data across a wide range of parameters and show it outperforms existing approaches, then apply it to real primary, treatment-naive tumors. The finding there: ecDNA usually emerges early and is under strong positive selection, though this varies by cancer type, and ecDNAs carrying known oncogenes emerge earlier and become more clonally dominant than ones without. In advanced, mostly treated tumors, ecDNA emerges later than in matched primary tumors, suggesting therapy itself generates and selects for new ecDNA. And earlier emergence correlates with worse survival."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So the allele frequency spectrum isn't just noise to normalize away, it's actually encoding evolutionary history you can read back out. That's a nice example of population genetics theory doing real clinical work."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Last deep dive, paper five, NetMap from Hartebrodt, Blumenthal and colleagues, tackles a circularity problem in gene regulatory network inference from single-cell RNA-seq. Normally you cluster cells into cell types first, then infer a GRN per cell type. But errors in that first clustering step propagate straight into your network, and you're blind to regulatory programs shared across cell types or subtle within-type variation."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So they do both steps at once?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Jointly infer a GRN at the level of individual cells and cluster cells by shared regulatory programs, combining single-cell autoencoders with explainable AI methods to pull interpretable regulatory structure out of what the autoencoder learned. On synthetic data with a known ground-truth network, NetMap beats existing GRN inference methods, and on real data it recovers biologically plausible regulons, meaning coherent sets of genes under shared regulatory control."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Does it need cell type labels at all?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Only a small set of user-provided marker genes, which it uses for GRN-structure-informed probabilistic cell type assignment. On PBMC data that gives near-perfect clustering and cell type recovery compared to manual labels. Then on a data set spanning naive, activated, and exhausted T cells, NetMap recovers the relevant T cell state signatures through two independent approaches within the pipeline."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's appealing if you work with messy or continuous cell states where discrete type labels feel like an oversimplification in the first place, differentiation trajectories being the obvious case. The code's apparently released as a python package compatible with scverse, so it should drop into existing single-cell pipelines without too much friction."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Now the quicker ones. Paper six is SpliceAI2, from Jaganathan and the Illumina group, a major update that doesn't just predict splice sites but reconstructs entire transcripts from genomic sequence, trained across multiple mammalian species. It improves detection of splice-altering variants and, applied to a rare disease cohort, finds predicted splice-altering variants account for about fifteen percent of the excess genetic burden, with roughly half sitting in deep intronic regions that exome sequencing would simply miss."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven, STEER-seq, addresses a real nuisance in overexpression screens: random viral integration gives you uncontrolled transgene copy number and genomic context, muddying comparisons between perturbations. STEER-seq uses site-specific recombination to integrate single-copy constructs at a defined safe-harbour locus in human iPSCs, then reads out perturbation identity by single-cell sequencing. In a blood-focused screen, SPI1 alone was enough to push cells toward hematopoietic stem and progenitor-like states without any added cytokines."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight, Swap-seq from Cai and colleagues, combines pooled prime editing with flow sorting to delete hundreds of endogenous regulatory elements and measure effects on a nearby gene directly in the genome. Applied to PPIF regulation in a monocyte cell line, they map enhancers, CTCF insulators, and a previously uncharacterized silencer that represses neighboring enhancers through histone deacetylase activity. They also use the data to benchmark sequence-to-function models and find these models often get local element activity right but fail to correctly link elements to their distal target genes, a useful reality check for the field we were just discussing with Cerberus."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nine looks at Down syndrome through three-dimensional genome architecture. Liao and colleagues built ChromE-seq, a single-cell assay jointly profiling chromatin conformation and transcription, applied to around four hundred thousand fetal liver blood cells, comparing trisomy 21 to disomic controls. B cell and red blood cell development follow opposite architectural trajectories, losing versus gaining chromatin connectivity respectively, and trisomy 21 specifically disrupts an EBF1-centred regulatory loop, which when deleted experimentally reproduces the same block in B cell progenitor development seen in the patient data."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper ten and eleven are both large multimodal single-cell atlases worth knowing about rather than dwelling on. scPRIME-seq profiles transcriptome, genome, and methylome together across four hundred thousand-plus cells from prostate cancer and benign tissue, pinpointing a tipping point where aneuploidy, methylation change, and transcriptional rewiring all occur together, with epigenetic alterations detectable even in benign pre-neoplastic tissue."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And Droplet-MT, from Shao and colleagues, does scalable joint methylome and transcriptome profiling by using methylation epimutations as a mutation-independent way to reconstruct clonal ancestry, then reference-based label transfer to assign clones even at low per-cell coverage. Applied to healthy blood and longitudinal acute myeloid leukemia samples, it tracks clonal abundance changes and distinguishes malignant monocytes from their healthy counterparts even after treatment-driven remodeling."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Papers twelve and thirteen are both spatial transcriptomics methods from the same group, worth a quick mention together. SORT is a matrix factorization framework that separates sample-specific, group-shared, and region-associated gene expression programs across spatial atlases spanning patients or species, using orthogonality constraints and spatial smoothing to keep programs distinct, and it links some of these programs to survival in pancreatic cancer cohorts."
+    },
+    {
+      "speaker": "Ava",
+      "text": "DeSPA, the companion paper, instead asks which genes change their spatial expression pattern across disease or developmental states, using a linear mixed model across replicate slices to control false discoveries. It finds, among other things, disrupted late-spermatid spatial programs in diabetic testis and a conserved injury program across different intracerebral hemorrhage models."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper fourteen is a mouse metastasis study worth a sentence: combinatorial CRISPR perturbations crossed with depletion of specific myeloid cell populations show that gene-by-gene epistasis in tumor cells is reshaped by the surrounding tissue niche, so the same genetic interaction can have a different sign or magnitude depending on which immune cells are present."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And paper fifteen is a statistics paper for anyone doing microbiome work: fastEmu approximates the radEmu test for fold-change differences in microbial abundance using a small, data-driven subset of taxa, cutting per-taxon runtime from hours down to under a minute without hurting error rate control, which matters once you're testing thousands of taxa at once."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Quick round-up of the rest. Bhadury and colleagues describe TorPause, a method for static preservation of organs for transplant. Yoon and colleagues report autonomous AI agents discovering reverse transcriptases with tandem repeat arrays, an interesting use of agentic search over sequence databases. Roig Puiggros and colleagues built a cellular atlas of Astyanax mexicanus, the blind cave fish, across embryogenesis, looking at developmental microevolution."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Liu and colleagues present a dark transcriptome atlas of mouse organogenesis, focused on poorly annotated transcripts. Dagher and colleagues argue fluid transport properties, not mechanical forces, dominate blastocyst expansion in early embryos. GRASS-MIL from Rabuzin and colleagues is a graph-based multiple instance learning method for finding phenotype-associated spatial structures in tissue images."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Wu and colleagues propose a scalable way to localize clustering instability in spatial transcriptomics, useful if you've ever wondered which regions of a tissue section are driving an unstable cluster boundary. DECONVersation uses single-cell foundation model embeddings for bulk RNA-seq deconvolution. And Perturb-Seqr is a signature search engine integrating connectivity mapping resources, for querying perturbation signatures against large reference sets."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the roundup. The throughline today is really about context: variant effects depend on the chaperone environment, transcription factors depend on the regulatory network they land in, and even an architecture choice like attention versus state-space blocks changes what long-range structure a model can learn."
+    },
+    {
+      "speaker": "Leo",
+      "text": "See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "10.64898/2026.10.02.756377",
+      "title": "Cerberus: bidirectional state space blocks improve accuracy and efficiency of regulatory sequence models",
+      "authors": [
+        "Kelley, D. R.",
+        "Yuan, H.",
+        "Huang, X.",
+        "Linder, J."
+      ],
+      "abstract": "Sequence-to-function models predict regulatory activity and variant effects from DNA sequence alone, and leading models such as Borzoi compute long-range interactions with self-attention. The reference genome caps unique training sequences, and new assays add labels, not sequences. This constraint favors architectures that learn more from limited sequence diversity. We compared long-range blocks with the rest of the architecture and the training data held fixed, replacing Borzoi's transformer blocks with Hydra, a bidirectional state space block built on Mamba-2. Hydra blocks ran 5.7-fold faster on 8,192-token inputs, and models built on them predicted binned coverage on held-out sequences and classified fine-mapped eQTLs more accurately. Hydra's linear cost in sequence length let us run the blocks at 32 bp resolution and remove the U-net decoder, leaving a convolution-SSM model smaller and more accurate than the one it replaced. Scaling this architecture up on an augmented track collection produced Cerberus, an ensemble of eight models over 786 kb of input. We evaluated it on GTEx v11 fine-mapped eQTL, sQTL, and paQTL benchmarks with negatives matched on allele frequency, gene expression, and phenotype-specific positional annotations to reduce confounding by these properties. Cerberus is more accurate than Borzoi on all three phenotypes, 0.692 versus 0.668 mean eQTL AUPRC across 48 tissues, and estimates eQTL effect sizes better, 0.379 versus 0.321 Spearman \\rho. Against AlphaGenome, it trades leads in eQTL classification, ahead on variants 3 to 100 kb from the transcription start site and behind in coding sequence and within 3 kb. Interpretation of the trained blocks shows interaction range growing with block depth, from a 0.9 kb median half-life in the first block to 79 kb in the seventh, and the deepest heads anchoring on promoters, enhancers, and CTCF peaks. We release the models, the training data, the training and evaluation code, and the benchmark sets, supporting variant scoring and transfer learning.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756377v1",
+      "tier": "deep",
+      "why": "Cerberus replaces transformer blocks with bidirectional state-space layers in a Borzoi-style sequence-to-function model, beating Borzoi and trading leads with AlphaGenome on eQTL/sQTL/paQTL benchmarks while being far more compute-efficient."
+    },
+    {
+      "id": "10.64898/2026.10.04.756099",
+      "title": "Massively scaled variant effect mapping across the MAPK pathway reveals the importance of molecular and cellular context",
+      "authors": [
+        "Simon, J. J.",
+        "Pendyala, S.",
+        "Adebanjo, A. F.",
+        "Holmes, D. L.",
+        "Walsh, M.",
+        "Vandi, A. J.",
+        "Wang, Z. R.",
+        "Wheelock, M. K.",
+        "Opsahl, J. L.",
+        "Shihora, A.",
+        "McEwen, A. E.",
+        "Smith, N. T.",
+        "O'Brien, S.",
+        "Hopkins, M.",
+        "Rubin, A. F.",
+        "Berger, A. H.",
+        "Starita, L. M.",
+        "Maly, D. J.",
+        "Fowler, D. M."
+      ],
+      "abstract": "Variation alters inherent protein properties like thermodynamic stability and catalytic activity, and these intrinsic effects are shaped by the complex cellular environment. Signaling cascades typify this complexity, with tens or hundreds of proteins acting in concert through regulated states and interactions to transduce signals. Here, we measure the effect of 186,676 variants across 17 proteins in the RAS-MAPK pathway on protein abundance and pathway activity in human cells under diverse conditions, for a total of 503,099 variant effect measurements. We discovered 14,412 dominant negative variants across 12 proteins, nearly all previously unknown, that disrupt specific domains or interaction interfaces while leaving other functions intact and that are depleted from the human population. Measuring the abundance of 106,642 variants across 10 proteins under HSP90 inhibition showed that HSP90 shapes the effect of 67% of missense variants across the pathway, buffering destabilizing variants in both strong and weak clients. Our variant effect data, collected in the context of an intact proteome, enabled us to assess the functional importance of 395 experimentally and computationally modeled MAPK protein interactions. Using additional mutational scans, we resolved how the promiscuous switch II helix binding surface of KRAS accommodates overlapping interactions with LZTR1 and SOS1, revealing distinct allosteric networks that support each interaction. Thus, we establish a framework for measuring variant effects at unprecedented scale in human cells, illuminating fundamental MAPK pathway signaling mechanisms and demonstrating that cellular context profoundly shapes the effect of most variants.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.04.756099v1",
+      "tier": "deep",
+      "why": "503,099 variant-effect measurements across 17 RAS-MAPK pathway proteins reveal thousands of novel dominant-negative variants and show HSP90 buffers two-thirds of missense effects, illuminating how cellular context shapes signaling networks."
+    },
+    {
+      "id": "10.64898/2026.10.07.757445",
+      "title": "High-throughput identification of chromatin-opening transcription factors",
+      "authors": [
+        "Keith, A.",
+        "Jain, S.",
+        "Daza, R. M.",
+        "Qiu, C.",
+        "Germain, P.-L.",
+        "Shendure, J.",
+        "Domcke, S."
+      ],
+      "abstract": "Cell fate transitions involve major changes to the chromatin landscape, some of which are thought to deepen the basin around a newly adopted cell state, stabilizing gene expression programs that might otherwise be transient. Transcription factors (TFs) are central to this process, binding a subset of their genome-wide motif occurrences to create accessible regions that can act as cell type-specific enhancers. However, apart from a few well-studied cases, it is not clear which of the ~1,600 mammalian TFs, when newly expressed, can directly or indirectly initiate newly accessible sites, nor why only some motif occurrences gain accessibility. Here, we applied pooled CRISPR activation (CRISPRa) to upregulate endogenous TFs to physiological levels in mouse embryonic stem cells (mESCs). After screening guides targeting 240 developmental TFs for transcriptional response, we selected 60 and jointly profiled gene expression and chromatin accessibility in ~140,000 single cells. Some TFs (e.g. Cdx2, Sox10) appeared to initiate new accessibility on their own, predominantly at distal sites that are closed in mESCs but coincide with cell type-specific enhancers later in development. Others appeared to partner with \"co-TFs\", either by leveraging preexisting mESC heterogeneity (e.g. uparrowGrhl1 in Tfap2c+ mESCs [-&gt;] opening of sites bearing motifs for both), or by hierarchical activation (e.g. uparrowSox7 [-&gt;] uparrowGata6 [-&gt;] opening of sites bearing either or both motifs). Such dependencies shape which sites are used and which fates are reachable, and may explain the differential behavior of TFs with nearly identical consensus motifs. Thus, the capacity of a newly expressed TF to open chromatin strongly depends on the cell type, cell state and gene regulatory network it lands in. Charting these dependencies will inform how cell fate transitions are initiated in development, homeostasis and disease, and how to engineer them in silico, in vitro and in vivo.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.757445v1",
+      "tier": "deep",
+      "why": "A CRISPRa screen of 60 developmental TFs with joint RNA/ATAC profiling in 140,000 single cells dissects which TFs can open chromatin de novo versus requiring cooperating co-TFs, addressing how regulatory programs establish enhancers during fate transitions."
+    },
+    {
+      "id": "10.64898/2026.10.09.758054",
+      "title": "Inferring ecDNA Evolution from Allele Frequency Spectra",
+      "authors": [
+        "Dameracharla, B.",
+        "Prasad, G.",
+        "Luebeck, J.",
+        "Amin, S.",
+        "Kirkland, J.",
+        "Chapman, O. S.",
+        "Chavez, L.",
+        "Verhaak, R.",
+        "Huang, W.",
+        "Mischel, P. S.",
+        "Werner, B.",
+        "Bafna, V."
+      ],
+      "abstract": "Extrachromosomal DNA (ecDNA) can arise early in the development of aggressive tumors or later upon progression, but the impact of chronology on patient outcome is not known. Currently, it is not possible to determine when an ecDNA arose in the course of tumor development and progression, based on genome sequencing data. Here, we develop an analytic method, ecEvol, to infer ecDNA emergence time, selection strength, mutation rate, and clonal dominance from allele frequency spectra in bulk whole-genome sequencing. EcEvol outperforms other methods and predicts parameters with high accuracy across a wide range of parameter values. Applying ecEvol to primary, treatment-naive tumors, we find that ecDNA typically emerges early and undergoes strong positive selection, albeit with substantial variation across cancer types. EcDNAs carrying known oncogenes emerge earlier and reach greater clonal dominance than ecDNAs lacking known oncogenes. In advanced and predominantly treated tumors, ecDNA emerges substantially later than in matched primary tumors, consistent with the generation and selection of new ecDNA during tumor progression and therapy. Longitudinal samples further support continued expansion of ecDNA-bearing lineages. Finally, earlier ecDNA emergence is associated with poorer overall survival. These results provide insight into the chronology of ecDNA formation from a single tumor biopsy taken at any point during the course of the disease, revealing that allele-frequency spectra encode the evolutionary history of ecDNA and provide a quantitative framework for reconstructing its emergence and expansion.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.09.758054v1",
+      "tier": "deep",
+      "why": "ecEvol infers ecDNA emergence timing, selection strength and clonal dominance from bulk WGS allele-frequency spectra, showing oncogene-bearing ecDNAs emerge earlier and predict worse survival."
+    },
+    {
+      "id": "10.64898/2026.10.04.756614",
+      "title": "Concurrent de novo inference of cell types and gene regulatory networks with NetMap",
+      "authors": [
+        "Hartebrodt, A.",
+        "Oubounyt, M.",
+        "de Almeida, G. P.",
+        "Reim, T.",
+        "Wenke, N.",
+        "Baumbach, J.",
+        "Zehn, D.",
+        "Blumenthal, D. B."
+      ],
+      "abstract": "Existing methods for GRN inference based on single-cell RNA-sequencing (scRNA-seq) data typically require prior cell type calling and then infer GRNs at cell type resolution. This risks propagation of errors from cell annotation to GRN inference. Moreover, it makes existing methods blind to regulatory programs that are shared between different cell types, as well as to subtle differences in regulatory activity between cells of the same type. To address these limitations, we present NetMap, a pipeline that jointly infers cell-level GRNs and clusters cells based on shared regulatory programs, combining state-of-the-art single-cell autoencoders and explainable artificial intelligence methods. NetMap outperforms existing methods on synthetic data with a known ground-truth GRN and is able to reliably detect biologically plausible regulons on real data. Moreover, requiring only a small set of user-provided marker genes, NetMap can be used for GRN structure-informed probabilistic cell type assignment. We demonstrate the utility of this approach using PBMC data, where we achieve near perfect clustering and cell type recovery performance compared with manually created cell type labels. Finally, we applied NetMap to a data set with naive, activated and exhausted T-cells, and were able to verify that NetMap retrieves relevant T-cell state signatures from the data, with two approaches. NetMap can be installed as a python package from https://github.com/bionetslab/netmap and is compatible with the scverse system. Scripts to reproduce our results can be found at https://github.com/bionetslab/netmap-evaluation.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.04.756614v1",
+      "tier": "deep",
+      "why": "NetMap jointly infers single-cell-resolution GRNs and clusters cells by shared regulatory programs rather than relying on pre-assigned cell types, tackling the core challenge of regulatory network inference from scRNA-seq."
+    },
+    {
+      "id": "10.64898/2026.10.08.757673",
+      "title": "A unified framework for quantitative splicing and transcript prediction",
+      "authors": [
+        "Jaganathan, K.",
+        "Chen, J.",
+        "Liu, X.",
+        "Zhang, Y.",
+        "Kim, Y.",
+        "Banerjee, A.",
+        "Fiziev, P. P.",
+        "Wilcox, N.",
+        "Taskiran, I. I.",
+        "Cai, Y.",
+        "Wigdor, E. M.",
+        "Chew, G.-L.",
+        "Png, G.",
+        "McRae, J. F.",
+        "Reddy, A. J.",
+        "Chao, K.-H.",
+        "Mehio, R.",
+        "Sanders, S. J.",
+        "Farh, K. K.-H."
+      ],
+      "abstract": "RNA splicing is frequently disrupted by genetic variation, contributing to a wide range of human diseases. Identifying the variants responsible for altered splicing is therefore crucial but has long been challenging. Deep learning models that predict splicing from genomic sequence have substantially advanced their detection, but accurately resolving their quantitative effects on splicing and the resulting transcripts remains an unmet need. Here we introduce SpliceAI2, a deep learning model trained end-to-end on splice site, splice junction, and transcript usage across multiple mammalian species. SpliceAI2 reconstructs complete transcripts directly from genomic sequence and considerably improves identification of splice-altering variants and quantification of their effects in diverse benchmarks spanning cryptic splicing, splicing quantitative trait loci, and massively parallel reporter assays. Human population datasets provide independent validation of these predicted functional effects through evidence of natural selection and associated changes in plasma protein abundance. Application to a rare disease cohort reveals that predicted splice-altering variants are highly enriched in disease-associated genes and account for 15% of the excess genetic burden, with approximately half residing in deep intronic regions likely missed by exome sequencing. Together, these findings establish SpliceAI2 as a major step forward in interpreting splice-altering variants across the human genome.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.757673v1",
+      "tier": "brief",
+      "why": "SpliceAI2 reconstructs full transcripts from sequence end-to-end and substantially improves detection and quantification of splice-altering variants, explaining about 15% of excess rare-disease genetic burden."
+    },
+    {
+      "id": "10.64898/2026.10.08.757551",
+      "title": "STEER-seq: a recombinase based platform for pooled multimodal single-cell perturbation screening",
+      "authors": [
+        "Migliori, V.",
+        "Suo, C.",
+        "Dufva, O.",
+        "Gyulev, I.",
+        "Polanski, K.",
+        "Symeonidou, V.",
+        "Rodschinka, G.",
+        "Sarropoulos, I.",
+        "Iwama, S.",
+        "Steemers, A. S.",
+        "Gontarczyk, A. M.",
+        "Powell, H.",
+        "Cujba, A.-M.",
+        "Park, J.-E. S.",
+        "Garnett, M.",
+        "Vassiliou, G. S.",
+        "Teichmann, S. A.",
+        "Bassett, A. R."
+      ],
+      "abstract": "Pooled gain-of-function screening is a powerful method for screening for transcription factors whose overexpression leads to changes in cellular identity. However, variable transgene copy number, integration site and genomic context from random viral integration can confound quantitative comparisons between perturbations. We present STEER-seq (Single-cell Transgene Expression via Exchange Recombination sequencing), a virus-free platform for pooled ORF gain-of-function screening in human induced pluripotent stem cells (hiPSCs). STEER-seq combines irreversible Bxb1-mediated integration at a defined genomic safe-harbour locus with promoterless donor libraries and barcode-enabled perturbation tracking, enabling single-copy expression from a common promoter and genomic context and direct recovery of perturbation identity by single-cell sequencing. In a focused haematopoietic screen, SPI1 expression alone was sufficient to drive differentiation towards HSC/MPP-like progenitors in the absence of exogenous cytokines, with transient induction generating progenitors that retained multilineage haematopoietic differentiation potential. Joint RNA-chromatin accessibility profiling linked transcription factor-induced transcriptional responses to chromatin remodelling and enabled reconstruction of perturbation-induced gene regulatory networks, including a RUNX2-driven osteoblast programme. Scaling STEER-seq to around 2,000 human coding sequences enabled systematic discovery of transcription factors capable of inducing distinct cell-state programmes, including neural progenitor-, melanocyte- and vascular smooth muscle-like states, as well as maintenance of pluripotency. STEER-seq provides a scalable, quantitative framework for single-cell and multimodal gain-of-function screening, enabling functional discovery and engineering of human cell identity.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.757551v1",
+      "tier": "brief",
+      "why": "STEER-seq uses site-specific recombinase integration to eliminate copy-number confounds in pooled TF overexpression screens, mapping TF-driven chromatin and GRN rewiring at scale in hiPSCs."
+    },
+    {
+      "id": "10.64898/2026.10.08.756856",
+      "title": "Systematic mapping of enhancers, silencers, and topological elements with prime editing deletion screens",
+      "authors": [
+        "Cai, X. S.",
+        "Montgomery, M. T.",
+        "Nagano, M.",
+        "Nisal, A.",
+        "Gu, Z.",
+        "Chen, Z.",
+        "Obbad, K.",
+        "Rastogi, R.",
+        "Tan, Y.",
+        "Zeng, T.",
+        "Sheth, M. U.",
+        "Xia, C.",
+        "Chiang, S.",
+        "Kundaje, A.",
+        "Hansen, A. S.",
+        "Bintu, L.",
+        "Engreitz, J. M."
+      ],
+      "abstract": "Noncoding regulatory elements in the human genome can control gene expression through distinct mechanisms, including acting as enhancers, silencers, or topological elements. However, we lack tools to identify all such classes systematically and quantify their effects on gene expression in an endogenous genomic context. Here we develop Swap-seq, a method that combines pooled twin prime editing with flow-sorting to delete hundreds of endogenous regulatory sequences and measure their quantitative effects on the expression of a nearby gene. We apply Swap-seq to dissect the regulatory elements that control PPIF expression in THP-1 monocytes. We quantify the effects of distal and intronic enhancers, characterize CTCF insulators, and discover a silencer that regulates distal genes through histone deacetylase (HDAC)-mediated repression of neighboring enhancers. Hundreds of other genomic elements share its chromatin signatures and transcription factor binding sites, suggesting that this silencer represents a broader class of repressive elements. We leverage Swap-seq data to benchmark sequence-to-function models and show that they often capture the local activity of regulatory elements but fail to link them to distal target genes. Swap-seq thus provides a generalizable tool to discover regulatory elements across mechanistic classes, characterize their effects on gene expression, and generate large-scale datasets for evaluating sequence-to-function models.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.756856v1",
+      "tier": "brief",
+      "why": "Swap-seq combines pooled prime-editing deletions with flow sorting to systematically classify enhancers, silencers and topological elements, discovering an HDAC-mediated silencer class."
+    },
+    {
+      "id": "10.64898/2026.10.07.757425",
+      "title": "Disrupted chromatin architecture blocks B lymphopoiesis in Down syndrome",
+      "authors": [
+        "Liao, Z.",
+        "Zhang, M.",
+        "Soong, B. Y.",
+        "Zhu, B.",
+        "Boshans, L. L.",
+        "Wang, K.",
+        "Quijada-Alamo, M.",
+        "Osakwe, I.",
+        "Wang, Z.",
+        "Fiore, P.",
+        "Hasson, D.",
+        "Wagenblast, E.",
+        "Ma, S."
+      ],
+      "abstract": "Human fetal haematopoiesis requires developmental potential to be encoded before lineage identity becomes transcriptionally apparent, but whether three-dimensional genome architecture provides such information is unknown. Here we develop ChromE-seq, a scalable single-cell assay that jointly profiles chromatin conformation and transcription, and integrate it with chromatin accessibility and DNA methylation to generate a multimodal atlas of ~400,000 haematopoietic cells from disomic and trisomy 21 (T21) human fetal liver. Chromatin contacts frequently preceded lineage-specific transcription or persisted after transcription declined, revealing 3D chromatin priming and memory. Unexpectedly, B-lineage and erythroid differentiation followed opposing architectural trajectories, with progressive loss and gain of chromatin connectivity, respectively. T21 disproportionately disrupted B-lineage architecture, redistributed interactions towards shorter genomic distances and weakened an EBF1-centred regulatory circuit. Deletion of a T21-sensitive EBF1 loop anchor reproduced the CLP-to-B-progenitor bottleneck observed in T21. These findings establish 3D genome architecture as an organizing layer of human fetal haematopoiesis that links developmental potential with lineage-specific vulnerability to genomic perturbation.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.757425v1",
+      "tier": "brief",
+      "why": "A new single-cell multi-omic assay shows 3D chromatin architecture is primed ahead of transcription in human fetal hematopoiesis, with trisomy 21 disrupting an EBF1-centered loop circuit."
+    },
+    {
+      "id": "10.64898/2026.10.07.757464",
+      "title": "scPRIME-seq uncovers synchronized multimodal molecular collapse facilitated by pre-neoplastic epigenetic burden in prostate cancer",
+      "authors": [
+        "Li, S.",
+        "Liu, Z.",
+        "Xie, Y.",
+        "Ma, X.",
+        "Tan, M.",
+        "Wang, X.",
+        "Ye, H.",
+        "Wu, D.",
+        "Huang, S.",
+        "Li, Z."
+      ],
+      "abstract": "Tumorigenesis involves alterations across the genome, epigenome and transcriptome, yet how these layers interact to drive malignant transformation remains unclear, largely due to the lack of scalable multimodal single-cell approaches. Here, we developed scPRIME-seq, a high-throughput platform for simultaneous single-cell profiling of transcriptome, genome and DNA methylome, and applied it to 436,908 cells from 29 prostate cancers and 15 benign tissues. This multimodal atlas resolved dynamic changes across 30 cell types and a unified tumorigenic trajectory. Integrated analysis revealed a cell-state transition tipping point, where the onset of aneuploidy is temporally coupled with global methylomic alterations and transcriptomic rewiring. Early focal epigenetic alterations, including TMEM106A promoter hypermethylation and the emergence of hypomethylated domains, were present in founder aneuploid clones and benign tissues, indicating a pre-neoplastic origin of epigenetic burden. These pre-neoplastic alterations coincide with transcriptomic changes that affect epithelial interactions with stromal and immune compartments, promoting a putative tumor-permissive microenvironment. scPRIME-seq provides a high-throughput multimodal framework for identifying conserved, cell-intrinsic molecular programs underlying tumorigenesis.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.757464v1",
+      "tier": "brief",
+      "why": "scPRIME-seq profiles transcriptome, genome and methylome jointly in over 400,000 prostate tumor cells, revealing a tipping point coupling aneuploidy onset with genome-wide methylomic change."
+    },
+    {
+      "id": "10.64898/2026.10.08.757494",
+      "title": "Scalable methylome-transcriptome profiling resolves clonal organization in human hematopoiesis",
+      "authors": [
+        "Shao, J.",
+        "Chen, M.",
+        "Liu, Y.",
+        "Sun, J.",
+        "Zhang, G.",
+        "Yan, Z.-Y.",
+        "Lin, H.",
+        "Ren, M.",
+        "Pei, S.",
+        "Peng, J.",
+        "Gong, Y.",
+        "WANG, S."
+      ],
+      "abstract": "Understanding human tissue maintenance and remodeling requires linking clonal ancestry to molecular state, yet scalable joint measurement remains challenging. Here, we introduce Droplet-MT and an integrated computational workflow for joint transcriptome and methylome profiling at ~10,000 cells per library. Methylation epimutations enable mutation-independent clonal reconstruction from high-coverage methylomes, while reference-based label transfer assigns cells to established clones at ~0.2% CpG coverage, reducing sequencing cost. Clone-aggregated somatic variants provide genetic annotation without additional single-cell genotyping. Across ~21,000 paired profiles from healthy blood and longitudinal acute myeloid leukemia, we resolved small and expanded clones with heterogeneous lineage output. In leukemia, the framework distinguished changes in malignant clonal abundance, state remodeling within persistent clones, and recovery of healthy polyclonal hematopoiesis. Malignant monocytes remained transcriptionally and epigenetically distinct from healthy and recovery-associated cells despite treatment-associated remodeling. Droplet-MT enables scalable analysis of human tissues by linking clonal organization with molecular state and retrospective genetic annotation.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.757494v1",
+      "tier": "brief",
+      "why": "Droplet-MT enables scalable joint transcriptome-methylome profiling that reconstructs clonal lineages without genotyping, resolving malignant clone dynamics through AML treatment."
+    },
+    {
+      "id": "10.64898/2026.10.04.756488",
+      "title": "SORT disentangles multilevel gene programs across heterogeneous spatial transcriptomic atlases",
+      "authors": [
+        "Zhang, L.",
+        "Li, L.",
+        "Zhang, S."
+      ],
+      "abstract": "Understanding how transcriptional programs are organized across biological contexts is essential for deciphering tissue development, disease progression, and species-specific adaptations. Spatial transcriptomic atlases spanning patients, developmental stages, and species provide an opportunity to resolve gene expression programs (GEPs) that are sample-specific, group-shared, or region-associated, yet strong sample-specific variation can obscure weaker shared programs. Here we introduce SORT, a matrix factorization framework that jointly recovers multilevel GEPs and their spatial activities, using orthogonality to reduce program redundancy and graph total variation to preserve spatial boundaries. In simulations with strong patient variation, SORT more accurately recovered patient-specific, subtype-shared, and region-associated programs than existing methods. Across 108 pancreatic ductal adenocarcinoma sections, SORT resolved tumor and stromal programs with distinct and overlapping activities and linked these activities to survival across four external cohorts. In a cross-species cerebellar atlas, SORT distinguished conserved layer-associated programs from species-specific activity variation. Across eight stages of mouse organogenesis, SORT revealed GEPs with anatomical redeployment and graded spatial activity, as well as stage-dependent local co-deployment of distinct programs.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.04.756488v1",
+      "tier": "brief",
+      "why": "SORT disentangles patient-specific, subtype-shared, and region-associated gene expression programs across heterogeneous spatial transcriptomic atlases, linking programs to survival in PDAC."
+    },
+    {
+      "id": "10.64898/2026.10.04.756473",
+      "title": "DeSPA uncovers genes with cross-state spatial pattern remodeling and coordinated spatial programs across multi-slice spatial transcriptomics atlases",
+      "authors": [
+        "Wen, H.",
+        "Shen, Q.",
+        "Yuan, Z.",
+        "Zhang, S."
+      ],
+      "abstract": "Spatial transcriptomics increasingly generates multi-slice atlases spanning developmental, regenerative, and disease-associated states. Identifying genes with spatial pattern remodeling across these states is essential for understanding tissue reorganization and the underlying gene programs, yet few existing methods systematically detect such changes while accounting for variation among replicate slices. Here we introduce DeSPA, a statistical framework that models gene-specific spatial variation within each slice using a linear mixed model, tests for cross-state remodeling by aggregating evidence across replicate slices, and organizes identified genes into interpretable spatial co-expression modules that reveal coordinated spatial programs. Simulations show that DeSPA achieves high power while controlling the false discovery rate under inter-slice heterogeneity. In mouse embryogenesis, it recovers programs linked to extracellular matrix organization, muscle formation, neural development, and erythrocyte development. In diabetic testis, it reveals disruption of a late-spermatid spatial program consistent with known spermatogenic dysfunction, while maintaining stable gene rankings under coordinate rotation. In axolotl brain, regeneration preserves a developmental-like biosynthetic backbone but reorganizes it into regeneration-specific modules. Across two mouse intracerebral hemorrhage models, DeSPA resolves a conserved spatial injury program alongside model-specific synaptic and tissue-response programs. Together, these findings establish DeSPA as a scalable and interpretable framework for detecting spatial pattern remodeling and resolving coordinated spatial programs across diverse biological states.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.04.756473v1",
+      "tier": "brief",
+      "why": "DeSPA statistically detects genes whose spatial expression pattern remodels across disease or developmental states, revealing coordinated spatial programs in embryogenesis and tissue injury."
+    },
+    {
+      "id": "10.64898/2026.10.02.756296",
+      "title": "Niche-dependent epistasis within the cancer genome shapes metastatic fitness",
+      "authors": [
+        "Liu, X.",
+        "He, L.",
+        "Zhao, M.",
+        "Golomb, S. M.",
+        "Ma, W.",
+        "Yang, X.",
+        "Aleksandrovic, E.",
+        "Borges, H. M.",
+        "Dean, K. M.",
+        "Wang, L.",
+        "Hon, G. C.",
+        "Gan, D.",
+        "Zhu, H.",
+        "Li, J.",
+        "Xu, L.",
+        "Zhang, S."
+      ],
+      "abstract": "Epistasis, the genetic interaction between loci, directs non-additive genotype-to-phenotype outcomes. Within a multicellular organism, how the tissue niche (E) shapes gene-by-gene epistasis (GxG) and its phenotypic consequences remains poorly studied. Using tumor lung metastasis as an experimental model, we mapped GxGxE through combinatorial CRISPR perturbation coupled with depletion of defined host myeloid populations in mice. The metastatic niche first selects disseminated tumor cells on GxG epistatic fitness, then drives transcriptome convergence regardless of genotype. Removing anatomically distinct myeloid populations reshaped the metastatic epistasis landscape despite identical tumor genotypes. Gene-by-gene-by-environment epistasis therefore operates at the organismal level, with interaction magnitude and sign set by niche cells. Beyond metastasis, our data suggest that the tissue niche conditions how genetic interactions translate into divergent phenotypes.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756296v1",
+      "tier": "brief",
+      "why": "Combinatorial CRISPR screening in vivo shows the tissue niche reshapes which gene-by-gene epistatic interactions promote metastasis, demonstrating organismal-level GxGxE."
+    },
+    {
+      "id": "10.64898/2026.10.08.757531",
+      "title": "Scalable fold-change estimation from microbial metagenomics",
+      "authors": [
+        "Teichman, S.",
+        "Willis, A. D."
+      ],
+      "abstract": "Microbial sequencing data are subject to sample-specific and species-specific distortions that complicate inference about true microbial abundances. Recent work established assumptions under which relative fold-differences in microbial abundances can be estimated from sequencing data, accompanied by an estimation and testing method called radEmu. While radEmu has excellent error rates, its computational cost can be prohibitive for large-scale analyses. Here we introduce fastEmu, a scalable approximation to radEmu's testing methodology. fastEmu uses a small, data-driven subset of taxa to approximate the computationally expensive test statistic. In a metagenomic analysis, we show a reduction in per-taxon runtime from 4-8 hours to 0.5-45 seconds, and simulations illustrate no adverse impact on estimation error or Type I error rate control. fastEmu enables testing differential abundance for thousands of microbial taxa while retaining clear parameter interpretation and error rate control.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.757531v1",
+      "tier": "brief",
+      "why": "fastEmu makes rigorous fold-change and differential abundance testing for microbial metagenomics orders of magnitude faster while preserving error-rate control."
+    },
+    {
+      "id": "10.64898/2026.10.08.755167",
+      "title": "TorPause: Efficient Static Organ Preservation for Transplants",
+      "authors": [
+        "Bhadury, J.",
+        "Tajima, T.",
+        "Suchy, F. P.",
+        "Masaki, H.",
+        "Zhang, J.",
+        "Rivera, M.",
+        "Nishimura, T.",
+        "Charlesworth, C. T.",
+        "Esquivel, C. O.",
+        "Nakauchi, H."
+      ],
+      "abstract": "Transplantation is limited by how long organs survive outside the body. Existing preservation methods slow metabolism or sustain physiological support, but neither eliminates ischemia-reperfusion injury (IRI), which shortens storage and drives organ discard. Embryonic diapause and hibernation show that mammalian cells retain a latent capacity for reversible metabolic arrest. Screening the PI3K-mTOR axis, we identified a dual inhibitor that pauses embryonic stem cells reversibly at ambient oxygen and holds intact mouse embryos in arrest for 11 days. Combined with a mitochondria-targeted hydrogen sulfide donor, this yields TorPause: a two-component flush pairing metabolic pausing with mitochondrial protection, compatible with existing preservation protocols. In a rat liver transplantation model, TorPause reduced structural injury and improved recipient survival after severe warm ischemic storage, potentially expanding the usable donor pool.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.755167v1",
+      "tier": "mention",
+      "why": "A dual PI3K-mTOR inhibitor plus a mitochondria-targeted H2S donor induces reversible metabolic arrest and improves rat liver transplant outcomes after severe ischemia."
+    },
+    {
+      "id": "10.64898/2026.10.05.755809",
+      "title": "Autonomous AI agents discover reverse transcriptases with tandem repeat arrays",
+      "authors": [
+        "Yoon, P. H.",
+        "Athukoralage, J. S.",
+        "Ameisen, E.",
+        "Kauderer-Abrams, E.",
+        "Perry, N. T.",
+        "Durrant, M. G."
+      ],
+      "abstract": "Metagenomic databases hold vast quantities of unexplored genetic material that can seed tools for biotechnology and medicine, but discovery is limited by our ability to examine sequence data at scale. Here, we show that large language models (LLMs) in an autonomous harness can alleviate this bottleneck and surface novel molecular systems. We deployed Claude Code instances to survey reverse transcriptase (RT) loci across 1.9 billion protein clusters. Among the top candidates were array-associated RTs (ART), a novel family of jumbo-phage RTs coupled with an array of ~200-nucleotide units and a dedicated partner gene. Session transcripts show that Claude identified the ART family by directly examining its DNA sequences and recognizing the atypical repeats, a behavior attributable to specific Mythos 5 internal signals that respond to repeated DNA. ART arrays are highly expressed and appear as discrete units during Staphylococcus phage infection, suggesting an RT system directed by a repertoire of distinct RNAs. These findings indicate that LLMs can autonomously detect anomalies and drive analyses to initiate biological discoveries.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.755809v1",
+      "tier": "mention",
+      "why": "Autonomous Claude Code agents surveying 1.9 billion protein clusters discovered a novel family of jumbo-phage reverse transcriptases with tandem repeat arrays."
+    },
+    {
+      "id": "10.64898/2026.10.07.757402",
+      "title": "A cellular atlas of Astyanax mexicanus embryogenesis reveals principles of developmental microevolution",
+      "authors": [
+        "Roig Puiggros, S.",
+        "Royer, G.",
+        "Prados, J.",
+        "AGNES, F.",
+        "Leclercq, J.",
+        "Jabaudon, D.",
+        "Torres-Paz, J.",
+        "RETAUX, S."
+      ],
+      "abstract": "The evolution of development is the primary mechanism by which morphological and functional diversity is generated. Comparing the developmental trajectories of single cells in entire embryos across species can reveal how gene expression is conserved and varies, as well as the molecular mechanisms underlying how cell- and tissue-specific changes in developmental regulation generate phenotypic differences. However, this perspective has not addressed the mechanisms of small-scale developmental microevolution, i.e, in closely-related species or even within a single species. The fish Astyanax mexicanus, which comes in two forms adapted to distinct environments - the eyed, river-dwelling morph and the eyeless, cave-adapted morph - is a remarkable model with which to investigate the evolution of gene regulation in a single species. Here, we generated and analyzed a single-nucleus RNA-seq atlas of the development of the two Astyanax morphs, from gastrula to swimming larva. Despite extensive changes in gene expression observed in the eight examined stages, for both ubiquitously-expressed and tissue-specific genes, and in both embryonic and extra-embryonic tissues, the temporal progression of cavefish and surface fish cells was similar in ordinal regression-based pseudotime models using 20-100 core genes. However, transcriptome-wide comparisons of gene expression waves revealed massive heterochronic shifts. In cavefish, some tissues had a majority of genes lagging behind in their transcriptional dynamics (e.g. the optic region), while in others, a majority of genes had accelerated dynamics (e.g. the mesoderm), or else, an equivalent number of genes were found in either category (e.g. the endoderm). Furthermore, cell fate acquisition and differentiation were variably affected in different cavefish lineages, with delays of ~6 hours in the retina, ~2 hours in the axial mesoderm and ~none in the extra-embryonic enveloping layer. Thus, cavefish embryos progress as a mosaic of different tissues, or modules, each following its own transcriptional tempo. Because gene expression differential regulation and time shifts were more prevalent in the early stages and gradually diminished throughout development, we propose that cavefish embryos initially undergo strong decanalisation before becoming re-canalized in line with the shared Astyanax developmental program.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.757402v1",
+      "tier": "mention",
+      "why": "A single-nucleus atlas across two Astyanax mexicanus morphs reveals mosaic heterochronic shifts across tissues during cavefish development."
+    },
+    {
+      "id": "10.64898/2026.10.06.756869",
+      "title": "The dark transcriptome mouse organogenesis cell atlas",
+      "authors": [
+        "Liu, M.",
+        "Zhang, D.",
+        "Li, K.",
+        "Kluger, Y.",
+        "Lu, J.",
+        "Gerstein, M. B.",
+        "Li, H.",
+        "Fan, R."
+      ],
+      "abstract": "Single-cell atlases have transformed our understanding of mammalian tissue biology, yet the diverse noncoding \"dark transcriptome\" remains largely uncharted. Here, we present the Dark Transcriptome Mouse Organogenesis Cell Atlas (DT-MOCA), comprising 276,455 cells across embryonic days 11 to 18 and jointly capturing protein-coding transcripts and five major classes of noncoding RNAs through single-nucleus total RNA sequencing, establishing the first comprehensive catalog of noncoding RNAs across major cell types and developmental lineages. We found that long noncoding RNA and microRNA profiles distinguished major cell types and developmental lineages with resolution comparable to messenger RNA, whereas transfer RNA, small nuclear RNA, and small nucleolar RNA programs were less cell type-discriminative and more broadly shared. We further resolve noncoding RNA expression patterns as lineage-specific, temporally modulated, or coordinately regulated by cell identity and developmental stage. We observed that temporally regulated long noncoding RNAs were evolutionarily younger than those associated with cell identity. We further generate a catalog of the change of noncoding RNAs cross all 11 major developmental trajectories. It revealed lineage-specific coordination between transfer RNA supply and codon demand during musculoskeletal organogenesis as well as dynamic microRNA and small nucleolar RNA programs during the central nervous system development. We observed microRNAs converge on regulators of proliferation and gliogenesis and shared induction of Snord116 defining a developmental window relevant to Prader Willi syndrome. Together, this atlas provides a comprehensive catalog of the developmental dark transcriptome and reveals how noncoding RNA programs are organized across cell identity, developmental time, and lineage progression.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.756869v1",
+      "tier": "mention",
+      "why": "The first comprehensive single-nucleus atlas of noncoding RNAs across mouse organogenesis reveals coordination between tRNA supply and codon demand."
+    },
+    {
+      "id": "10.64898/2026.10.05.756743",
+      "title": "Fluid transport properties dominate blastocyst expansion over mechanics",
+      "authors": [
+        "Dagher, L.",
+        "Bassanini, M.",
+        "Deplater, L.",
+        "Gropplero, G.",
+        "Caporal, C.",
+        "Maillot, A.",
+        "Kastas, O.",
+        "Duclut, C.",
+        "Descroix, S.",
+        "Maitre, J.-L."
+      ],
+      "abstract": "Lumens populate most of our organs and their size, which dynamically changes throughout the day and lifetime, can influence their function. During mammalian development, the first lumen appears in the blastocyst. Surface epithelial cells pump ions to build an osmotic gradient that draws water, which inflates the embryo and stretches the epithelium as well as the zona pellucida, an elastic shell protecting the embryo. Blastocyst expansion is not steady and instead undergoes cycles of expansion interrupted by collapses during which the lumen leaks out. Early studies identified the critical role of osmotic pressure difference in regulating the expansion of the blastocyst whereas recent studies proposed that mechanical stresses would set the size of the embryo. However, the relative contributions of osmotic and mechanical stresses to lumen expansion dynamics remain unclear. Here, we investigate this using microfluidics, biophysics, machine learning and modelling on mouse embryos. Breaking down the expansion dynamics of mouse embryos, we discovered that fluid pumping rate accelerates, compensating for the increased frequency of collapses interrupting episodes of expansion. We reasoned that fluid transport could be rate limited by osmotic pumping, water permeability and/or mechanical constraints. Removing the mechanical constraint from the zona pellucida only marginally affected these expansion dynamics. Forcing fluid exchange with osmotic shocks we measured that water permeability is large enough not to restrict fluid accumulation rates. Finally, we estimate ion pumping for mouse blastocysts and interfere with it using inhibitors to measure how it quantitatively sets blastocyst expansion rates. Together, we propose that osmotic pressure differences, regulated by fluid transport properties, dominate over mechanical stresses in controlling blastocyst expansion dynamics.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756743v1",
+      "tier": "mention",
+      "why": "Microfluidics, machine learning and biophysical modeling show osmotic fluid-transport dynamics, not mechanical constraints, dominate mouse blastocyst lumen expansion cycles."
+    },
+    {
+      "id": "10.64898/2026.10.08.757722",
+      "title": "GRASS-MIL: graph-based representation and discovery of phenotype-associated spatial structures with multiple instance learning",
+      "authors": [
+        "Rabuzin, L.",
+        "Yates, J.",
+        "Xu, M. L.",
+        "Boeva, V."
+      ],
+      "abstract": "Tissue function is shaped by both cellular composition and the spatial organization of cells. Spatial single-cell technologies capture this organization across tissue sections, enabling tissue architecture to be linked to disease phenotypes, prognosis and treatment response. However, many current graph-based predictive models depend on assay-specific molecular features, limiting joint analysis of cohorts profiled with incompatible panels, and either aggregate local predictions uniformly or rely on post hoc importance scores that do not directly decompose the basis of a sample-level prediction. Here we introduce GRASS-MIL, a graph multiple-instance learning framework that learns the relative relevance and class-specific evidence of individual cellular neighborhoods, predicts phenotypes across platforms, and decomposes each sample-level prediction exactly into signed contribution from each local neighborhood. These contributions are terms of the prediction itself rather than a post hoc approximation and sum exactly to the predicted logit. In simulations, GRASS-MIL distinguished phenotypes with identical global cell-type composition but different spatial organization, whereas composition-based classifiers performed no better than chance. A single model trained jointly on CosMx spatial molecular imaging, Xenium and MERFISH datasets, harmonized only through a shared cell-type vocabulary, predicted treatment status in high-grade serous ovarian carcinoma with an area under the receiver operating characteristic curve of 0.74 and associated this prediction with two stromal architectures: an immune-rich niche admixed with malignant cells and a desmoplastic niche characterized by malignant-cell exclusion. Applied to spatial proteomics data from non-small-cell lung cancer, GRASS-MIL identified distinct niches associated with relapse (area under the receiver operating characteristic curve, 0.57), including myeloid-rich niches in relapsing tumors and adaptive immune niches in non-relapsing tumors. In a separate lung adenocarcinoma cohort, a similar lymphoid-myeloid polarity was observed when predicting 3-year mortality (area under the receiver operating characteristic curve, 0.62), with a B-cell and CD4+ T-cell niche associated with favorable outcome and a neutrophil and macrophage niche associated with adverse outcome. GRASS-MIL thus combines cross-platform phenotype prediction with an exact, signed decomposition of each prediction into the cellular neighborhoods on which it depends, providing a direct route from sample-level prediction to testable hypotheses linking tissue architecture with patient phenotypes.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.757722v1",
+      "tier": "mention",
+      "why": "GRASS-MIL exactly decomposes spatial-transcriptomics phenotype predictions into signed contributions from cellular neighborhoods across CosMx, Xenium and MERFISH platforms."
+    },
+    {
+      "id": "10.64898/2026.10.08.738042",
+      "title": "Scalable localization of clustering instability for spatial transcriptomics",
+      "authors": [
+        "Wu, W.",
+        "Nguyen, J. T.",
+        "Molloy, E. K."
+      ],
+      "abstract": "Standard spatial transcriptomics workflows rely on clustering methods to define regions of interest for downstream analyses, such as differential expression and pathway enrichment. Although researchers are presented with a single partition, most clustering methods are stochastic, meaning their output depends on random algorithmic choices, typically controlled by a seed; thus, repeating the analysis changing only the seed can yield a different result. Spatial transcriptomics data may be especially sensitive to algorithmic perturbations due to high dimensionality, sparsity, and mixed expression profiles at tissue boundaries and transitional zones; however, the extent of seed-dependent variation and its downstream impact have yet to be systematically evaluated. To bridge this gap, we present InSTability, a framework that localizes disagreement among partitions at the observation level. InSTability is built on (1) an interpretable, per-spot score that quantifies the variability of a spot's cluster assignment across partitions, and (2) an algorithm with time complexity linear in the number of spots for a specified number of runs for computing the instability score at all spots. Together, these advances enable spatially-resolved clustering instability maps for large, high-resolution datasets. Applying InSTability to repeated runs of seven established methods (BayesSpace, GraphST, Leiden, Louvain, SEDR, STAGATE, and SpiceMix) on 18 benchmark samples reveals that clustering instability varies across tissue sections, with shared spatial patterns emerging among different methods applied to the same sample. Furthermore, clustering instability correlates with poor agreement against reference annotations and propagates downstream into differential expression analyses, resulting in inconsistent gene sets across seeds. Thus, InSTability can strengthen spatial transcriptomics studies by highlighting regions where clustering is seed-sensitive and further validation is warranted. InSTability is open-source and available at https://github.com/molloy-lab/InSTability.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.738042v1",
+      "tier": "mention",
+      "why": "InSTability quantifies per-spot clustering instability across random seeds in spatial transcriptomics, showing it propagates into inconsistent differential expression results."
+    },
+    {
+      "id": "10.64898/2026.10.02.756356",
+      "title": "DECONVersation: Single Cell Foundation Model-Derived Embeddings for Robust Cell Type Deconvolution of Bulk RNA-seq",
+      "authors": [
+        "Oku, A.",
+        "Geiger, H.",
+        "Robine, N.",
+        "Fu, R."
+      ],
+      "abstract": "AI and deep learning have transformed single-cell transcriptomics, empowering unsupervised annotation, trajectory inference, and cross-dataset integration at scale. Here, we propose bulk RNA-seq deconvolution as a novel task for single-cell foundation models. Deconvolution estimates cell type proportions from bulk RNA-seq using single-cell reference data, with applications spanning tumor microenvironment profiling to the detection of disease-associated shifts in tissue composition. However, existing methods remain vulnerable to batch effects, subject-level variation, and marker gene selection sensitivity. We introduce DECONVersation, which leverages embeddings from pretrained and fine-tuned single-cell foundation models, coupled with a non-negative least squares solver, to estimate cell type proportions. Foundation model embeddings are robust to batch effects and implicitly encode complex gene relationships, sidestepping explicit marker gene selection. Benchmarked against MuSiC, DWLS, and BayesPrism, DECONVersation achieved comparable or superior performance across diverse tissues. Performance further improved with tissue-specific fine-tuning.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.02.756356v1",
+      "tier": "mention",
+      "why": "DECONVersation repurposes single-cell foundation model embeddings for bulk RNA-seq cell-type deconvolution, robust to batch effects without explicit marker genes."
+    },
+    {
+      "id": "10.64898/2026.10.06.757137",
+      "title": "Perturb-Seqr: Signature Search Engine Integrating Connectivity Mapping Resources",
+      "authors": [
+        "Taub, L. D.",
+        "Gardner, J. K.",
+        "Diamant, I.",
+        "Clarke, D. J. B.",
+        "Ma'ayan, A."
+      ],
+      "abstract": "High-throughput transcriptomics can be used to develop Connectivity Mapping resources for identifying potential reversers and mimickers of disease signatures for drug and target discovery. Recently, several new Connectivity Mapping datasets have emerged, but no efforts were made so far to evaluate and integrate them. Motivated by this opportunity, we have developed Perturb-Seqr, a comprehensive Connectivity Mapping search engine that integrates nine small molecule transcriptomics Connectivity Maps and seven single gene perturbation followed by expression Connectivity Maps. Specifically, Perturb-Seqr contains processed data from LINCS (L1000), Tahoe-100M, Novartis Institute for Biomedical Research (DRUG-seq), the original CMap (cDNA microarrays), Ginkgo Bioworks (DRUG-seq), SciPlex (scRNA-seq), DeepCover MoA (PISA proteomics), Perturb Atlas (RNA-seq), Replogle et al. (Perturb-seq), CREEDS (cDNA microarrays), CM4AI (Perturb-seq), and RummaGEO (RNA-seq). To serve these Connectivity Maps in one unifying search engine, we converted the expression signatures from these resources into 450,271 gene sets of up- and down-regulated genes measuring the effects of 9,856 unique drug and 17,643 unique gene perturbations, targeting 917 cell lines and cell types. We demonstrate how Perturb-Seqr, and the gene sets it serves, can be used to identify targets for drugs and drugs for targets, uncover new pathways, and identify potential side effects for preclinical compounds. Overall, Perturb-Seqr is a comprehensive up-to-date Connectivity Mapping search engine and database, enabling the discovery of new drugs and targets. Perturb-Seqr is accessible from: https://perturbseqr.maayanlab.cloud/.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757137v1",
+      "tier": "mention",
+      "why": "Perturb-Seqr integrates nine Connectivity Mapping resources into one unified search engine of 450,271 gene sets for drug and target discovery."
+    }
+  ]
+}

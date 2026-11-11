@@ -1,0 +1,860 @@
+{
+  "date": "2026-10-15",
+  "format": "dialogue",
+  "n_papers": 173,
+  "episode_title": "Virtual knockouts expose aging's regulatory noise, engineered chromatin states crack AMD genetics, and sequence-only super-enhancer grammar",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Morning, Leo. It's October fifteenth, and the listings show about a hundred seventy-three new papers across archive and bio-archive today."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Busy one. What's worth our twenty minutes?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Five deep dives today. A deep learning framework that tracks how gene regulatory responses get noisier with age, a CRISPR activation screen that engineers hidden disease biology into view for macular degeneration, a sequence-only model that decodes super-enhancer grammar, a sobering audit of surrogate variable analysis in psychiatric transcriptomics, and a theory paper on why generative models hallucinate interactions they never learned. Plus the usual round-up after."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Let's get into it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper one, from He, Haddad Guez, Wang and Levy. The question is whether gene regulatory responses become less consistent as cells age, not just whether expression levels drift, but whether perturbing the same gene gives a less predictable outcome in old cells versus young ones."
+    },
+    {
+      "speaker": "Leo",
+      "text": "How do you ask that without actually knocking out every gene in every single cell?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's the trick. They use a framework called DKO that predicts cell-specific virtual perturbation effects directly from unperturbed single-cell transcriptomes. No CRISPR, no matched perturbation data, and no need to reconstruct an explicit gene regulatory network. It's a counterfactual model trained to infer what a knockout would do in each individual cell, based on patterns learned across many cells."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a strong generalization claim. How do they validate it's not just noise dressed up as biology?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "The abstract doesn't dwell on benchmarking, which is a fair caveat, but they apply it across four species, human, mouse, fly, and C elegans, and consistently find that predicted knockout effects for the same gene become more heterogeneous across cells with age. So the readout is the variance of the model's own output, not raw fold-change."
+    },
+    {
+      "speaker": "Leo",
+      "text": "What's the biological payoff?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Two links. Cells with higher somatic mutation burden show greater knockout-response variability, tying accumulated DNA damage to regulatory inconsistency, consistent with the stochastic damage hypothesis of aging. And within the same cell population, higher impact variability correlates with higher senescence scores, connecting transcriptional dysregulation directly to senescent states."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So instead of the usual young-versus-old differential expression, you get a single-cell readout of regulatory robustness itself."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly, and that's the conceptually new part. Aging isn't just genes going up or down, it's the same perturbation producing increasingly unpredictable downstream effects. For anyone working on gene regulatory networks, it's a reminder that network topology might not be fixed, robustness is a property that can quietly degrade."
+    },
+    {
+      "speaker": "Leo",
+      "text": "My catch is that this is virtual, inferred perturbation across four very different organisms. I'd want to see it checked against real Perturb-seq in aged versus young tissue before fully trusting the heterogeneity signal, but as a cross-species hypothesis generator it's a nice complement to purely descriptive aging atlases."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper two is from Metzner and colleagues, including Tom Norman's group, and it's the kind of CRISPR activation and Perturb-seq paper I enjoy. The problem: for age-related macular degeneration, many GWAS variants have invisible effects in standard resting cell models because the relevant chromatin simply isn't open."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So the gene and the variant both exist, but the regulatory context needed for them to matter doesn't exist in the dish."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right. Their fix is to engineer regulatory states, using CRISPR activation to overexpress individual transcription factors in RPE-1 cells, a standard retinal pigment epithelium model for macular degeneration. Then they run multiome Perturb-seq, single-cell R-N-A-seq plus single-cell A-T-A-C-seq together, after each single transcription factor perturbation, to find which ones open chromatin specifically at AMD GWAS loci that were closed before."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And then they combine factors?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the clever design step. They look at which single perturbations prime partner motifs, meaning they open chromatin just enough to expose a second factor's binding sites, and use that priming signal to predict which transcription factor pairs will generate genuinely new transcriptional states when activated together. They test this directly with combinatorial Perturb-seq."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's a rational design strategy for combinatorial screens rather than brute-forcing every pair. Useful on its own, since combinatorial CRISPR screens scale terribly."
+    },
+    {
+      "speaker": "Leo",
+      "text": "On the disease side, distinct transcription factor pairs showed different degrees of convergence between the polygenic AMD signal and Mendelian retinal disease genes, supporting what's called an omnigenic model, where common variants and rare high-penetrance genes converge on the same regulatory programs, but only once the right regulatory state exists."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Did they build a predictive model on top?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Yes, called Mosaic, trained on the single and pairwise data, which then nominated new regulators out of sample, including a higher-order transcription factor combination they validated experimentally for emergent effects on AMD programs."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The honest caveat is this is one cell line and one disease, and the strategy depends on guessing the right transcription factors to screen in the first place. But using chromatin priming to guide combinatorial perturbation design is something worth borrowing for other systems."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper three, from Liang and colleagues, is pure sequence-to-function deep learning. Super-enhancers are large clusters of enhancers that drive cell-identity genes, but until now you could only find them empirically, from H-three-K-twenty-seven acetylation ChIP-seq, meaning you needed the epigenomic data in hand."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So no prediction in a cell type you haven't profiled."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and the DNA sequence grammar underlying super-enhancers was basically unknown. They built Borzoi-SE, extending the genomic transformer Borzoi, which predicts epigenomic and expression tracks from long-range sequence, and reframe super-enhancer discovery as hierarchical, cell-type-resolved object detection, across ninety human lineages, straight from sequence."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Object detection like bounding boxes in an image, but for enhancer clusters along the genome."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly that framing. Base-resolution attribution, asking which individual bases drive the prediction, recovers master transcription factors defining each lineage without being told in advance. And within super-enhancers shared across lineages, they find different motif usage, meaning the same physical region can run a different transcription factor logic in different cell types."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Nice example of sequence elements being context-dependent rather than fixed labels. What validates it experimentally?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Two things. In silico ablation of the beta-globin super-enhancer correctly prioritized hypersensitive site two as the dominant constituent, confirmed with CRISPR interference in the wet lab. And, trained without ever seeing variant-effect labels, the model found gain-of-super-enhancer variants. At the CHRM2 locus, a single nucleotide variant creates a new glucocorticoid receptor motif, which recruits activated receptor and potentiates a neighboring MEF2 motif, nucleating a new cardiac super-enhancer from a point mutation."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Does that connect to an actual human phenotype?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Multi-omic and population-genetic evidence link that variant to higher CHRM2 expression and to variation in resting heart rate and P-R interval duration, real cardiac electrophysiology traits. A model trained only on sequence-to-epigenome mapping ends up prioritizing a causal non-coding variant for a cardiac trait without ever seeing GWAS data. Worth some skepticism, but the mechanistic chain, new motif, recruits the receptor, potentiates MEF2, is concrete enough to be convincing."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper four is a different animal, a methods audit from Hoang and colleagues, and it should make anyone running differential expression pipelines a little nervous. The question: does surrogate variable analysis, S-V-A, actually help find true differentially expressed genes, or does it overfit?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "S-V-A estimates hidden, unmeasured sources of variation, batch effects, cell composition, whatever wasn't measured, directly from the expression matrix, then regresses them out before testing your variable of interest."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Hugely popular, especially in brain transcriptomics where technical variation is brutal. They test it two ways. On synthetic data with known ground truth, S-V-A usage frequently produced high false positive rates, and standard diagnostics didn't catch it, nor did strategies like maximizing cross-dataset signal correlation."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So the usual sanity checks wouldn't warn you."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Right. On fourteen real brain R-N-A-seq and microarray datasets spanning Alzheimer's, autism, bipolar disorder, schizophrenia, and Parkinson's, using S-V-A reduced reproducibility of differential expression signatures across independent cohorts, regardless of how many surrogate variables were included."
+    },
+    {
+      "speaker": "Ava",
+      "text": "What's the fix?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Nothing exotic, modeling known, measured covariates directly rather than defaulting to an automatic latent-variable method, and applying S-V-A cautiously, case by case, instead of as a routine pipeline step."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Worth flagging well beyond neuropsychiatric disease, the overfitting mechanism isn't disease-specific, it's about surrogate variables absorbing your signal of interest when sample sizes are moderate and true effects are subtle. Treat it as a caution light on an extremely common analytic default."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper five is more conceptual, from Gijsen, Seiler, and Ritter, not a biology dataset paper, but directly relevant if you use generative models for perturbation prediction, which is increasingly common in single-cell screens. The question: when a conditional flow-matching model predicts the combined effect of two interventions it never saw together, does it actually learn the interaction, or hallucinate one?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Flow matching being one of the newer alternatives to diffusion models, learning a continuous transport from noise to data."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, used here to generate outcomes conditioned on combinations of interventions, drug doses, combinatorial cell perturbations, and molecular conformer generation. They separate true interaction recovery from hallucinated interaction structure using settings with known ground truth, including a controlled simulator where they can dial in exactly how non-additive two effects really are."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And the finding?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "In the controlled setting, individual main effects are learned much earlier in training than interactions, and models hallucinate an interaction even when the true effect is purely additive. Across the more realistic settings, whether the model generalizes correctly to a held-out combination depends on whether that combination's structure continues smoothly from what was seen in training. If it does, interactions are recoverable. If it requires genuine extrapolation, the model can produce a plausible-looking response while completely missing the true interaction."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That should worry anyone using these models for combinatorial perturbation screens, the output can look good on aggregate fidelity metrics while being wrong exactly on the interaction term you care about."
+    },
+    {
+      "speaker": "Ava",
+      "text": "They show that directly, aggregate metrics can conceal whether interactions were learned at all, and nonlinear readouts downstream of the model's latent output can break interaction recovery even when it looked fine internally. A sobering check for the combinatorial Perturb-seq crowd, arguably relevant to paper two's combinatorial transcription factor screen."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Good pairing for the morning. One paper builds smart combinatorial designs from real chromatin priming, this one warns that if you instead try to predict combinations purely generatively, be careful what you're trusting."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's move through the round-up."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper six: Zaalberg and colleagues show that in colon organoids with APC loss, gaining a whole extra copy of chromosome seven isn't random aneuploidy, it's adaptive, dialing WNT signaling down from excessive to just right. Removing the extra copy from patient tumor organoids severely impairs growth, and the effect holds from early adenoma-like organoids through advanced colorectal cancer."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A nice mechanistic explanation for why specific aneuploidies recur in specific mutational contexts, rather than aneuploidy being generic genomic chaos."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper seven, Zwaans and colleagues, tackles barcode dropout in CRISPR lineage tracing. They build a mechanistic model of barcode loss into BEAST two, so sparse, previously unusable single-cell lineage data can contribute to phylogenetic inference instead of being filtered out, and filtering out that data was apparently biasing growth rate estimates downward in both cell culture and mouse gastruloid datasets."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eight, Huseyin and colleagues, use degron systems plus Region Capture Micro-C to dissect how Polycomb complexes build three-D chromatin interactions. Surprisingly, removing canonical PRC1 entirely still leaves Polycomb-mediated interactions intact, and no single remaining complex, variant PRC1 or PRC2, seems solely responsible."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So the textbook model of canonical PRC1 as the sole architect of Polycomb loops needs revising."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper nine is more structural pharmacology than genomics, but worth a mention. Joshi and colleagues use molecular dynamics, a peptide-adapted Gaussian accelerated approach, to explain why synthetic peptides can reactivate disease-mutant forms of polycystin-one, the receptor mutated in most polycystic kidney disease cases."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper ten, Hung and Yeung, is practical for spatial transcriptomics work. STARgrid is a fully open-source pipeline turning Visium HD sequencing reads into count matrices, an alternative to the closed-source Space Ranger, with output correlating above zero point nine nine nine with Space Ranger and running twenty to thirty-five percent faster. Useful if you're licensing-constrained."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eleven, from Iqbal and colleagues, is a big heterochronic transplantation and parabiosis study on ovarian aging in mice. They built a transcriptomic ovarian aging clock and show ovarian molecular age shifts partially in both directions depending on host environment, and young ovaries even lowered the transcriptomic age of the uterus, liver, and brain, positioning the ovary as an active node in a broader inter-organ aging network."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twelve, from the Lozano lab, uses a Kras-driven mouse lung cancer model to isolate losing one Trp53 allele versus both. Single-cell transcriptomics shows heterozygous loss specifically expands tumor transcriptional plasticity not seen in fully wild-type or fully null tumors, and the resulting signatures map onto human non-small cell lung cancer survival in both directions."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A reminder that gene dosage, not just mutation status, shapes tumor evolutionary trajectories."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper thirteen is a big resource, the Human Gut Cell Atlas version one, pooling nearly a million cells from five hundred two samples and twenty-four studies into a consensus taxonomy of ninety-four homeostatic gut cell identities. Reference mapping alone recovers known Crohn's disease and treatment signatures without redoing annotation, and the same mapping scores how closely intestinal organoids match native tissue."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fourteen, Shamail and McWhite, applies concept activation vectors, simple linear probes in embedding space, to protein and single-cell foundation models. A single linear direction recovers Gene Ontology terms, localizes protein domains, and in single-cell embeddings isolates cancer-associated expression axes that largely agree with conventional differential expression."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Cheap interpretability, no need to train a new predictor for every property you care about."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Last one before the round-up, paper fifteen, Ahmed and colleagues, for anyone doing low-coverage single-cell DNA sequencing of tumors. The bin size chosen for inferring copy number profiles has a drastic, underappreciated effect on downstream tumor phylogeny accuracy, and they provide a tool called BinSelector to choose it well."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Good one to bookmark if you ever touch single-cell copy number phylogenetics, an easy parameter to get wrong silently."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A quick round of mentions before we close. Paper sixteen: a single epigenetic repressor controls opposite developmental speeds in human neural versus cranial neural crest lineages. Paper seventeen: contrastive learning on pan-cancer single-cell R-N-A-seq reveals shared clonal T cell niches across tumor types. Paper eighteen: probabilistic AI weather models reportedly beat numerical weather prediction specifically on record-breaking heat extremes, not biology, but a nice parallel for anyone thinking about out-of-distribution extremes generally."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper nineteen: a study linking reproduction mode to vertebrate organ aging rates. Paper twenty: dog-human gene network colocalization implicates synaptic signaling and ubiquitination genes in compulsive disorders. Paper twenty-one: king penguin blood methylomes suggest hematopoietic aging signatures are evolutionarily conserved."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper twenty-two: convergent genome evolution across flowering plants converges on shared routes to salt tolerance. Paper twenty-three: a call for standards in calling structural variants from short-read whole genome sequencing. Paper twenty-four: a Gaussian random field approach for imputing relative abundances, likely aimed at microbiome-style compositional data. And paper twenty-five: cross-species evidence that APOBEC3 enzymes cause hypermutability in spliceosomal small nuclear RNAs."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's a good spread for a Thursday. Enjoy the coffee."
+    },
+    {
+      "speaker": "Ava",
+      "text": "See you tomorrow."
+    }
+  ],
+  "picks": [
+    {
+      "id": "2610.19029",
+      "title": "Deep learning-based virtual perturbation reveals increasing heterogeneity of gene regulatory responses with aging",
+      "authors": [
+        "Yongjian He",
+        "Julia Hanna Haddad Guez",
+        "Xu-Wen Wang",
+        "Orr Levy"
+      ],
+      "abstract": "A central hypothesis in aging biology proposes that the gradual accumulation of stochastic molecular damage drives transcriptional deregulation (TD), ultimately leading to functional decline. However, existing single-cell analyses largely rely on static expression measurements and provide limited resolution of how regulatory responses change at the level of individual cells. Here, we leverage DKO, a deep learning framework that predicts cell-specific virtual gene perturbation effects from unperturbed transcriptomes, capturing cell-to-cell differences in regulatory context without requiring a reconstructed gene regulatory network or matched perturbation data. Applying DKO to single-cell transcriptomic datasets from humans, mice, Drosophila, and C. elegans revealed that the transcriptional consequences of perturbing the same gene became increasingly heterogeneous across cells with age, indicating that gene regulatory responses become less consistent and more dependent on cellular context. Furthermore, we find that cells with higher somatic mutation burdens have greater knockout-response variability, linking accumulated molecular damage to regulatory inconsistency. Within the same cellular populations, higher impact variability was also associated with higher senescence scores, linking transcriptional dysregulation to senescence-associated states. Our findings identify a progressive loss of regulatory robustness at both the gene and cell levels as a conserved feature of aging, linking stochastic molecular damage to increasing heterogeneity in cellular regulatory responses.",
+      "categories": [
+        "q-bio.MN",
+        "q-bio.GN",
+        "q-bio.TO"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.19029",
+      "tier": "deep",
+      "why": "A deep-learning virtual-perturbation framework reveals that gene regulatory responses become progressively more heterogeneous with age across four species, linking stochastic damage accumulation to loss of regulatory robustness — a striking systems-level view of aging built entirely on unperturbed single-cell transcriptomes."
+    },
+    {
+      "id": "10.64898/2026.10.09.758047",
+      "title": "Engineered regulatory states resolve context-dependent genetics in macular degeneration",
+      "authors": [
+        "Metzner, E.",
+        "Guruvayurappan, K.",
+        "Southard, K. M.",
+        "Ardy, R. C.",
+        "Dey, K. K.",
+        "Norman, T. M."
+      ],
+      "abstract": "The effects of many genes and disease-associated variants remain hidden in standard cellular models, limiting functional interpretation. Here we engineer regulatory states via CRISPR activation of transcription factors (TFs) in human RPE-1 cells, a model for age-related macular degeneration (AMD). Multiome Perturb-seq profiling of single-TF perturbations identified regulators that selectively opened chromatin at AMD GWAS variants inaccessible in resting RPE-1. Priming of partner motifs in chromatin made accessible by single-TF perturbations predicted TF pairs generating emergent transcriptional states in combinatorial Perturb-seq, providing a design principle for selecting informative interactions. Distinct TF pairs also showed variable convergence between polygenic AMD signals and Mendelian retinal disease genes, supporting an omnigenic model shaped by regulatory states. Finally, Mosaic, a chromatin-informed model of TF interaction phenotypes, nominated out-of-sample regulators, including a higher-order combination with experimentally validated emergent effects on AMD-associated programs. Engineered regulatory states thus bring hidden disease biology within experimental reach.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.09.758047v1",
+      "tier": "deep",
+      "why": "Using CRISPRa multiome Perturb-seq to engineer regulatory states in RPE-1 cells, this paper shows how TF-driven chromatin priming can expose hidden AMD GWAS variant effects, offering a general design principle for making disease-relevant regulatory programs experimentally accessible."
+    },
+    {
+      "id": "10.64898/2026.10.11.756618",
+      "title": "Decoding super-enhancer regulatory grammar and pathogenic gain-of-function variants directly from DNA sequence",
+      "authors": [
+        "Liang, Y.",
+        "Xu, X.",
+        "Mao, Y.",
+        "Zheng, Z.",
+        "Liu, N."
+      ],
+      "abstract": "Super-enhancers (SEs) drive cell-identity gene expression, yet their identification relies on epigenomic profiling (e.g., H3K27ac ChIP-seq), precluding discovery in unprofiled cellular states and leaving their underlying sequence grammar unknown. Here, we present Borzoi-SE, a deep learning framework built upon the genomic transformer Borzoi that formulates SE discovery as hierarchical, cell-type-resolved genomic object detection directly from long-range sequence across 90 human lineages. Base-resolution attribution recovers lineage-defining master transcription factors across cell types. Within SEs shared across lineages, it reveals lineage-dependent motif usage, suggesting that the same regulatory regions can support distinct cell-type-specific programs. Using in silico ablation, Borzoi-SE decoded the functional hierarchy of the beta-globin super-enhancer, prioritizing hypersensitive site 2 (HS2) as the dominant constituent, which we experimentally verified via CRISPR interference. Trained without variant-effect labels, Borzoi-SE identified gain-of-super-enhancer variants in different tissues. At the CHRM2 locus, a single-nucleotide variant created a de novo glucocorticoid receptor (GR) motif that recruited activated GR and potentiated adjacent MEF2 regulatory syntax, nucleating a cardiac super-enhancer. Orthogonal multi-omics and population-genetic evidence linked this variant to increased CHRM2 expression and variation in resting heart rate and PR-interval duration. Borzoi-SE establishes a general framework for decoding SE regulatory grammar and prioritizing causal non-coding variants directly from sequence.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.11.756618v1",
+      "tier": "deep",
+      "why": "Borzoi-SE reformulates super-enhancer discovery as sequence-based object detection, decoding regulatory grammar and pinpointing a single non-coding variant that creates a de novo GR motif driving a cardiac super-enhancer — elegant mechanistic dissection of enhancer logic from DNA alone."
+    },
+    {
+      "id": "10.64898/2026.10.05.756826",
+      "title": "Surrogate variables and the risk of overfitting in neuropsychiatric gene expression analyses",
+      "authors": [
+        "Hoang, D.",
+        "Thompson, R.",
+        "Lund, A.",
+        "Kritzer, E.",
+        "Buxbaum-Grice, A.",
+        "John, D.",
+        "Nadkarni, G.",
+        "Golestani, N.",
+        "Charney, A. W.",
+        "Beckmann, N."
+      ],
+      "abstract": "The reproducibility crisis in biomedical research calls for re-evaluation of how common analytic approaches affect results. One such approach, surrogate variable analysis (SVA), is widely used to adjust for unmeasured drivers of variation in transcriptomic differential expression analyses. We systematically quantified the impact of SVA using synthetic data with known ground truth and fourteen brain RNA-seq and microarray datasets spanning Alzheimer's disease, autism spectrum disorder, bipolar disorder, schizophrenia, and Parkinson's disease. In synthetic data, SVA usage frequently led to high false positive rates. This issue was not revealed by standard diagnostics nor resolved by strategies such as maximizing cross-dataset signal correlation. In real data, using SVA reduced cross-cohort reproducibility of differential expression signatures regardless of the number of surrogate variables included. These findings show that SVA risks inducing overfitting at realistic signal levels, advocating for a cautious, case-by-case application, with a preference for modeling known covariates.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756826v1",
+      "tier": "deep",
+      "why": "A rigorous audit shows that surrogate variable analysis, a near-ubiquitous covariate-adjustment tool in transcriptomics, can inflate false positives and actually reduce cross-cohort reproducibility — a methodologically important cautionary result for anyone doing differential expression analysis."
+    },
+    {
+      "id": "2610.20288",
+      "title": "Predicting Unseen Scientific Interactions: Conditional Flow Models Hallucinate Non-Additive Effects",
+      "authors": [
+        "Sam Gijsen",
+        "Moritz Seiler",
+        "Kerstin Ritter"
+      ],
+      "abstract": "Conditional generative models are increasingly used for scientific prediction beyond the direct training support. Yet scientific questions often concern whether one intervention changes the effect of another. Such interactions can be of primary interest while explaining little of the total variation, allowing models to appear accurate overall without recovering the relevant scientific effect. It remains unclear how these models learn interactions and when these successfully extrapolate to unseen conditions. We therefore study interaction recovery in flow-matching models using a physiological time-series simulator, drug dose-response data, combinatorial cell perturbations, and molecular conformer generations, where we separate recovery from hallucinated interaction structure. In the controlled setting, individual effects are learned much earlier than interactions and models hallucinate interactions where none exist. Across settings, we find qualitatively different generalization problems, with successful prediction depending on whether condition structure continues from observed to held-out targets. When it does, interactions are recoverable. If not, models can generate plausible responses while missing the interaction. We furthermore find that hallucinations increase as targets become less identifiable, and that successful interaction recovery in output space can fail under nonlinear readouts. Finally, we show that aggregate fidelity metrics can conceal whether models learn and extrapolate interactions.",
+      "categories": [
+        "cs.LG",
+        "q-bio.QM"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2610.20288",
+      "tier": "deep",
+      "why": "A careful dissection of when conditional flow-matching models genuinely recover versus hallucinate gene-gene and drug interaction effects in extrapolation settings, directly relevant to the reliability of perturbation-prediction models used across single-cell and combinatorial screening."
+    },
+    {
+      "id": "10.64898/2026.10.12.758507",
+      "title": "Chromosome 7 gain establishes a just-right WNT signaling state during colorectal tumorigenesis",
+      "authors": [
+        "Zaalberg, I. C.",
+        "Cane Gasull, P.",
+        "Vromans, M.",
+        "Brunet Guasch, M.",
+        "Marcekova, N.",
+        "Vinken, A.",
+        "Middelkamp, S.",
+        "Wardenaar, R.",
+        "Koot, D.",
+        "Carvalho, B.",
+        "Snippert, H.",
+        "Nicholson, M. D.",
+        "Foijer, F.",
+        "Schubert, M.",
+        "Lens, S. M. A."
+      ],
+      "abstract": "Aneuploidy is a hallmark of colorectal cancer, yet the functional consequences of recurrent chromosome gains and losses remain largely unknown. Leveraging advances in human colon organoid culture and chromosome copy number engineering, we here identify the gain of chromosome 7 as an adaptive event following APC loss-of-function mutation. Trisomy 7 confers a cell-intrinsic fitness advantage to APC-mutant colon organoids, while selective removal of the additional chromosome 7 copy from patient-derived colon cancer organoids severely impairs colorectal cancer organoid growth. By comparing transcriptomes of isogenic disomy 7 and trisomy 7 organoid lines, we found that chromosome 7 gain promotes organoid fitness through attenuation of excessive WNT-driven stemness caused by bi-allelic APC mutation. The gain of chromosome 7 thus establishes a just-right WNT signaling state. This effect of chromosome 7 gain is conserved from early adenoma-like APC-mutant organoids to advanced colorectal cancer organoids carrying additional oncogenic driver mutations. Moreover, consistent with our organoid data, gain of chromosome 7 is particularly common in tumors of colorectal cancer patients whose APC genotypes confer relatively high WNT activity. Overall, this work demonstrates that chromosome-specific aneuploidy can act as an adaptive mechanism to optimize, rather than maximize, oncogenic signaling during tumor evolution.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.12.758507v1",
+      "tier": "brief",
+      "why": "Chromosome 7 gain emerges as an adaptive 'just-right' dosage mechanism that tempers excessive WNT activity after APC loss, reframing aneuploidy as fine-tuning rather than brute-force amplification during colorectal tumor evolution."
+    },
+    {
+      "id": "10.64898/2026.10.07.757283",
+      "title": "Bayesian phylogenetics with incomplete lineage tracing data",
+      "authors": [
+        "Zwaans, A.",
+        "Seidel, S.",
+        "Chen, K.",
+        "Stadler, T."
+      ],
+      "abstract": "Single-cell lineage tracing is rapidly emerging as a powerful method to track the dynamics of cell populations through time. Specifically, CRISPR-Cas9-based dynamic lineage tracing methods generate high-resolution data with the potential to investigate increasingly complex biological processes. However, single-cell readouts are inherently lossy, resulting in significant sparsity in lineage barcode alignments. Here, we present a mechanistic model of barcode loss implemented in the Bayesian framework BEAST 2, enabling phylogenetic inference from sparse datasets without the need for data filtering. Through simulations, we find that incorporating a mechanistic model of loss improves accuracy across all estimates in phylogenetic analyses by enabling previously unusable data to contribute to the inference. We further demonstrate the model's utility across two datasets: one from a monoclonal cell culture and another from murine gastruloids. Consistent with our simulation findings, applying our model to these datasets recovers higher growth rates than workflows relying on standard data filtering, confirming that such filtering can lead to an underestimation of population expansion. Crucially, we demonstrate that our framework enables inference even from datasets whose sparsity previously prevented analysis, providing a robust foundation for extracting biological insights from lineage tracing experiments.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.07.757283v1",
+      "tier": "brief",
+      "why": "A mechanistic model of CRISPR barcode dropout integrated into Bayesian phylogenetics (BEAST2) lets sparse lineage-tracing data be used without filtering, recovering higher and more accurate growth-rate estimates in cell lineage experiments."
+    },
+    {
+      "id": "10.64898/2026.10.13.758654",
+      "title": "Dissection of Polycomb complexes reveals canonical PRC1-independent 3D chromatin interactions",
+      "authors": [
+        "Huseyin, M. K.",
+        "Kim, S.",
+        "Toppen, J.",
+        "Blackledge, N. P.",
+        "Hansen, A. S."
+      ],
+      "abstract": "The Polycomb system is an essential regulator of developmental genes which controls chromatin state through histone modifications and 3D chromatin organization. Although Polycomb-mediated histone modification is well understood, how Polycomb-mediated 3D chromatin interactions form remains unclear. To address this gap, we combine comprehensive Polycomb subunit degrons with Region Capture Micro-C, ChIP-seq, nascent transcriptomics, and live-cell imaging of DNA loci and Polycomb bodies. We find that, within canonical Polycomb repressive complex 1 (cPRC1), polyhomeotic proteins are the primary contributors to interactions. In surprising contrast to existing models, we find that Polycomb-mediated interactions persist in the absence of cPRC1, and combined depletion of cPRC1 with individual variant PRC1 and PRC2 complexes indicates that the remaining interactions do not depend on a single complex. These results raise the previously unexplored possibility of a more general mechanism for Polycomb-mediated interactions not requiring cPRC1.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.13.758654v1",
+      "tier": "brief",
+      "why": "Systematic Polycomb subunit degron experiments overturn the assumption that canonical PRC1 is required for Polycomb-mediated 3D chromatin interactions, revealing a more redundant architecture underlying chromatin organization."
+    },
+    {
+      "id": "10.64898/2026.10.10.758211",
+      "title": "Activation of Disease-Associated Polycystin-1 Mutants by Binding of Stalk-derived Agonist Peptides",
+      "authors": [
+        "Joshi, K.",
+        "Magenheimer, B. S.",
+        "Haldane, A.",
+        "Zhang, Y.",
+        "Miao, Y.",
+        "Maser, R. L."
+      ],
+      "abstract": "Polycystin-1 (PC1) functions as an atypical G-protein-coupled receptor (GPCR) with an autocatalytic GAIN domain that cleaves PC1 into extracellular N-terminal (NTF) and membrane-embedded C-terminal (CTF) fragments. Mutations in PC1 are responsible for 85% of autosomal dominant polycystic kidney disease (ADPKD) cases. Activation of signaling by PC1 CTF has been shown to be allosterically mediated by a stalk tethered agonist (TA) and to be prevented by mutations of the stalk. Soluble, synthetic peptides derived from the PC1 stalk were also shown to re-activate signaling by a stalkless CTF mutant. Here, we have investigated the ability of selected stalk peptide agonists p9, p15 or p17 to re-activate signaling by PC1 CTF with ADPKD-associated missense mutations, G3052R or R3063C. Biochemical experimental data showed that each of the three stalk peptides was able to significantly reactivate signaling by the CTF-R3063C mutant. In contrast, signaling by CTF-G3052R could only be rescued by treatment with p17. In parallel, we employed peptide docking and novel Peptide Gaussian-accelerated Molecular Dynamics (Pep-GaMD) simulations to elucidate the binding conformations of p9, p15 and p17 to the PC1 mutants. The simulation findings were highly consistent with experimental data. Furthermore, Pep-GaMD revealed binding conformations of the agonist peptides and important low-energy conformational states of the PC1 CTF, as well as their critical residue interactions. Overall, our complementary approach provides important mechanistic insights into the re-activation of PC1 disease-associated mutants by stalk-derived peptide agonists. Such insights are expected to be valuable for the future design and development of peptide modulators targeting PC1 for an effective ADPKD therapeutic treatment.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.10.758211v1",
+      "tier": "brief",
+      "why": "A careful eQTL analysis shows that common cis-regulatory variation does not explain why some chromosome 21 genes deviate from the expected 1.5x dosage in trisomy 21, narrowing the search for real buffering mechanisms in Down syndrome."
+    },
+    {
+      "id": "10.64898/2026.10.09.757882",
+      "title": "STARgrid: an open-source pipeline from Visium HD sequencing reads to count matrices",
+      "authors": [
+        "Hung, L.-H.",
+        "Yeung, K. Y."
+      ],
+      "abstract": "In Visium HD, transcript positions are computed from sequenced barcodes, which are matched to a list of coordinate barcodes that map to a grid of capture locations. Quantifying reads and assigning their positions have relied on Space Ranger, whose end-user licence prohibits modification and whose published source cannot be redistributed. We present STARgrid, the first open-source pipeline that takes Visium HD FASTQ files from Flex or RNA-seq based quantitation to count matrices at 2, 8 and 16 um; it is part of STAR Suite. On three human slides its output agrees closely with Space Ranger's (correlations of gene totals are at least 0.9989), and STARgrid takes 20-35% less wall time under the tested configurations. STARgrid assigns each read barcode to the coordinate barcode with the most similar sequence, as assessed by edit distance. In an examination of Space Ranger's per-read output on one further slide, Space Ranger does the same for most reads, with two differences. First, where two coordinate barcodes overlap, the shorter being the longer without its first base, Space Ranger records the shorter barcode, although the longer one matches with fewer edits; in all, Space Ranger's location is not among the closest for 0.5980% of the reads that our decoder can place. Second, Space Ranger settles each read on its own, recording one location or none, and leaves 0.2916% of these reads without a location; STARgrid keeps every matching location and chooses among them for each molecule, using all its reads. Our molecule totals are 1.9-7.6% above Space Ranger's. The larger source of this difference is probably that we resolve location for each molecule and not for each read; STAR Suite's own gene assignment and molecule counting may also contribute. The counts that STARgrid adds behave like signal. On H&E images of the same sections they fall in cells at nearly the rate of the counts that both pipelines report. Against an adjacent Xenium section of one slide, our counts are closer to Xenium than Space Ranger's for 15 of the 20 genes of a cancer gene panel that Xenium measures most abundantly (P = 0.0414). The added counts therefore appear to improve the measurement of cancer-associated expression. These results are preliminary, but the method is now open, and every comparison reported here can be repeated, extended and improved upon.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.09.757882v1",
+      "tier": "brief",
+      "why": "STARgrid provides the first open-source, faster alternative to Space Ranger for Visium HD processing, with molecule-level resolution improvements that measurably track cancer gene expression better than the proprietary tool."
+    },
+    {
+      "id": "10.64898/2026.10.11.758357",
+      "title": "Systemic control and inter-organ communication of ovarian aging",
+      "authors": [
+        "Iqbal, S.",
+        "Tyshkovskiy, A.",
+        "Zhang, B.",
+        "Zhang, S.",
+        "Moliere, A.",
+        "Ying, K.",
+        "Bai, Y.",
+        "Steven, H.",
+        "Goeminne, L.",
+        "Alba-Linares, J. J.",
+        "Jacques, E.",
+        "Hossain, M. A.",
+        "Glubokov, D.",
+        "Moldakozhayev, A.",
+        "Poganik, J. R.",
+        "Moqri, M.",
+        "Agar, N.",
+        "Chen, F.",
+        "Horvath, S.",
+        "Gladyshev, V. N."
+      ],
+      "abstract": "Whether ovarian aging is intrinsic and unidirectional or dynamically regulated by systemic context remains an open question for fertility and women's healthspan. To address it, we developed a mouse ovarian transcriptomic aging clock (OvaAge) and applied it, together with published transcriptomic, epigenetic and pathway-resolved DNA methylation (PathAge) clocks, multi-omic analyses and reproductive outcomes, to new reciprocal heterochronic ovary transplantation and parabiosis experiments. Ovarian molecular age shifted in both directions: aged ovaries became younger in young hosts and young ovaries became older in aged hosts, and in each case the shift was partial across transcriptomic, epigenetic and pathway-resolved measures. Ovaries from 13-month-old C57BL/6J donors supported full-term pregnancies and live births at 17-18 months of age when transplanted into young hosts, but not when transplanted into old hosts, and young ovaries supported live births in 17-18-month-old recipients. Donor ovary age altered the transcriptomic age of the uterus in both directions, while young ovaries also lowered the transcriptomic age of aged liver and brain, identifying the ovary as an active node within an inter-organ aging network. Across unilateral and bilateral transplantation and parabiosis, an older environment increased inflammatory gene expression in the ovary, whereas a younger environment reduced it and increased mitochondrial and biosynthetic programs. Integration of methylation, expression and cell-type markers linked these changes to declining oocyte-associated programs and an expanding stromal compartment enriched for multinucleated giant cells (MNGCs). MNGC-rich regions formed a reversibly remodeled, focally aged niche with distinct spatial metabolic features, and a related macrophage expression signature was detected in human ovaries. Together, these findings identify ovarian aging as a modular, bidirectionally plastic process that is regulated by the systemic environment and point to tractable intervention points.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.11.758357v1",
+      "tier": "brief",
+      "why": "Heterochronic ovary transplantation and parabiosis experiments show ovarian aging is bidirectionally plastic and systemically regulated, identifying the ovary as an active node in an inter-organ aging network with therapeutic implications for fertility."
+    },
+    {
+      "id": "10.64898/2026.10.12.758643",
+      "title": "Trp53 heterozygosity defines novel states impacting tumor plasticity and progression in Kras-initiated non-small cell lung cancer",
+      "authors": [
+        "V, M.",
+        "Koladiya, A.",
+        "Thennavan, A.",
+        "Yu, X.",
+        "Lozano, G."
+      ],
+      "abstract": "KRAS and TP53 are frequently mutated in non-small cell lung cancer (NSCLC), the leading cause of cancer-related mortality worldwide. The most common event at the TP53 locus is mutation/loss of one allele and retention of a wild-type allele, which confers better survival outcomes than complete TP53 loss. To study the contribution of TP53 heterozygosity, we generated a murine lung tumor model with a KrasG12D mutation and intact (K) or single-allele loss (KP+/-) of Trp53 and compared it with publicly available complete loss (KP) data. K and KP+/- mice lived longer than KP mice, paralleling clinical survival data. Single-cell transcriptomic analysis of tumor-burdened lungs indicated that Trp53 heterozygosity expanded transcriptional plasticity that was not present in K and KP tumors. Genomic instability was also higher in KP+/- mice relative to the KP genotype. Trp53 gene dosage, thus, regulates phenotypic plasticity and evolutionary trajectories of tumor states across K, KP+/-, and KP tumors. Murine KP+/- tumor signatures and copy-number profiles were present in human NSCLC datasets. Two of these signatures correlated with better and worse patient survival outcomes, respectively. TP53 heterozygosity in KRAS-mutant lung cancers presents a distinct genomic landscape that should be taken into account in the development of novel therapeutic strategies.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.12.758643v1",
+      "tier": "brief",
+      "why": "Single-cell transcriptomics across Trp53 dosage states in Kras-driven lung cancer shows that Trp53 heterozygosity—not just full loss—expands tumor cell-state plasticity, with human-validated prognostic signatures relevant to precision oncology."
+    },
+    {
+      "id": "10.64898/2026.10.09.753994",
+      "title": "The Human Gut Cell Atlas v1.0: A Unified, Community-BuiltReference of Cellular Diversity Across the Gut",
+      "authors": [
+        "Kimler, K.",
+        "Lance, C.",
+        "Bohar, B.",
+        "Ahmed, A.",
+        "Zhou, R.",
+        "Bartolome-Casado, R.",
+        "Gudino, V.",
+        "Ramirez Flores, R. O.",
+        "Junghus, F. V.",
+        "Morbe, U. M.",
+        "Domanska, D.",
+        "Mueller, M. F.",
+        "Moy, M. R.",
+        "Sanzo-Machuca, A.",
+        "Olbei, M.",
+        "Cakir, B.",
+        "Weinert, B.",
+        "Frey, B. M.",
+        "Glinka, M.",
+        "Alegbe, T.",
+        "Pham, D.",
+        "de Sousa Casal, J.",
+        "Predeus, A. V.",
+        "Denadai-Souza, A.",
+        "Perrone, F.",
+        "Lee, H. C.",
+        "Maddipatla, S. C.",
+        "Rogers, D.",
+        "Futey, M. K.",
+        "Chatzigeorgiou, A.",
+        "Zucchi, I.",
+        "Belfiore, J.",
+        "Robson, L.",
+        "Antanaviciute, A.",
+        "Rainbow, D. B.",
+        "Karakasheva, T. A.",
+        "Baldock, R.",
+        "Houghton, D.",
+        "Shitov, V. A.",
+        "Zhu, C.",
+        "Lee, C. H.-J.",
+        "Novoa-del-T"
+      ],
+      "abstract": "Single-cell RNA-sequencing (scRNA-seq) studies have transformed our understanding of cellular diversity in the human intestine, but differences in anatomical sampling, experimental processing and cell-type nomenclature limit comparison across datasets. Here, we present the Human Gut Cell Atlas (HGCA) V1, a community-curated reference of 944,390 healthy and disease-adjacent intestinal cells from 502 samples, 265 donors and 24 landmark studies, linked to detailed anatomical, clinical, and technical metadata. As this metadata is of critical importance to human biology, we developed MetaManager, an open source data management framework for standardized metadata collection and tracking. A five-level consensus taxonomy resolves 94 homeostatic cell identities and enables transferrable, high-resolution annotation of new gut datasets. By assembling cell identity, sampling metadata, and independent spatial validation, intestinal segment and radial tissue depth were revealed to systematically shape cellular composition and transcriptional state, enabling inference of the presence of sampling-dependent tissue niches, including lymphoid follicles. Reference mapping accurately and rapidly recovered cohort-level Crohn's disease and treatment signatures without de novo annotation, while mapping human intestinal organoids quantified cell-type-specific identity, regional specification, maturation, and transcriptional fidelity to native tissue. The HGCA V1 provides a standardized cellular, anatomical coordinate, and metadata system for reproducible, high-quality analysis of intestinal biology across healthy tissue, disease-associated remodelling, and experimental models, providing a continuously evolving community reference for cumulative discovery in human intestinal biology.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.09.753994v1",
+      "tier": "brief",
+      "why": "A community-built Human Gut Cell Atlas of ~1M cells with standardized taxonomy and metadata management establishes a much-needed reference for reproducible intestinal single-cell analysis across health and disease."
+    },
+    {
+      "id": "10.64898/2026.10.10.758204",
+      "title": "Representing biological concepts as directions in foundation model embeddings",
+      "authors": [
+        "Shamail, A.",
+        "McWhite, C. D."
+      ],
+      "abstract": "Biological foundation models encode rich information about protein structure, function, and cellular state in high-dimensional embeddings, but accessing specific biological properties typically relies on additional, task-specific prediction models. Here, we show that diverse biological properties can be mapped to interpretable, reusable directions in embedding space. In the Concept Activation Vector (CAV) approach, examples representing a concept are distinguished from a background set using a linear model, and the resulting weight vector defines the CAV for that concept. In protein embeddings, CAVs recover Gene Ontology and Enzyme Commission annotations, localize Pfam domains, reveal novel structural relationships, and capture DNA-binding and protein-interaction interface specificity. In single-cell embeddings, CAVs isolate cancer-associated expression transitions, and gene variation along these axes substantially agrees with conventional differential-expression analysis despite being a distinct computational approach. Together, these results establish concept directions as a common representation, enabling diverse biological features to be compared, localized, and manipulated.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.10.758204v1",
+      "tier": "brief",
+      "why": "Concept Activation Vectors turn biological foundation model embeddings into interpretable, reusable directions—recovering GO/EC annotations in protein models and cancer-associated expression axes in single-cell embeddings without new predictors."
+    },
+    {
+      "id": "10.64898/2026.10.05.756871",
+      "title": "Optimizing copy number profiles for tumor cell phylogeny inference from low-coverage single-cell sequencing data",
+      "authors": [
+        "Ahmed, N.",
+        "Weiner, S.",
+        "Payne, C.",
+        "Bansal, M. S."
+      ],
+      "abstract": "Motivation: Accurate reconstruction of tumor cell phylogenies is crucial for understanding cancer evolutionary dynamics, inferring intra-tumor heterogeneity, and designing effective and personalized cancer treatment strategies. One of the most promising and cost-effective approaches for reconstructing tumor phylogenies for large numbers of cells is to use copy number alteration (CNA) data obtained from low-coverage single-cell DNA sequencing of sampled tumor cells. However, error and uncertainty in inferred copy number profiles (CNPs), resulting from low sequence coverage, can have a drastic negative effect on the reconstruction accuracy of tumor cell phylogenies. Results: In this work, we show that careful selection of bin size, a critical tuning parameter for inferring CNPs, is necessary to maximize the accuracy of tumor cell phylogeny inference. Specifically, we (i) use three previously published low-coverage single-cell DNA sequencing datasets from real tumors to demonstrate that even small changes in bin size can have a drastic impact on downstream tumor phylogeny reconstruction, (ii) show that this effect persists even when using simulated low-coverage datasets generated under idealized conditions with minimal noise, and (iii) propose a simple computational approach to select bin sizes that maximize tumor phylogeny accuracy. Our experiments span a wide range of bin sizes and account for the impact of various factors including coverage-level, phylogeny reconstruction method, and CNP inference method, and explicitly account for phylogenetic reconstruction uncertainty. Our evaluation of the proposed computational approach for bin size selection shows that it can significantly improve tumor cell phylogeny reconstruction accuracy compared to baseline methods. Availability: Freely available from https://github.com/Tanveer14/BinSelector.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.05.756871v1",
+      "tier": "brief",
+      "why": "A systematic study shows that bin size choice for inferring copy-number profiles from low-coverage single-cell DNA-seq dramatically affects tumor phylogeny accuracy, with a proposed computational method to select optimal bins."
+    },
+    {
+      "id": "10.64898/2026.10.09.758088",
+      "title": "A single epigenetic repressor controls opposing developmental tempos in human neural and cranial neural crest lineages",
+      "authors": [
+        "Bell, O.",
+        "Atmaca Duran, Z. E.",
+        "Birtele, M.",
+        "Quadrato, G.",
+        "Mendiratta, S.",
+        "Yelagandula, R.",
+        "Stevens, C.",
+        "Rhie, S."
+      ],
+      "abstract": "The precise timing of lineage specification is essential for embryonic development, yet the epigenetic mechanisms enforcing human developmental tempo remain poorly understood. Heterozygous loss-of-function variants in ZNF462 cause Weiss-Kruszka syndrome (WKS), a pleiotropic disorder characterized by neurodevelopmental delays and craniofacial dysmorphisms. Here, we show that ZNF462 acts as an epigenetic gatekeeper that coordinates human developmental tempo across divergent lineages by repressing cell lineage-specific gene enhancers. In human embryonic stem cells (hESCs), ZNF462 maintains self-renewal by recruiting the G9A/GLP histone methyltransferase complex to silence primate-specific retrotransposon-derived enhancers. Upon neural lineage commitment, ZNF462 redirects to hominoid-specific LTR5Hs elements and divergent lineage-specific enhancer programs, where its loss produces opposing kinetics. In neural progenitor cells (NPCs), ZNF462 enforces G9A/GLP-dependent repression of ZIC-driven neural enhancers, and loss of this repression traps NPCs in a progenitor state, slowing cortical neurogenesis without impairing terminal neurogenic capacity. In neural crest cells (NCCs), ZNF462 targets repressive chromatin to silence SOX9 family-driven enhancers. Here, ZNF462 haploinsufficiency triggers premature activation of definitive NCC specifiers, accelerating differentiation. These findings establish that a single repressor can simultaneously decelerate and accelerate developmental tempo by gating lineage-specific enhancers, placing Weiss-Kruszka syndrome into the emerging class of human developmental timing disorders.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.09.758088v1",
+      "tier": "mention",
+      "why": "ZNF462 is shown to act as a single epigenetic repressor that simultaneously decelerates neural progenitor differentiation and accelerates neural crest specification, redefining Weiss-Kruszka syndrome as a developmental-tempo disorder."
+    },
+    {
+      "id": "10.64898/2026.10.06.757206",
+      "title": "Revealing pan-cancer clonal niches of T cells from single-cell RNA sequencing using contrastive learning",
+      "authors": [
+        "Shorer, O.",
+        "Pinhasi, A.",
+        "Amit, R.",
+        "Yizhak, K."
+      ],
+      "abstract": "T-cell clonal organization is central to anti-tumor immunity, yet its functional characterization typically requires paired single-cell RNA and TCR sequencing (scRNA/TCR-seq). Existing multimodal methods integrate transcriptome and TCR information but are limited when TCR data are unavailable. Here we present CloneTrast, a supervised contrastive-learning framework that uses paired scRNA/TCR-seq during training to learn clonal-functional states from gene expression, while requiring only scRNA-seq at inference. Using paired scRNA/TCR-seq profiles from 2.6 million human T cells across 16 cancer types, CloneTrast identified distinct T-cell clonal niches not explained solely by TCR sequence similarity or conventional cell-state annotations. Among these, an NK-like T-cell niche enriched for tumor-blood shared TCRs was consistently associated with poor immunotherapy response at the pan-cancer level. Analysis of antigen-specific T-cell clones revealed that tumor-resident and blood-borne antigen-specific T cells were preferentially associated with distinct clonal niches. Overall, CloneTrast enables scalable and interpretable inference of clonal organization from single-cell transcriptomes.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.06.757206v1",
+      "tier": "mention",
+      "why": "CloneTrast uses contrastive learning to infer T-cell clonal organization from scRNA-seq alone, identifying an NK-like clonal niche linked to poor immunotherapy response across 16 cancer types."
+    },
+    {
+      "id": "2610.20519",
+      "title": "Probabilistic AI models outperform numerical weather prediction models on record breaking heat extremes",
+      "authors": [
+        "Jakob Benjamin Wessel",
+        "Fiona Spuler",
+        "Christopher A. T. Ferro",
+        "Marlene Kretschmer",
+        "Sebastian Sippel"
+      ],
+      "abstract": "AI weather prediction (AIWP) models have emerged as a key complement to physics-based numerical weather prediction (NWP) models, and now often outperform them on aggregate skill. Yet, several studies report that physics-based models still forecast extreme events better, in particular record-breaking extremes, based on the evaluation of deterministic forecasts. Here we evaluate heat extreme forecasts from probabilistic AIWP models over global land and show that they clearly outperform the ECMWF IFS ensemble, both raw and post-processed, including for record-breaking events, in all regions and at all lead times considered. AIWP models better forecast the occurrence and intensity of extremes, are better calibrated in the tail and miss fewer records. Station observations confirm these results. We argue that many reported AIWP limitations stem from unsuitable verification choices, specifically comparing deterministic forecasts that target different quantities. Instead, a fair evaluation of extremes necessitates probabilistic verification.",
+      "categories": [
+        "stat.AP",
+        "physics.geo-ph"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2610.20519",
+      "tier": "mention",
+      "why": "Probabilistic AI weather models are shown to outperform physics-based NWP ensembles even on record-breaking heat extremes once evaluation is done properly—an important lesson in benchmarking methodology outside biology."
+    },
+    {
+      "id": "10.64898/2026.10.08.757363",
+      "title": "Sexual reproduction impacts vertebrate organ aging",
+      "authors": [
+        "Chen, J.",
+        "Tsenter, A.",
+        "Costa, E. K.",
+        "Yu, D.",
+        "Lin, X.",
+        "Chen, K. L.",
+        "Bot, V. A.",
+        "Housh, M. J.",
+        "Heraud, L.-P.",
+        "Perry, S. V.",
+        "Khondker, R. C.",
+        "Snyder, M. P.",
+        "Webb, A. E.",
+        "Wyss-Coray, T.",
+        "Brunet, A."
+      ],
+      "abstract": "Sexual reproduction is a central component of life. Yet, an unanswered question remains: how does sexual reproduction shape physiology and health across an individual's lifetime? Unlike other external factors such as diet and exercise, the impact of sexual reproduction on organ health during aging is far less studied, particularly in vertebrates. Here, we develop the short-lived killifish as a vertebrate model to study how lifelong mating affects organ aging. We discover that mating regulates liver aging in a cell-type and sex-specific manner. In old female livers, mating dampened hepatocyte inflammation and reduced myeloid cell levels, and machine-learning models predicted that mating led to a 'younger' transcriptomic age in several liver cell types. Functionally, mating reduced hepatic accumulation of several lipid classes and was associated with enhanced female resilience against the liver toxin acetaminophen. More broadly, mating induced anti-inflammatory and metabolic rewiring transcriptomic signatures in the brain and gut, indicating that mating may affect vertebrate organ aging more globally. Using publicly available human datasets and plasma proteomics aging clocks, we observed an association between sexual experience and a 'younger' plasma proteomic age of several cell types, including hepatocytes. Our work provides evidence that lifelong mating reshapes the physiological context during aging in a vertebrate, highlighting an understudied connection between vertebrate sexual history, health, and aging.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.08.757363v1",
+      "tier": "mention",
+      "why": "Lifelong mating in killifish reshapes liver, brain and gut aging transcriptomes in a sex-specific way, with echoes in human plasma proteomic aging clocks—an underexplored link between reproduction and organismal aging."
+    },
+    {
+      "id": "10.64898/2026.10.12.758413",
+      "title": "Dog-human gene network colocalization links synaptic signalling and ubiquitination to compulsive disorders",
+      "authors": [
+        "Tengvall, K.",
+        "Sohrab, V.",
+        "Christmas, M. J.",
+        "Brander, G.",
+        "Pederson, E.",
+        "Pensch, R.",
+        "Kenney, B.",
+        "Song, C.",
+        "Wallerman, O.",
+        "Sundstrom, E.",
+        "Wang, C.",
+        "Karlsson, A.",
+        "Monsen, L. L.",
+        "Nordic OCD and Related Disorders Consortium (NORDiC),",
+        "PGC TS/OCD working group,",
+        "Lord, K. A.",
+        "Strom, N. I.",
+        "Ruck, C.",
+        "Mataix-Cols, D.",
+        "Mattheisen, M.",
+        "Crowley, J. J.",
+        "Meadows, J. R. S.",
+        "Karlsson, E.",
+        "Lindblad-Toh, K."
+      ],
+      "abstract": "Obsessive-compulsive disorder (OCD) is highly polygenic, and the largest genome-wide association study (GWAS), with 53,660 cases and 2,044,417 controls, identified only 30 loci, a small fraction of loci estimated to explain its heritability - too few to resolve biological pathways. Pet dogs develop a compulsive disorder (dogCD) similar to OCD. In a GWAS of dogCD with 2,584 dogs from the community science project Darwin's Ark, each dog locus explains at least 40-fold more phenotypic variance than each human OCD locus, giving power equivalent to the human GWAS with 80-fold fewer individuals. Combining the two GWAS identifies a 165-gene network undetectable in humans at current sample sizes. This network is enriched for genes expressed in neurons, particularly in the amygdala and cortex, and comprises four biological processes: excitatory-inhibitory synaptic transmission, axon guidance and neuron recognition, protein ubiquitination, and adenylyl cyclase-activating G-protein-coupled receptor signaling. Like most complex human traits, dogCD risk is likely driven by regulatory variation: fine-mapped dogCD SNPs are non-coding, and dogCD loci are enriched in candidate cis-regulatory elements (cCREs) in a new dog epigenomic atlas spanning eight brain regions. The cross-species network implicates an inherited risk architecture largely outside current OCD pharmacotherapy, and establishes pet dogs as a model for gene network discovery, particularly for conditions underpowered in human studies.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.12.758413v1",
+      "tier": "mention",
+      "why": "Combining dog and human GWAS for compulsive disorder reveals a 165-gene network undetectable in humans alone, showcasing companion animals as a powerful amplifier for complex trait gene discovery."
+    },
+    {
+      "id": "10.64898/2026.10.10.757848",
+      "title": "An epigenetic palimpsest: the King penguin's blood methylome reveals conserved hematopoietic ageing",
+      "authors": [
+        "Hukkanen, M.",
+        "Nitta Fernandes, F. A.",
+        "Davis, L. R.",
+        "Hofer, M.",
+        "Bardon, G.",
+        "Paciello, E.",
+        "Zahn, S.",
+        "Zhu, T.",
+        "Westerlund, S.",
+        "Meyer, B. S.",
+        "Ollikainen, M.",
+        "Le Bohec, C.",
+        "Cristofari, R."
+      ],
+      "abstract": "Age-associated DNA methylation is conserved across vertebrates, but whether epigenetic ageing reflects cellular ageing programmes or age-dependent shifts in cell composition remains unresolved. Here, using 126 whole-blood methylomes from known-age King penguins (Aptenodytes patagonicus), we exploit a vertebrate system in which nucleated erythrocytes dominate peripheral blood, minimizing the influence of leukocyte heterogeneity. We identify a core set of 409 ageing-associated genes showing lifelong, clock-like methylation change. These genes are strongly enriched for regulators of hematopoietic stem and progenitor cell (HSPC) function and niche communication. Integration of methylome, transcriptome and chromatin-accessibility data reveals that many of the strongest ageing signals derive from genes inactive in mature erythrocytes, consistent with the persistence of epigenetic states from ancestral hematopoietic progenitors. A comparison with methylation profiles from 1,501 humans identified a conserved cross-species subset of ageing genes, and a human epigenetic age model constructed solely from orthologues of penguin ageing genes predicts chronological age with high accuracy while remaining largely insensitive to blood cell composition. We propose that blood epigenetic ageing signatures contain a long-lived cellular memory of stem-cell ageing, that may represent an evolutionarily ancient layer of the vertebrate ageing process.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.10.757848v1",
+      "tier": "mention",
+      "why": "King penguin blood methylomes reveal a conserved hematopoietic stem-cell aging signature that transfers to humans and is robust to blood cell composition, suggesting an evolutionarily ancient layer of vertebrate aging."
+    },
+    {
+      "id": "10.64898/2026.10.12.758530",
+      "title": "Convergent genome evolution reveals shared routes to salt tolerance in flowering plants",
+      "authors": [
+        "Wimalagunasekara, S.",
+        "Dassanayake, M."
+      ],
+      "abstract": "Transitions to saline environments pose formidable challenges to plants, yet halophytism has evolved independently across many flowering plant lineages. We assembled a comparative angiosperm gene catalog of ~10 million protein-coding genes from 232 genomes spanning 55 families, with similar representation of halophytes and salt-sensitive relatives, to identify convergent genomic signatures of halophytism. Halophytes show remarkable convergence with recurrent genomic trends in salt-response genes, including lower copy numbers, higher basal expression, more constrained expression variation, distinct evolutionary rates, and independent positive selection on select genes at the same amino acid sites across multiple halophyte lineages. Crops and their wild halophytic relatives differ in gene family evolution, particularly in stress-response pathways. These findings reveal repeatedly tested evolutionary routes to halophytism and establish a genomic foundation for translating convergent adaptations into salt-tolerant crops.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.12.758530v1",
+      "tier": "mention",
+      "why": "Comparative genomics across 232 angiosperm genomes finds convergent molecular routes to halophytism, including recurrent positive selection at identical amino acid sites across independent lineages."
+    },
+    {
+      "id": "10.64898/2026.10.13.758836",
+      "title": "Towards standards for analysing structural variants from short-read whole genome sequencing data",
+      "authors": [
+        "Slimmer, J. C.",
+        "Jones, J. L.",
+        "Reay, W. R.",
+        "Burdon, K. P.",
+        "Blackburn, N. B."
+      ],
+      "abstract": "No widely accepted standard exists for analysing structural variants from short-read whole genome sequencing (WGS) data. We use comprehensive SV truth sets (HG002 T2T-Q100, Platinum Pedigree) and long-read sequencing databases (1KGP-ONT, CoLoRS) to benchmark SV breakpoints and sizes at base pair resolution. Using 30X Illumina WGS data, only five of sixteen individual tools tested reliably output deletions, insertions and duplications that perfectly match the truth sets. Ensemble pipelines (e.g. GATK-SV, MOPline, Parliament2), frequently used in population-scale datasets, reduced perfect matching accuracy by up to 98% compared to their highest-performing constituent tools. This inaccuracy propagates into a short-read database (gnomAD-SV) constructed from an ensemble pipeline (GATK-SV) and likely affects other databases (TOPMed, All of Us, Biobank Japan). As a proof-of-concept, we demonstrate an intra-sample merging strategy that generates the highest F1-scores for deletions and insertions on the HG002 sample, recovering more perfect matches than total matches from the best performing ensemble pipeline tested. Common HG002 truth SVs (allele frequency > 1%) showed extremely high concordance for exact matches between our ensemble callset and two orthogonal long-read sequencing databases (CoLoRS, ONT-1KGP). This study provides a vital step towards robust standards for SV analysis, guiding short-read WGS ensemble pipeline development and improving cross-study comparisons.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.13.758836v1",
+      "tier": "mention",
+      "why": "A rigorous benchmarking study finds that popular ensemble SV-calling pipelines (e.g., GATK-SV) are substantially less accurate than their best constituent tools, with implications for major population SV databases."
+    },
+    {
+      "id": "10.64898/2026.10.12.758512",
+      "title": "Imputing relative abundances via Gaussian random fields",
+      "authors": [
+        "Shternshis, A.",
+        "Singh, P.",
+        "Hugerth, L. W."
+      ],
+      "abstract": "Longitudinal studies with human participants frequently face the challenge of missing samples, which lead to incomplete trajectories of participant biomarkers and a reduction in data size. Existing approaches focus on single-variable imputation or model features one at a time, while neural networks typically require a large number of parameters and substantial training data. To address these challenges, we present an explainable model for multiple imputation of compositional samples based on a Gaussian random field (GRF). The model is specifically designed for longitudinal data: it incorporates participant-specific information and accounts for both temporal dependence across repeated observations and within-sample correlations, while using a moderate number of parameters. By coupling the GRF with sparse activation functions, the framework outputs sum-constrained compositions and explicitly models zero inflation. Under the Aitchison and Jensen–Shannon distances, our framework achieves imputation accuracy comparable to that of an observation-carrying baseline, while overcoming its static nature by modeling temporal trajectories and multivariate correlations. The resulting multiple imputations allow us to reconstruct complete datasets for downstream analysis and uncertainty quantification. We demonstrate the practical utility of our framework on gut microbiome datasets, restoring incomplete time series and achieving a balanced accuracy of 0.72 in predicting food allergy in infants (sensitivity 0.8) and of 0.64 in forecasting postpartum depression.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.12.758512v1",
+      "tier": "mention",
+      "why": "A Gaussian random field model for imputing compositional microbiome data handles zero-inflation and temporal/multivariate structure, improving longitudinal gut microbiome reconstruction and downstream disease prediction."
+    },
+    {
+      "id": "10.64898/2026.10.12.758683",
+      "title": "Cross-species analysis identifies APOBEC3-associated spliceosomal snRNA hypermutability",
+      "authors": [
+        "Xue, J.",
+        "Jiang, Z.",
+        "Zhang, J.",
+        "Li, C."
+      ],
+      "abstract": "Spliceosomal small nuclear RNA (snRNA) genes show unusually high germline mutation rates, with R-loop formation previously implicated in this mutability. Our cross-species rare-variant and de novo mutation analyses show that hypermutability is concentrated in RNA polymerase II-transcribed spliceosomal snRNA genes, with strong enrichment in primates but a much weaker excess in rodents and chicken, consistent with lineage differences in APOBEC3 repertoires. Human Pol II-transcribed spliceosomal snRNA genes show mutational strand asymmetry, APOBEC3-associated mutational signatures and strong APOBEC3B binding signals. R-loops are also frequent at these loci, including in mouse genes with much weaker hypermutability, indicating that R-loop formation alone is insufficient to explain the phenotype. Together, cross-species comparisons support lineage-specific APOBEC3 activity, rather than R-loop formation alone, as a major contributor to spliceosomal snRNA gene hypermutability.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.10.12.758683v1",
+      "tier": "mention",
+      "why": "Cross-species analysis links APOBEC3 activity, rather than R-loop formation alone, to the unusually high mutation rates of spliceosomal snRNA genes in primates."
+    }
+  ]
+}

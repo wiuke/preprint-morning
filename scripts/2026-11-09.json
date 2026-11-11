@@ -1,0 +1,761 @@
+{
+  "date": "2026-11-09",
+  "format": "dialogue",
+  "n_papers": 109,
+  "episode_title": "Coupling RNA and ATAC trajectories, untangling spillover in spatial data, and the hidden plate effects skewing perturbation screens",
+  "segments": [
+    {
+      "speaker": "Ava",
+      "text": "Morning. It's November ninth, and the listings dropped about a hundred and nine new papers across archive and bio-archive overnight."
+    },
+    {
+      "speaker": "Leo",
+      "text": "We pulled five for a proper look today, plus a good stack of briefs. Theme of the day, if there is one, is honesty about artifacts: spillover in spatial data, plate layout effects in perturbation screens, and a careful way to couple RNA and ATAC trajectories without forcing them into one shared space."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Let's start with that last one. Paper one in the show notes, from Wang, Zhao, Nie and Cang, introduces something called COATI, for Cross-Omics Aligned Trajectory Inference."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The setup is the usual developmental time-course problem. You've got single-cell RNA and ATAC snapshots at different stages, but sequencing kills the cell, so you never see the same cell twice. You have to infer the trajectory connecting independently sampled populations at each time point."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right, and the standard move is optimal transport within one modality, or integrating RNA and ATAC into a shared embedding and doing trajectory inference there. COATI does neither. It keeps RNA and ATAC in their own distinct state spaces and learns a time-dependent map that couples them, using what they call unbalanced synchronized dynamical optimal transport."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Unbalanced is the interesting word there. Balanced optimal transport assumes mass is conserved between time points, which is false in development since cells divide and die. What does letting mass change buy them?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "It lets the model infer population growth or shrinkage directly from the data rather than assuming it away. They validate on synthetic benchmarks and four real developmental datasets, using held-out-stage reconstruction, meaning they hide an intermediate time point and ask whether the model can reconstruct it from the stages on either side."
+    },
+    {
+      "speaker": "Leo",
+      "text": "And how well does that work?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "COATI improves reconstruction of the held-out populations compared to the baselines, including recovering chromatin-state heterogeneity within a cell type that other methods flatten out. It also preserves lineage relationships better. The mass-change signal they infer from the unbalanced formulation lines up with DNA-replication programs early in development and lineage-maturation programs later, which is a nice internal consistency check since those are exactly the processes you'd expect to drive population growth at those stages."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Do they check against anything independent, or is this all self-consistency within the transport model?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "They do cross-check. The lineage responses inferred by COATI agree with independent CRISPR perturbation results, and the regulatory patterns it infers are consistent with independent epigenetic data collected separately. So it's not just fitting its own assumptions back to itself."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The appeal for anyone doing multi-omic trajectory work is that you're not forced to pretend RNA and ATAC live on a common manifold just to couple them. You keep each modality's own geometry and let a map, rather than an embedding, do the translating. Whether that generalizes beyond these four datasets is the open question, but the held-out-stage evaluation is a reasonable way to start answering it."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper two is about causal structure in gene regulatory networks, from Qian, Song and Welch, and it's called CausalODE."
+    },
+    {
+      "speaker": "Leo",
+      "text": "This is going after pooled CRISPR screens with single-cell RNA readout, including combinatorial perturbations where you knock out or activate several regulators in the same cell. The appeal of combinatorial designs is throughput and the chance to see non-additive effects, but it creates a real attribution problem: when you perturb three genes at once and see a shift, which of the three actually caused which downstream change?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "And existing causal discovery methods tend to assume acyclicity, which is a strange assumption for a biological network full of feedback loops. What's CausalODE's fix?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Three ingredients. First, a metric they call causal reach: if perturbing gene A changes gene B's expression, B should be downstream of A in the inferred graph, and they optimize the graph directly against this property rather than just against expression prediction error. Second, they model the transient dynamics of the response, since transcription, splicing and degradation don't happen instantaneously, so a snapshot captures a moving target. Third, they explicitly model latent protein levels, because regulation is done by proteins, which single-cell RNA-seq never actually measures."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That protein layer is appealing conceptually, but how do you know the latent variable they're calling protein level is actually tracking anything real rather than just being a useful knob?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the ablation they run. On simulated Perturb-seq data, the learned latent regulator activities correlate with the ground-truth simulated protein dynamics, with median temporal correlations between about zero point seventy-nine and zero point ninety-nine depending on the gene. So in simulation at least, it's recovering the right latent trajectory, not just a convenient fiction."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And on real data, where you don't have ground truth graphs, what do they fall back on?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the other contribution worth flagging: a new evaluation metric for real perturbation data, since expression prediction error doesn't necessarily track graph quality. They score how well an inferred graph explains the actual differentially expressed genes seen after each real perturbation. By that measure, CausalODE beats the best competing method by roughly sixty percent on a knockdown dataset called CaRPool-seq and roughly eighty percent on the Norman activation dataset. Its top-ranked edges are also more enriched for independent ChIP-seq evidence, for curated regulator databases, and for STRING interactions than competitors' edges are."
+    },
+    {
+      "speaker": "Ava",
+      "text": "It also distinguishes additive from non-additive genetic interactions in held-out perturbation pairs, which is exactly the kind of signal combinatorial screens are supposed to deliver and single-perturbation methods can't touch. For anyone building gene regulatory networks from Perturb-seq, this is a serious upgrade to both the method and how you'd check it."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper three moves to spatial transcriptomics, and it's a problem a lot of us have quietly worried about without a good fix. Molen, Toosi, Ferreira and Lagergren call it DisCell."
+    },
+    {
+      "speaker": "Ava",
+      "text": "The problem: in single-cell-resolution spatial data, a cell's measured transcripts aren't purely its own. Diffusion and segmentation errors let neighboring cells' transcripts bleed into a cell's counts, so a cell can look like its neighbors purely for technical reasons, not biological ones."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Which is a nightmare for niche analysis, because a real biological niche response also makes neighboring cells resemble each other. From raw counts alone you can't tell a technical spillover artifact from a genuine community effect."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Exactly, and that's the gap DisCell targets. It's a generative model with two latent variables per cell, an intrinsic state and a niche response, plus a separate spillover term borrowed explicitly from the neighbors. Previous models included at most two of these three components. DisCell fits all three jointly, then deliberately refits at increasing levels of assumed spillover and asks how much of a given finding survives once spillover is stripped out."
+    },
+    {
+      "speaker": "Leo",
+      "text": "So it's not just correcting for spillover once, it's quantifying robustness, the maximum amount of spillover a section could plausibly contain, and checking whether your finding would still hold even at that worst case."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Right. In simulated tissue, it successfully separates the three components and correctly flags spillover-induced findings as such. On real ovarian and lung sections, the intrinsic state they recover retains more of a cell's own identity, benchmarked against cell-cycle phase, than competing methods that also try to strip out neighborhood influence."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Any real finding that survives the stress test?"
+    },
+    {
+      "speaker": "Ava",
+      "text": "Yes, they revisit a previously reported result that esophageal cancer cells in niches infiltrated by immune or stromal cells upregulate an epithelial-to-mesenchymal transition program, and confirm it holds even at the maximal plausible spillover level. DisCell also predicts how a given cell type's expression would look in a different niche, with spillover separated out, and does this at lower error than the existing method built for that specific task. And it's fast, under ten minutes on a single consumer GPU for sections up to four hundred thousand cells, so it's not a theoretical nicety, it's usable at the scale people are actually generating data."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Worth remembering next time a niche-driven gene program shows up in a paper and nobody's checked whether it survives a spillover correction."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper four is less a new method and more an uncomfortable audit, from Ghajari, Thirunarayan and Amsaad, on plate design in single-cell perturbation screens."
+    },
+    {
+      "speaker": "Leo",
+      "text": "The setup most of these screens use: you take immune cells from many donors, and every donor-perturbation combination occupies one well on a plate, with control wells grouped together, and typically every donor shares the same plate layout."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the claim is that this layout itself introduces a technical signal that looks biological?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the core finding. Using a ninety-cytokine screen, two compound screens, four cohorts, and simulations, they show that well position effects explain most of the variance you'd otherwise attribute to donor-to-donor replicate variation in abundant cell types. Control wells across the same plate carry a shared offset. And here's the striking number: identical negative control wells differ from each other by hundreds of differentially expressed genes at a standard significance threshold, roughly as many genes as you'd get comparing two genuinely different receptor-negative cell populations."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So a well-position artifact can look as large as a real biological contrast. What happens when you reanalyze published work with that in mind?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "They reinterpret four recent analyses using negative controls, design-aware statistical estimators, and perturbation-specific rather than pooled evaluation, and the conclusions shift. Most pointedly, they re-benchmark a deep learning response-prediction model that scores below a perturbation-agnostic baseline under the standard evaluation scheme. Once they switch to perturbation-specific evaluation, that same model actually outperforms a simple baseline in two of three cell types, significantly so in one once stricter controls are applied. But it still predicts the component shared with inert control wells less well."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That's a real catch for anyone benchmarking perturbation response models, including the computational biology community that keeps leaderboard-chasing on these datasets. A method that looks mediocre under naive evaluation might actually be capturing perturbation-specific signal that the benchmark itself is obscuring, or the reverse could be true elsewhere. Either way, if you're training or evaluating models on single-cell screens with plate structure, this is worth reading before you trust your held-out metric."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Last deep dive, paper five, is a tool and atlas paper from Yan, He, Fernandez, Pleska, Maniatis, Raimondi and Vickovic, called SPACE-Tag."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Spatial epigenomics has lagged behind spatial transcriptomics mostly for technical reasons, so what's the trick here?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "SPACE-Tag is a spatial CUT&Tag method. CUT&Tag normally tags chromatin regions bound by a specific histone mark or protein with a transposase, cutting out and sequencing the associated DNA. SPACE-Tag converts that tagged DNA into polyadenylated RNA through a T7-based linear amplification step, which means it can slot directly into standard spatial transcriptomics workflows and instruments rather than needing a bespoke pipeline."
+    },
+    {
+      "speaker": "Ava",
+      "text": "So you get spatial chromatin maps using the same capture technology people already use for spatial RNA. What did they actually do with it?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Applied it to mouse brain, resolving both activating and repressive chromatin landscapes across anatomical regions, with region-specific regulatory programs that correlate well with existing bulk and single-cell reference datasets. Then they scaled it up: an aging mouse brain atlas profiling five different histone modifications plus the transcriptome in parallel across the adult lifespan, which they describe as the largest spatial multimodal dataset of its kind so far."
+    },
+    {
+      "speaker": "Ava",
+      "text": "And the biology that falls out of that scale?"
+    },
+    {
+      "speaker": "Leo",
+      "text": "Sharp regional divergence in how different brain structures age. Fiber tracts show widespread transcriptional downregulation with aging, often without any accompanying shift in chromatin state, whereas the isocortex shows transcription and chromatin changing together, including an H-three-K-four monomethylation peak module that grows with age, concentrates at super-enhancers, and is linked to the upregulation of genes that regulate neuronal plasticity."
+    },
+    {
+      "speaker": "Ava",
+      "text": "That dissociation between transcription and chromatin in the fiber tracts is the interesting methodological point for us: it's a reminder that you cannot infer chromatin-state change from expression change alone, and vice versa, which is exactly the kind of claim you need multimodal spatial data to actually test rather than assume. Useful if your own work ever needs to defend using both modalities instead of just RNA."
+    },
+    {
+      "speaker": "Leo",
+      "text": "On to the briefs. Paper six, Guan, Liu, Calabrese and Elston propose a three-factor mathematical model of X-chromosome inactivation, built from Xist RNA, an X-linked activator of Xist, and the autosomal protein SPEN. Stochastic differences in Xist levels break symmetry between the two X chromosomes, and feedback loops then amplify and propagate the SPEN-Xist complex asymmetrically, reproducing every known counting scenario for how many X chromosomes stay active. It's a clean example of how a small feedback circuit, without invoking any cis-acting DNA element network, can explain a genuinely hard chromosome-scale regulatory decision."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper seven, from Scales, Karsan, Underwood and colleagues, identifies a mutually repressive pair of transcription factors, BLIMP1 and CASZ1, as the switch that times intestinal enterocyte maturation at weaning. BLIMP1 marks the neonatal, milk-absorbing state, CASZ1 drives the adult state, and the same switch mediates how corticosteroids accelerate epithelial maturation, which matters clinically since corticosteroids are already used to mature the gut in preterm infants."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper eight uses epigenetic-state-informed polymer modeling to generate chromosome conformational ensembles directly from epigenomic data, from Bazmi, Turco and Kumar. The models reproduce experimental Hi-C maps across cell lines, and when they simulate a TAD-boundary-disrupting deletion without retuning parameters, the ensemble shifts from mostly insulated to mostly fused chromatin states, with active contacts getting stronger and enhancer contacts for neighboring genes getting selectively disrupted. It's a nice demonstration that single-cell-like heterogeneity in 3D genome folding can be predicted from epigenetic state rather than just measured."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper nine tackles a subtle blind spot in DNA language models: since most tokenizers split a sequence differently from its reverse complement, the same regulatory motif can get chopped into different tokens depending on which strand you read. Datta and colleagues show existing models flip twenty-five to thirty-one percent of their predictions under reverse-complementing, and their new tokenizer, MirrorDNA, guarantees strand-symmetric token boundaries by construction, more than doubling strand-consistent accuracy at a fraction of the parameter count of models like DNABERT-two."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper ten, scDisentangle from El Mejjad and colleagues, predicts single-cell perturbation responses by decomposing expression into observed attributes plus a sequence of residual latent components, generating counterfactual cells that still look like their source cell. It beats baselines on cytokine stimulation, liver infection and unseen combinatorial genetic perturbations, and its accuracy doesn't just track how close a response is to the average perturbation effect, which is the trap a lot of these prediction models fall into."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper eleven is a fun one to picture even half-asleep: Auger, Gandecki and Heng grow a two-dimensional Arabidopsis root tip from a single sixty-two-gene network, with no cell identities given in advance, just auxin transport polarity and mechanical relaxation. Over simulated hours it self-organizes into recognizable tissue layers, a quiescent center and growth zones, though the authors are refreshingly upfront that the niche isn't stable long-term and most mutant phenotypes don't reproduce."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper twelve extends the simpleaf tool for quantifying probe-based multiplexed single-cell data, from He, Gao and Patro, with a cache-friendly probe dictionary and external-memory barcode handling. Across forty-four ten-x Flex datasets it's about twice as fast and uses roughly one-thirteenth the memory of a competing tool, while also preserving probe-level resolution that reveals splicing dynamics hidden by gene-level aggregation."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper thirteen is a big resource expansion: Munro and colleagues processed over three thousand RNA-seq samples across thirteen tissues from heterogeneous stock rats, quantifying six modalities of transcriptome regulation and running a transcriptome-wide association study across three hundred and eight traits, turning up over seven thousand significant gene-trait links now searchable through an updated RatGTEx portal."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Paper fourteen asks whether isoform diversity itself, not just gene-level expression, carries independent information. Shanas and colleagues apply a Shannon evenness measure across thousands of GTEx samples and find isoform diversity separates tissues even among genes with no differential expression, and shifts with age most strongly in the brain, often with total gene expression unchanged."
+    },
+    {
+      "speaker": "Ava",
+      "text": "Paper fifteen, JANUS from Kara, Ashyralyyev and Alkan, finds somatic structural variants directly on a personal pangenome graph built from matched tumor and normal long reads, skipping full alignment to a linear reference. Across five tumor-normal pairs it leads an eighteen-caller consensus and keeps that lead especially at low sequencing depth and low tumor purity, running about twenty-four times faster than alignment-based approaches."
+    },
+    {
+      "speaker": "Leo",
+      "text": "Quick mentions to round it out. A new tool called SARDINE for making epigenome-wide association study summary statistics usable at scale for epigenetic biomarkers. A three-dimensional spatial atlas of human lung fibrosis linking tissue microarchitecture to maladaptive repair states."
+    },
+    {
+      "speaker": "Ava",
+      "text": "A transcriptomic analysis arguing that cell-cycle-arrest programs dominate over apoptosis programs in treatment-naive pancreatic ductal adenocarcinoma. A second somatic structural variant caller built against a composite germline reference, a complementary approach to today's JANUS paper."
+    },
+    {
+      "speaker": "Leo",
+      "text": "A protein-complex mapping resource for mouse embryonic stem cells called stem dot MAP. A comparative study of how gene expression shapes genome-wide mutation rates in fruit flies and roundworms."
+    },
+    {
+      "speaker": "Ava",
+      "text": "An agentic AI system that does cell-type inference without needing prior segmentation in spatial transcriptomics, and then uses that inference to guide segmentation itself. And, outside biology entirely, a provably space-efficient indexing structure for skewed key-value workloads, if you ever need to store your own data more efficiently than your lab's compute cluster currently allows."
+    },
+    {
+      "speaker": "Leo",
+      "text": "That's the batch for November ninth. Back tomorrow with whatever the archive and bio-archive throw at us next."
+    }
+  ],
+  "picks": [
+    {
+      "id": "2611.08853",
+      "title": "Synchronized Optimal Transport Reconstructs Coupled Transcriptomic and Chromatin Dynamics",
+      "authors": [
+        "Jingfeng Wang",
+        "Yanxiang Zhao",
+        "Qing Nie",
+        "Zixuan Cang"
+      ],
+      "abstract": "Single-cell RNA and ATAC data collected across developmental stages provide time-course snapshots of transcriptional and regulatory states. Since sequencing is destructive, trajectories between these snapshots must be inferred from independently sampled cell populations. Existing approaches typically infer continuous dynamics in a single modality or integrate RNA and ATAC in a shared representation. Here we present Cross-Omics Aligned Trajectory Inference (COATI), which extends unbalanced synchronized dynamical optimal transport to time-dependent cross-modal maps for reconstructing coupled trajectories in distinct RNA and ATAC state spaces. We evaluated COATI on synthetic benchmarks and four developmental datasets using held-out-stage reconstruction and lineage analyses. COATI improved reconstruction of cell populations at held-out stages, including recovery of chromatin-state heterogeneity within cell types, and better preserved developmental lineage relationships. The unbalanced formulation allows the inference of population mass changes, which were shown to associate with DNA-replication programs at early stages and lineage-maturation programs later in development. The coupled trajectories enabled analysis of lineage-specific transcriptional and chromatin changes and their temporal relationships during development. Lineage responses inferred by COATI agreed with independent CRISPR perturbation results, and the inferred regulatory patterns were consistent with independent epigenetic data.",
+      "categories": [
+        "q-bio.GN",
+        "math.OC"
+      ],
+      "announce_type": "new",
+      "url": "https://arxiv.org/abs/2611.08853",
+      "tier": "deep",
+      "why": "COATI extends unbalanced dynamical optimal transport to jointly reconstruct coupled RNA and ATAC trajectories across developmental time, directly addressing the hard problem of coupling multi-omic snapshots into continuous regulatory dynamics."
+    },
+    {
+      "id": "10.64898/2026.11.05.764481",
+      "title": "Inferring gene regulatory networks from single-cell perturbation data by optimizing causal reach of latent mediator dynamics",
+      "authors": [
+        "Qian, W.",
+        "Song, Y.",
+        "Welch, J. D."
+      ],
+      "abstract": "Resolving the causal structure of gene regulatory networks is central to understanding cellular regulation. Pooled CRISPR screens with single-cell RNA readouts measure the transcriptional consequences of many interventions in parallel, providing a powerful resource for causal discovery. Combinatorial designs that perturb multiple regulators per cell increase throughput and can reveal responses that single-gene perturbations do not. However, inferring causal gene networks from these experiments remains challenging because gene regulatory interactions are nonlinear, dynamic, and often involve feedback. Thus, attributing the combined effect of several perturbations to individual regulators remains difficult. Additionally, transcriptional regulation is ultimately carried out by proteins, while single-cell perturbation datasets generally measure only RNA levels. Existing methods often simplify regulatory dynamics or rely on assumptions that conflict with gene regulation, such as acyclicity. Moreover, current evaluation practices usually rely on expression prediction error, which is readily computable in real datasets, but does not necessarily reflect graph quality. A complementary metric is needed to assess inferred regulatory connections using observed perturbation responses in real data. To address these challenges, we present CausalODE, a differentiable framework for learning causal graphs from single-cell perturbation data. Our approach incorporates three central insights to improve upon previous methods. First, genes that are differentially expressed when a gene is perturbed should be downstream of the target gene in the regulatory network; we quantify this property with a metric we term causal reach. Second, causal interactions involve transient cellular responses in RNA transcription, splicing, and degradation. Third, gene regulatory interactions are mediated by proteins, whose levels are not directly measured in single-cell RNA-seq experiments. Building on these insights, CausalODE learns a graph that optimizes the causal reach metric, captures transient cellular responses to perturbation, and explicitly models the latent dynamics of protein levels. Together, these components allow nonlinear responses, feedback loops, and time-lagged regulation. Across simulated Perturb-seq datasets with different sparsities and graph structures, CausalODE improves AUPRC and precision among top-ranked edges compared with baselines and competing methods, while achieving competitive AUROC. We introduce a metric to evaluate the causal reach of inferred graphs on real data by measuring how well the graphs explain differentially expressed genes in single-cell perturbation experiments. Using this metric, CausalODE outperforms the strongest competing method or baseline by approximately 60% on the CaRPool-seq knockdown dataset and 80% on the Norman et al. activation dataset. Its top-ranked edges generally show greater enrichment for high-confidence evidence from cell-type-matched ChIP-seq, CollecTRI, and regulatory STRING than those of other methods. The inferred graphs also distinguish non-additive from approximately additive genetic interactions in held-out perturbation pairs. Finally, ablation analyses show that optimizing causal reach improves performance on held-out perturbations, and the learned latent regulator activities track simulated protein dynamics, with median temporal correlations ranging from 0.79 to 0.99.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764481v1",
+      "tier": "deep",
+      "why": "CausalODE introduces a 'causal reach' metric and latent protein dynamics to infer gene regulatory networks from Perturb-seq data, tackling feedback and nonlinearity that most GRN inference methods ignore."
+    },
+    {
+      "id": "10.64898/2026.11.04.764463",
+      "title": "DisCell: Separating Spillover from Niche Response in Spatial Transcriptomics",
+      "authors": [
+        "Molen, R.",
+        "Toosi, H.",
+        "Ferreira, P. F.",
+        "Lagergren, J."
+      ],
+      "abstract": "Spatial transcriptomics at single-cell resolution measures every cell in its place in the tissue, but diffusion and segmentation errors also add transcripts of neighboring cells to a cell's counts. This spillover makes a cell resemble its neighbors, and a response to the niche makes cells in the same niche resemble each other. Both tie a cell's expression to its surroundings. The count data alone cannot tell the two apart. Findings from single-cell transcriptomes, such as a gene program that is higher in one niche than in another or signaling genes that change depending on the neighborhood, may therefore be artifacts of spillover. Current models describe a cell by its intrinsic state together with either its niche response or spillover, but none models all three. We present DisCell, the first method that models all three components jointly and measures how robust each finding is to spillover. DisCell is a generative model that describes single-cell gene expression profiles in terms of two latent variables, an intrinsic state and a response to the niche, and adds spillover from its neighbors as a separate term. DisCell fits the model at increasing levels of spillover and recomputes each finding on the spillover-free expression to see how much spillover it withstands. DisCell also estimates the most spillover a section can contain, and a finding that holds even at that amount is not explained by spillover. In simulated tissue, DisCell recovers each cell's intrinsic state and response and tells findings created by spillover apart from genuine responses. On five sections of ovarian and lung tissue, the intrinsic state keeps more of each cell's own properties, measured by its cell-cycle phase, than any competing method that holds as little of its neighborhood. Within each cell type, the model partitions the variation of each gene into intrinsic state, niche response and spillover. Using DisCell, we rank findings about niches by their robustness to spillover and confirm that a previously reported finding withstands spillover, that esophageal cancer cells in niches infiltrated by immune or stromal cells express more of an epithelial-mesenchymal transition program. DisCell also predicts what the gene expression of a cell type would be in another niche, with its spillover part separated, at lower error on most tasks than the competing method built for this purpose. Training the model takes under ten minutes on one consumer GPU for sections of up to 400,000 cells.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764463v1",
+      "tier": "deep",
+      "why": "DisCell formally separates spillover contamination from genuine niche response in spatial transcriptomics, exposing how many published niche-dependent findings could be artifacts of segmentation/diffusion rather than biology."
+    },
+    {
+      "id": "10.64898/2026.11.04.764088",
+      "title": "Plate design confounds donor variation and model evaluation in single-cell perturbation screens",
+      "authors": [
+        "Ghajari, G.",
+        "Thirunarayan, K.",
+        "Amsaad, F."
+      ],
+      "abstract": "Single-cell screens of immune cells from many donors are used to study why individuals respond differently and to benchmark response models. Each donor-perturbation combination typically occupies one well, controls are grouped, and donors share one layout, so technical effects can look biological. Using a 90-cytokine screen, two compound screens, four cohorts and simulations, we show that well effects explain most replicate-control variation in abundant cell types, controls carry a shared offset, and identical control wells differ by hundreds of differentially expressed genes at a standard threshold, about as many as two receptor-negative proteins do. Negative controls, design-aware estimators and perturbation-specific evaluation change the interpretation of four recent analyses. A deep-learning model that scores below a perturbation-agnostic predictor under standard evaluation outperforms a simple baseline on perturbation-specific differences in two of three cell types (significantly in one with stricter controls), but predicts less well the component shared with inert wells.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764088v1",
+      "tier": "deep",
+      "why": "A sobering methodological audit showing that plate-layout confounds, not biology, explain most apparent donor variation in single-cell perturbation screens, which should change how the field designs and benchmarks these experiments."
+    },
+    {
+      "id": "10.64898/2026.11.06.764689",
+      "title": "SPACE-Tag Enables High-Throughput Spatial Chromatin Profiling With CUT&Tag",
+      "authors": [
+        "Yan, C.",
+        "He, R.",
+        "Fernandez, S.",
+        "Pleska, M.",
+        "Maniatis, S.",
+        "Raimondi, I.",
+        "Vickovic, S."
+      ],
+      "abstract": "Spatial epigenomics maps chromatin states within intact tissues, yet current methods remain limited by accessibility and scale. We developed SPACE-Tag, a spatial CUT&Tag framework that converts epigenetic marks-associated DNA into polyadenylated RNA through T7 based linear amplification, enabling direct integration with standard spatial transcriptomic workflows. Applied to the mouse brain, SPACETag resolved activating and repressive chromatin landscapes, recovered region-specific gene regulatory programs across anatomical domains, and showed strong correlation with existing bulk and single cell reference data. We generated an integrated multimodal atlas of the aging mouse brain, profiling five histone modifications and the transcriptome in parallel across the adult lifespan to establish the largest spatial multimodal dataset to date. This analysis uncovered sharp regional divergence with aging in the brain: fiber tracts showed widespread transcriptional downregulation, often without nearby chromatin state transitions, whereas the isocortex showed coordinated chromatin transcriptome changes, including an H3K4me1 peak module that increased with age, was enriched at super-enhancers and linked to upregulation of neuronal plasticity regulators. These findings highlight the power of multimodal and high throughput spatial genomics in uncovering the divergent regulatory logic that governs tissue-specific vulnerability and resilience in the aging brain.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764689v1",
+      "tier": "deep",
+      "why": "SPACE-Tag converts spatial CUT&Tag chromatin signal into RNA-compatible readouts, enabling a five-histone-mark, whole-transcriptome spatial atlas of the aging mouse brain at unprecedented scale and resolution."
+    },
+    {
+      "id": "10.64898/2026.11.03.764019",
+      "title": "A three-factor model can explain symmetry breaking and the n-1 rule during X-chromosome inactivation",
+      "authors": [
+        "Guan, K.",
+        "Liu, J. M.",
+        "Calabrese, J. M.",
+        "Elston, T. C."
+      ],
+      "abstract": "X-chromosome inactivation (XCI) is a mammalian gene regulatory process that via chromosome-scale transcriptional silencing, leaves active a single X chromosome per diploid genome complement. The mechanisms that enable cells to select the appropriate number of X chromosomes to inactivate while leaving others active remain unclear. We demonstrate that all known chromosomal counting scenarios during XCI can be accounted for by a three-factor mathematical model that includes (1) Xist, the long noncoding RNA (lncRNA) responsible for gene silencing during XCI in eutherians, (2) an X-linked transcriptional activator of Xist, and (3) the autosomally-encoded SPEN, an Xist RNA-binding protein that is essential for gene silencing during XCI. In our model, symmetry between active X chromosomes is broken by stochastic differences in the number of Xist molecules that associate with the X chromosomes at the onset of XCI. Subsequently, integrated positive and negative feedback loops amplify then propagate superstoichiometric assemblies of SPEN complexed with Xist on the inactive chromosome(s), and select for levels of X-linked activator that enable only one X chromosome per diploid genome complement to remain active. Thus, asymmetric propagation of the SPEN-Xist ribonucleoprotein complex may play an essential role in symmetry breaking and chromosomal counting during XCI, independently of or in concert with cis-acting networks of DNA regulatory elements. Our results also have conceptual implications for gene regulatory circuits on autosomes.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.03.764019v1",
+      "tier": "brief",
+      "why": "A compact three-factor mathematical model (Xist, an X-linked activator, and SPEN) reproduces every known X-chromosome counting scenario during XCI, grounding chromosome-scale gene silencing in a minimal feedback circuit."
+    },
+    {
+      "id": "10.64898/2026.11.04.764083",
+      "title": "Mutually Repressive Transcription Factors Drive Intestinal Maturation for Weaning",
+      "authors": [
+        "Scales, M. K.",
+        "Karsan, R.",
+        "Underwood, J.",
+        "Bara, A. M.",
+        "Wang, Y.",
+        "Sumigray, K.",
+        "Lechler, T."
+      ],
+      "abstract": "In mammals, rapid neonatal growth depends on specialized intestinal enterocytes that absorb nutrients from milk. These cells exhibit distinct functions, morphologies, and gene expression programs that support neonatal nutrition before transitioning to an adult state at weaning. However, the transcriptional mechanisms that establish neonatal enterocyte identity and coordinate their maturation remain poorly understood. Here we show that the transcription factors BLIMP1 and CASZ1 form a central switch in the timing of enterocyte maturation. While BLIMP1 marks and promotes neonatal enterocytes, CASZ1 is expressed in adult enterocytes and is required for the proper timing of their emergence. Genetic analysis indicates that these neonatal and adult factors are mutually repressive, forming a genetic switch underlying weaning. This regulatory mechanism also controls glucocorticoid-induced maturation, a process relevant to both normal weaning and the clinical use of corticosteroids to promote epithelial maturation in preterm infants. We show that corticosteroids act directly on the intestinal epithelium and require CASZ1 to induce maturation. Together, these findings reveal a transcriptional mechanism that coordinates intestinal epithelial identity with the changing nutritional demands of early life and mediates the response to maturation-promoting hormones.",
+      "categories": [
+        "developmental biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764083v1",
+      "tier": "brief",
+      "why": "BLIMP1 and CASZ1 form a mutually repressive transcriptional switch that times the neonatal-to-adult enterocyte transition at weaning, with direct relevance to corticosteroid-induced gut maturation in preterm infants."
+    },
+    {
+      "id": "10.64898/2026.11.04.764273",
+      "title": "Epigenome-informed Polymer Modeling Reveals Chromosome Folding Landscapes across Distinct Genetic and Epigenetic Contexts",
+      "authors": [
+        "Bazmi, S.",
+        "Turco, A.",
+        "Kumar, S."
+      ],
+      "abstract": "Three-dimensional (3D) genome organization is critical for gene regulation, enabling long-range interactions between genes and distal regulatory elements. Genomic structural variations and epigenetic differences can perturb this organization, contributing to phenotypic variation and tissue-specific gene regulation. Prior studies have assessed the impact of these genetic and epigenetic changes on 3D genome folding, primarily using population-averaged features such as topologically associating domains and loops. However, growing evidence from single-cell and live-imaging studies indicates that chromosomes are highly dynamic and exist as heterogeneous ensembles of conformations. Here, we applied an epigenetic-state-informed polymer modeling framework to generate chromosomal conformational ensembles directly from cell- and tissue-specific epigenomic data. The resulting ensembles reproduced experimental Hi-C maps across cell lines and tissue types. Comparison of these conformational ensembles revealed that, although polymer dynamics were conserved across cell lines, their folding landscapes diverged. These differences arose primarily from cell-line-specific chromatin-state interaction networks and were concentrated in rare, long-lived contacts. Furthermore, modeling a TAD-boundary-disrupting deletion without re-optimizing the model parameters indicated a shift in the chromatin conformational ensemble from predominantly insulated to predominantly fused states. The modeled deletion also selectively strengthened active chromatin contacts and differentially disrupted enhancer contacts involving neighboring genes. Finally, comparison of two tissue types from the same donor revealed epigenetically driven rewiring of chromatin-state interaction networks. These findings establish chromosomal conformational ensembles as a sensitive readout of genome reorganization across distinct genetic and epigenetic contexts.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764273v1",
+      "tier": "brief",
+      "why": "Epigenome-informed polymer modeling generates cell-type-specific chromosome conformational ensembles that reproduce Hi-C maps and predict how a TAD-boundary deletion shifts folding landscapes and enhancer contacts."
+    },
+    {
+      "id": "10.64898/2026.11.04.764207",
+      "title": "Learning Strand-Equivariant Tokenizations of DNA with MirrorDNA",
+      "authors": [
+        "Datta, N.",
+        "Shatabda, S.",
+        "Bayzid, M. S.",
+        "Rahman, M. S."
+      ],
+      "abstract": "DNA has two strands, and for most regulatory label prediction tasks a sequence and its reverse complement should get same answer. Yet DNA language models are tokenized, trained and tested on one strand at a time. We show that this makes them inconsistent. BPE and k-mer tokenizers split 92–100\\% of transcription-factor motifs differently on the two strands, and NT-v2, DNABERT-2 and HyenaDNA change 25-31\\% of their predictions when the test sequences are reverse-complemented. We introduce \\model, a compact DNA language model with a learned tokenizer that guarantees mirror-symmetric token boundaries across reverse-complement sequences, regardless of its learned parameters. We prove that this symmetry holds through the whole model. As a result, the same model can give identical answers on both strands when the label does not depend on the strand, and can still tell the strands apart when it does, which no strand-blind model can learn. Counting only predictions that are correct on both strands, \\model\\ more than doubles the MCC of NT-v2, DNABERT-2 and HyenaDNA. With 2.3M parameters, it is more accurate than the Caduceus models trained on the same data, and not significantly different from NT-v2 (98M parameters) on Genomic Benchmarks or from DNABERT-2 (117M) on the Nucleotide Transformer tasks. It also stays accurate on inputs sixteen times longer than those it was trained on. The same model trained with reverse-complement augmentation instead still changes about one prediction in ten with the strand, unless its outputs are averaged over both strands. Without any annotation, the tokenizer learns to keep the splice-donor signal \\textttAGGT in a single token. Code: https://github.com/NIRJHOR-DATTA/MirrorDNA.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764207v1",
+      "tier": "brief",
+      "why": "MirrorDNA builds a DNA language model with provably strand-symmetric tokenization, fixing a surprisingly common failure mode where current DNA LMs give inconsistent predictions on reverse-complement sequences."
+    },
+    {
+      "id": "10.64898/2026.11.04.764292",
+      "title": "scDisentangle: sequential disentanglement for single-cell perturbation response prediction",
+      "authors": [
+        "El Mejjad, S.",
+        "Enezari, S.",
+        "Bedraoui, A.",
+        "El Hajji, F. Z.",
+        "El Fatimy, R.",
+        "Hofree, M.",
+        "Daouda, T."
+      ],
+      "abstract": "Predicting the transcriptional response of single cells to perturbation is a central goal of single-cell modeling, with broad application to analysis and experimental design. Existing methods often fail to beat simple baselines and offer little insight into how biological variation is organized. We present scDisentangle, a model that decomposes single-cell expression into observed attributes and a sequence of residual components, generating counterfactuals that preserve source cell identity. scDisentangle outperformed current models and naive baselines on cytokine stimulation, liver infection, and unseen combinatorial genetic perturbations, on which accuracy was largely independent of how closely a response resembled the average perturbation effect. In an immune checkpoint inhibitor-associated myocarditis cohort, cell-resolved counterfactuals predicted donor-specific intracardiac CD8+ T cell states from peripheral blood. In a castration-regeneration prostate atlas, predictions recapitulated luminal dynamics and progenitor-marker kinetics upon androgen add-back. scDisentangle's coarse-to-fine latent structure aligned with hematopoietic lineage organization, with early levels capturing a less differentiated core progressively refined into cell-type-specific programs.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764292v1",
+      "tier": "brief",
+      "why": "scDisentangle decomposes single-cell expression into observed attributes and residual components to generate counterfactual perturbation responses, outperforming baselines on cytokine, infection, and combinatorial genetic perturbation tasks."
+    },
+    {
+      "id": "10.64898/2026.11.05.764577",
+      "title": "Growing a Root from Its Genome : Emergent Tissue Layers and Zones in a GPU-Native Simulation of the Arabidopsis Root Tip",
+      "authors": [
+        "Auger, E.",
+        "Gandecki, M.",
+        "Heng, F.-X."
+      ],
+      "abstract": "Models of the Arabidopsis root tip usually take its cell identities as given. Here we grow a root tip from a single genome. In a two-dimensional median section, every cell reads the same network of 62 genes (26 core genes from an earlier, unpublished model of callus and 36 added for the root) and starts with the same expression; the only spatial cues are the polarity of auxin transport, auxin from the shoot and the free surface. Identities and zones are never given to the simulation; they are read from gene expression. Cells are polygons of a shared mesh, relaxed towards mechanical equilibrium under turgor at every step. In 48 simulated hours, a tip-shaped template grows into a root of 3 000-4 500 cells with epidermis, cortex, endodermis, pericycle and stele in order along most of its length, SHORT-ROOT and SCARECROW in the endodermis, an auxin maximum, a quiescent centre and a cap at its tip, and meristem, elongation and mature zones. A WOX5 gate built from published interactions and one hypothesis keeps a quiescent centre to 48 h in 17 of 20 simulated roots that were not used for tuning (85%; Wilson 95% interval 64-95%; criteria fixed before the run), against 9 of 20 roots used for tuning, before the gate. The niche is not maintained beyond 48 h: grown on to 73 h, only 6 of these 20 roots still have a quiescent centre (30%; 15-52%). All pre-registered criteria hold in only 1 of 20 roots, because the quiescent centre is too wide at 0 h; without that count, 12 of 20. The meristem is too long, and cortical cells made after the start of growth elongate only three- to four-fold instead of eightto thirty-fold, a limit set in large part by the numerical growth scheme. Mutants are a major weakness: several look like their published phenotype, but an exploratory re-run of a mutant benchmark fixed in advance for our first model passes one of nine predictions. Nor does the root regenerate: cut near its tip, it re-forms an auxin maximum and a columella but no quiescent centre. On a first, simpler model and without any polarity cue, a mass of identical cells still sorts into concentric layers and, when PIN carriers follow the auxin flux, concentrates auxin into a few foci, but forms no stem-cell niche: the genome lacks a lateral inhibition between foci. We state the limitations and the next stages.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764577v1",
+      "tier": "brief",
+      "why": "A GPU-native simulation grows a realistic Arabidopsis root tip—including tissue layers, auxin maximum, and a quiescent centre—from a single shared 62-gene network with no pre-assigned cell identities, a striking systems-biology proof of concept with honestly reported limitations."
+    },
+    {
+      "id": "10.64898/2026.11.05.764594",
+      "title": "Rapid, accurate, and memory-frugal sub-gene-level quantification of probe-based, multiplexed single-cell data",
+      "authors": [
+        "He, D.",
+        "Gao, Y.",
+        "Patro, R."
+      ],
+      "abstract": "Probe-based, multiplexed single-cell assays enable accurate transcriptome profiling while processing multiple samples in parallel. Their predefined probe sequences and additional sample barcodes introduce computational requirements that differ from those of poly(A)-based assays, for which many existing single-cell quantification tools were developed. We extend simpleaf to enable efficient demultiplexing and quantification of probe-based single-cell libraries. A new, cache-friendly dictionary specializes lookup to small probe references, while a shared thread budget balances parallel decompression and mapping. We extend RAD and downstream tools with reusable sample-scoped correction plans and external-memory collation of hierarchically barcoded data, retaining probe identities through quantification to enable rapid mapping and quantification with a small working memory budget. Across five 10x Genomics Flex datasets comprising 44 samples, simpleaf had the shortest runtime and lowest peak memory use of the three tools on every library, while producing gene-expression estimates, cell clusters, and marker genes concordant with cyto and Cell Ranger. Compared with cyto, simpleaf was on average 2 times faster and used approximately one-thirteenth as much memory. simpleaf also exports probe-level quantification results, allowing a range of analyses at sub-gene resolution. Here, we show that individual probe counts reveal expression changes obscured by gene-level aggregation, identify the transcript groups contributing to gene-level changes, and provide insight into splicing dynamics across cell types. These results demonstrate the computational and biological value of retaining probe-level information in multiplexed singlecell analysis.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764594v1",
+      "tier": "brief",
+      "why": "simpleaf delivers fast, memory-frugal quantification of probe-based multiplexed single-cell data down to sub-gene/probe resolution, outperforming Cell Ranger-style tools on speed and memory."
+    },
+    {
+      "id": "10.64898/2026.11.05.764420",
+      "title": "Deep transcriptomic analysis of molecular mediators of complex traits in heterogeneous stock (HS) rats",
+      "authors": [
+        "Munro, D. B.",
+        "Nguyen, K.-M. H.",
+        "St. Pierre, C. L.",
+        "Bimschleger, H.",
+        "Cohen, K. A.",
+        "Wang, Y.",
+        "Ward, R.",
+        "Holl, K.",
+        "Chen, D.",
+        "Johnson, B. B.",
+        "Ang, G.",
+        "Mortazavi, M.",
+        "Keung, E.",
+        "King, C.",
+        "Tripi, J. A.",
+        "Kuhn, B. N.",
+        "Thompson, B. M.",
+        "Lionikas, A.",
+        "Daniels, D.",
+        "Vulpe, C.",
+        "Kalivas, P. W.",
+        "George, O.",
+        "Adams, D. J.",
+        "Dietz, D. M.",
+        "Flagel, S.",
+        "Hitzemann, R.",
+        "Gusev, A.",
+        "Saba, L. M.",
+        "Jablonski, M. M.",
+        "Jhou, T. C.",
+        "Telese, F.",
+        "Meyer, P. J.",
+        "Mitchell, S. H.",
+        "Solberg Woods, L. C.",
+        "Chen, H.",
+        "Polesskaya, O.",
+        "Mohammadi, P.",
+        "Palmer, A. A."
+      ],
+      "abstract": "Rats are a powerful model organism for genome-wide association studies (GWAS) of physiological and behavioral traits. Heterogeneous Stock (HS) rats, which were created by intercrossing 8 inbred rat strains, are heavily used for this purpose because of their genetic diversity and accumulated recombinations due to over 100 generations of outbreeding, which improves mapping precision. However, functional genomics resources for post-GWAS interpretation of genomic findings have been limited. We processed 3,160 RNA-seq samples, 1,932 of which were previously unpublished, from 13 tissues as part of RatGTEx. We used Pantry to quantify six modalities of transcriptome regulation (expression, isoform ratio, intron excision ratio, alternative transcription start site (TSS), alternative poly(A), and RNA stability) in each sample, which allowed us to identify 144,876 independent quantitative trait loci (QTL) for 22,599 genes. We performed a transcriptome-wide association study (TWAS) with 19,796 unique genes across tissues and transcriptional modalities and 308 traits collected from 14 studies using FUSION, which identified 7,473 significant gene-trait associations. This work presents a significant expansion of the RatGTEx resource in terms of samples, modes of transcriptome regulation, and genetic analyses. Our findings provide molecular evidence for the involvement of specific genes in mediating GWAS signals through a range of transcriptome regulatory mechanisms. These gene-to-phenotype relationships can be easily applied to genetic analyses in humans and other species. Further experiments can use this evidence to confirm these molecular mediators and target them for the treatment of behavioral and physiological traits and disorders. To facilitate use of these results, we have updated results on RatGTEx.org and provided a new interactive TWAS web portal (twas.ratgtex.org).",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764420v1",
+      "tier": "brief",
+      "why": "A major expansion of RatGTEx with 3,160 RNA-seq samples across 13 tissues and six regulatory modalities yields 144,876 QTLs and a TWAS linking molecular mediators to 308 complex traits, a rich resource for post-GWAS interpretation."
+    },
+    {
+      "id": "10.64898/2026.11.05.764607",
+      "title": "Isoform diversity as a complementary dimension of gene expression",
+      "authors": [
+        "Shanas, S.",
+        "Lubaton, E.",
+        "Jermans, S.",
+        "Mikl, M."
+      ],
+      "abstract": "Most human genes produce multiple mRNA isoforms through alternative splicing and alternative transcription start and end sites. Isoforms of the same gene can differ in function, and their relative abundance varies between tissues and conditions. However, gene expression analysis is often restricted to the gene level, masking its diversification into mRNA and protein isoforms with potentially distinct functionality. Here we show, using an adaptation of Shannon evenness applied to 4,814 GTEx samples from 25 tissues, that isoform diversity constitutes a distinct dimension of gene expression, complementary to gene-level abundance and whole transcriptome diversity. Isoform diversity separated tissues based on non-differentially expressed genes and changed with age in a gene- and tissue-specific manner, most strongly in the brain and often without changes in overall gene expression levels. During neuronal differentiation, it increased most notably in RNA processing and splicing genes. Our results suggest that isoform diversity represents an independent dimension of gene expression and may help explain functional differences between tissues and cell states that are not captured by analyzing expression levels alone.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764607v1",
+      "tier": "brief",
+      "why": "Using Shannon evenness across GTEx, this paper shows isoform diversity is an independent axis of gene regulation that distinguishes tissues and ages even without changes in overall gene expression levels."
+    },
+    {
+      "id": "10.64898/2026.11.05.764632",
+      "title": "Somatic structural variation discovery on cancer pangenome graphs",
+      "authors": [
+        "Kara, M.",
+        "Ashyralyyev, A.",
+        "Alkan, C."
+      ],
+      "abstract": "Somatic structural variants (SVs) drive tumorigenesis across most cancers, yet low variant allele frequencies in subclonal populations often necessitate multi-sample sequencing per patient. Existing somatic SV callers rely on whole-genome read alignments against a single linear reference, incurring high computational costs and reference bias. We present JANUS, which discovers somatic SVs directly within a personal pangenome, a colored de Bruijn-like graph of locally consistent parsing (LCP) cores built from matched normal and tumor PacBio HiFi reads. JANUS identifies candidate SV sites traversed exclusively by tumor reads without prior alignment, mapping only short read snippets surrounding each site. Across five tumor-normal pairs in the CASTLE panel, JANUS leads the 18-caller consensus with a mean F1 score of 0.887 (next-best caller: 0.858), widening its lead under low-signal regimes (0.489 versus 0.362 at 5x; 0.683 versus 0.520 at 20% purity). End to end, JANUS analyzes a tumor-normal pair in ~11 minutes on average with 16 threads, which is ~24x faster than read alignment alone on the same machine. In a 20-tumor patient simulation, joint graph calling outperforms independent pairwise runs in speed and accuracy, particularly at low depth. By processing multi-sample cohorts jointly and maintaining sensitivity at low coverage and purity, JANUS provides an efficient, reference-unbiased framework for cancer genomics. JANUS is available at https://github.com/BilkentCompGen/janus.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764632v1",
+      "tier": "brief",
+      "why": "JANUS discovers somatic structural variants directly from a personal pangenome graph without initial read alignment, beating an 18-caller consensus especially at low tumor purity and coverage."
+    },
+    {
+      "id": "10.64898/2026.11.05.763758",
+      "title": "SARDINE unlocks EWAS summary statistics for large-scale epigenetic biomarker analysis",
+      "authors": [
+        "Wu, Y.",
+        "Wang, Y.",
+        "Moreno, R.",
+        "Merrill, S. M.",
+        "Dwaraka, V. B.",
+        "Seale, K. B.",
+        "Smith, R.",
+        "Schmitz, L. L.",
+        "Lu, Q."
+      ],
+      "abstract": "Epigenetic clocks are increasingly used to study biological aging, yet their interpretation and utility remain uncertain. Meanwhile, the growing wealth of epigenome-wide association study (EWAS) summary statistics remains largely untapped for evaluating these biomarkers. Here, we introduce SARDINE, a statistical framework that estimates epigenetic clock-phenotype associations using EWAS summary statistics, clock weights, and reference methylation covariance, without individual-level data. SARDINE accurately reproduced individual-level association estimates across 38 epigenetic biomarkers and four phenotypes in 15,677 individuals. Applying SARDINE to diverse EWAS datasets revealed substantial heterogeneity in biomarker associations with aging, diseases, and lifestyle factors. By transforming CpG-level EWAS results into interpretable biomarker-level associations, SARDINE unlocks a largely underutilized data resource and establishes a scalable paradigm for systematic biomarker evaluation and discovery in aging research.",
+      "categories": [
+        "genetics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.763758v1",
+      "tier": "mention",
+      "why": "SARDINE lets researchers estimate epigenetic clock-phenotype associations directly from published EWAS summary statistics, unlocking a large underused resource for aging biomarker research."
+    },
+    {
+      "id": "10.64898/2026.11.05.764175",
+      "title": "Three-dimensional mapping of human lung fibrosis identifies spatial coupling between tissue microarchitecture and maladaptive repair states",
+      "authors": [
+        "Bell, J. A.",
+        "Robinson, S. K.",
+        "Pedley, R.",
+        "Ahuja, G.",
+        "Szmul, A.",
+        "Reddin, I.",
+        "Thomas, J.",
+        "Norman, J.",
+        "James, S.",
+        "Basford, P. J.",
+        "Barozi, V.",
+        "Bhattacharya, D.",
+        "Parkin, J. G. H.",
+        "Allen, R.",
+        "Sayer, L. N.",
+        "Ward, J.",
+        "Haydon, G.",
+        "Vyas, N.",
+        "Jogai, S.",
+        "Johnston, D.",
+        "Alzetani, A.",
+        "Chee, S. J.",
+        "Ottensmeier, C. H.",
+        "Marshall, B. G.",
+        "Wallis, T.",
+        "Mahajan, S.",
+        "Thomas, G.",
+        "Offer, E.",
+        "Marshall, G.",
+        "Geillinger-Kastle, K.",
+        "Seither, P.",
+        "Thomas, M.",
+        "Vallejo, A. F.",
+        "Eyres, M.",
+        "Wang, Y.",
+        "Davies, D. E.",
+        "Jacob, J.",
+        "Fabre, A.",
+        "Katsamenis, O. L.",
+        "Natarajan, K.",
+        "Jones, M. G."
+      ],
+      "abstract": "Human lung fibrosis progressively destroys three-dimensional tissue architecture, yet how the structural microenvironment shapes cellular states remains unclear. Integrating 3D X-ray histology with spatial omics, we generate a volumetric multimodal atlas of human lung fibrosis that enables direct interrogation of relationships between tissue microarchitecture and spatial molecular programmes. We identify collapse of the alveolar-capillary unit - the coupled loss of alveolar type 1 epithelial cells, capillary endothelial cells, and basement membrane integrity - as a structural transition associated with early fibrogenesis. Surrounding transitional zones exhibit aberrant epithelial differentiation and proteolytic matrix remodelling, with epithelium shifting toward bronchiolised, airway-like states. Stromal activation converges on spatially restricted fibrogenic cores, sites of maximal collagen maturation and matrix stabilisation that function as signalling hubs within surrounding perifocal and vascular microenvironments. Molecular signatures of atlas-defined tissue states were associated with lung function and mortality across independent patient cohorts. Together, these data support a model in which fibrosis emerges as a spatial tissue-state process, with alveolar-capillary collapse redirecting repair towards mechanically stabilised niches that reinforce pathological remodelling.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764175v1",
+      "tier": "mention",
+      "why": "A volumetric 3D X-ray histology plus spatial omics atlas of human lung fibrosis links alveolar-capillary collapse and fibrogenic cores to patient survival outcomes."
+    },
+    {
+      "id": "10.64898/2026.11.04.764269",
+      "title": "Arrest-associated transcriptional programmes outweigh apoptosis-associated programmes in treatment-naive pancreatic ductal adenocarcinoma",
+      "authors": [
+        "Obuekwe, C. A.",
+        "Ogunoye, B. T.",
+        "Adelaja, A.",
+        "Ossai, J.",
+        "Adegbesan, A. C.",
+        "Akingbola, A."
+      ],
+      "abstract": "Background: Pancreatic ductal adenocarcinoma (PDAC) is driven by mutant KRAS, and RAS inhibitors now extend survival in previously treated metastatic disease. Whether treatment shrinks a tumour or only halts its growth depends partly on whether cancer cells die or stop dividing, yet how untreated PDAC cells are balanced between these programmes is unknown. Aims: We aimed to characterise the balance between apoptosis-associated and arrest-associated transcriptional programmes in treatment-naive PDAC and to examine their relationships with tumour subtype, TGM2 expression, tissue organisation, survival and drug sensitivity. Methods and results: We scored 52,999 malignant cells from 18 untreated patients in the Hwang atlas using a transcriptional contrast between genes associated with apoptosis and genes associated with resistance to apoptosis or cell-cycle arrest. In every patient the contrast was shifted toward the arrest-associated side: using equality between the two sides as the dividing threshold, 86.3% of cells with an informative score fell on that side, although the proportion depends on the threshold chosen. The shift recurred in the independent Steele atlas (median 71.6% per sample, range 37.1% to 90.8%). In the discovery cohort, tumours with higher basal-like scores had fewer arrest-side cells, and TGM2 expression was modestly higher on the arrest-associated side in both cohorts. The contrast did not track cell-line drug sensitivity or survival in bulk tumours. Conclusion: Untreated PDAC cells show a reproducible transcriptional bias toward anti-apoptotic and cell-cycle-arrest programmes. Whether this bias predicts cellular responses to treatment remains to be tested.",
+      "categories": [
+        "cancer biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764269v1",
+      "tier": "mention",
+      "why": "Scoring 53,000 treatment-naive PDAC cells reveals a reproducible transcriptional bias toward cell-cycle arrest over apoptosis programs, relevant to how RAS-inhibited tumors shrink versus merely stall."
+    },
+    {
+      "id": "10.64898/2026.11.06.764802",
+      "title": "Somatic Structural Variant Discovery from Tumor Specific Strings Computed Against a Draft Composite Germline Reference",
+      "authors": [
+        "Monti, D. C.",
+        "Ciccolella, S.",
+        "Cozzi, D.",
+        "Della Vedova, G.",
+        "Bonizzoni, P.",
+        "Denti, L.",
+        "Hormozdiari, F."
+      ],
+      "abstract": "Somatic structural variants (SVs) are among the most clinically relevant genomic alterations in cancer. However, their accurate detection remains challenging due to complex genomic rearrangements, repetitive genomic regions, difficulties in distinguishing somatic variants from germline variation and sequencing artifacts, and limited sequencing support for low-frequency events. Existing mapping-based somatic SV callers are susceptible to alignment ambiguities in repetitive regions and near complex SV breakpoints, while approaches relying on comparisons of independently generated tumor and normal variant callsets may propagate errors from both callsets. Building on the concept of specific strings, previously applied to germline SV discovery, we introduce VESPA-SS, a novel approach for detecting somatic SVs from paired tumor-normal long-read whole-genome sequencing data. VESPA-SS directly extracts somatic SV signals using specific strings computed from tumor reads against a Draft Composite Germline Reference, without requiring initial read mapping or a high-quality germline assembly. These signals are subsequently clustered and refined through consensus sequence generation and alignment-based procedures to identify somatic SVs. Evaluation on real PacBio HiFi datasets demonstrates that VESPA-SS outperforms state-of-the-art somatic SV callers, achieving F1 scores exceeding 0.92 and 0.90 on the well-characterized HG008 and COLO829 cancer cell lines, respectively, compared with the highest F1 scores of 0.86 and 0.85 achieved by the evaluated methods. These results demonstrate the effectiveness of specific string based signal extraction for accurate somatic SV discovery and establish a new computational paradigm for identifying complex genomic alterations in cancer. VESPA-SS is freely available at https://github.com/dcmonti/VESPA.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.06.764802v1",
+      "tier": "mention",
+      "why": "VESPA-SS detects somatic structural variants from long-read tumor-normal pairs using reference-free specific strings, outperforming existing callers on well-characterized cancer cell lines."
+    },
+    {
+      "id": "10.64898/2026.11.04.764359",
+      "title": "stem.MAP: Identification of cell-type-specific protein complexes in mammalian embryonic stem cells.",
+      "authors": [
+        "Rajaraman, A.",
+        "Fischer, S. N.",
+        "Woodcock-Girard, M. D.",
+        "Garge, R. K.",
+        "Drew, K."
+      ],
+      "abstract": "Protein complexes carry out critical functions during development. Mapping cell-type-specific protein complexes in early embryogenesis is essential for uncovering the molecular mechanisms of embryonic development. We unfortunately currently lack a catalog of protein complexes specific for embryogenesis including embryonic stem cells. Here we develop a proteomics-based machine learning workflow to predict protein complexes present in mouse embryonic stem cells (mESC). Our method integrates data from a cell-type agnostic protein complex resource with co-fractionation mass spectrometry (CF-MS) experiments on mESC. Our resource, stem.MAP, identifies 3,986 complexes encompassing ~133,000 unique interactions, and 8,616 proteins. stem.MAP captures variant complexes critical for stem cell function including the PRC2, BAF and NuRD complexes. stem.MAP also discriminates mutually exclusive interactions specific to embryonic stem cells (e.g. Eif4ebp2 - Eif4e). Finally we observe 1,388 high confidence stem.MAP interactions found only in mESC CF-MS data, many with support from AlphaFold modeling and a gastruloid coregulation network. We make stem.MAP protein complexes available through our web resource: stem.proteincomplexes.org. We anticipate stem.MAP will be beneficial to the study of early development and we expect our proteomics-based machine learning workflow to be applicable to the creation of any context-specific protein interaction network.",
+      "categories": [
+        "systems biology"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.04.764359v1",
+      "tier": "mention",
+      "why": "stem.MAP catalogs ~4,000 cell-type-specific protein complexes in mouse embryonic stem cells via co-fractionation mass spectrometry, capturing PRC2, BAF and NuRD complex variants relevant to early development."
+    },
+    {
+      "id": "10.64898/2026.11.05.764598",
+      "title": "How mutation rate evolves: Gene expression shapes genome-wide mutation rates in Drosophila melanogaster and Caenorhabditis elegans",
+      "authors": [
+        "Phillips, D. P.",
+        "Kriaucionis, S.",
+        "Sarkies, P."
+      ],
+      "abstract": "Mutation rates vary across the genome, linked to biochemical properties of local DNA sequences. However, mutation rate variation also associates with functional genomic features, raising the possibility that intragenomic mutation rate variation is shaped by adaptive evolution. In particular, recent studies in the model plant Arabidopsis thaliana suggested that highly conserved genes under strong purifying selection also have reduced de novo mutation rates, suggesting that natural selection may have acted to reduce mutation rate specifically at important genes. However, whether this is true for wider taxa, including animals, remains unknown. Here we repurposed published mutation accumulation datasets from Drosophila melanogaster and Caenorhabditis elegans to investigate the determinants of de novo single nucleotide variant (DNV) rates genome-wide under minimal selection. Loci under stronger purifying selection accumulated fewer mutations, including intronic and synonymous mutations. Various sequence-specific (i.e. GC content) and regulatory features (e.g. chromatin modifications) were strongly correlated with mutation rate, but gene expression best explained the depletion of mutations within strongly conserved loci, even after accounting for correlations amongst variables. Using excision repair (XR)-sequencing data we determined that higher levels of transcription- coupled repair (TCR) were associated with reduced mutation rates, strongly suggesting that TCR lowers mutation rate of highly conserved genes. Furthermore, by comparing orthologs between C. elegans and its close relative Pristionchus pacificus, we found that altered gene expression across evolutionary time correlated with altered mutation rate. These findings support a model whereby developmental transcription modulates local mutation rates through TCR. A corollary is that adaptive mutation bias may emerge indirectly, downstream of gene regulation evolution, providing a mechanistic framework that reconciles non-random local mutation rate variation with established evolutionary theory.",
+      "categories": [
+        "genomics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764598v1",
+      "tier": "mention",
+      "why": "A cross-species analysis in flies and worms finds that gene expression, via transcription-coupled repair, best explains why highly conserved genes accumulate fewer mutations—an elegant mechanistic link between regulation and mutation rate evolution."
+    },
+    {
+      "id": "10.64898/2026.11.05.764509",
+      "title": "Agentic AI enables cell segmentation-free cell-type inference and cell-type-guided cell segmentation in spatial transcriptomics",
+      "authors": [
+        "Jeong, Y.",
+        "Lee, H.",
+        "Lee, D.",
+        "Kim, H.-M.",
+        "Kim, S.-H.",
+        "Park, S.",
+        "Bae, J.",
+        "Cho, E. S.",
+        "Choi, Y.-L.",
+        "Kwon, O.",
+        "Kim, J.-I.",
+        "Lee, H.",
+        "Park, J."
+      ],
+      "abstract": "Cell-type identification in spatial transcriptomics often relies on cell segmentation, which can introduce inaccuracies in cell boundaries and transcript assignment. Segmentation-free or cell-free methods have been developed to completely avoid cell segmentation, but inaccurate cell typing hinder accurate downstream analysis. Here, we introduce SSAF-T, a segmentation-free agentic framework that identifies cell types directly from spatial gene expression without predefined reference datasets. For the reference-free cell typing, SSAF-T incorporates CeLLMan, which employs expert-level agents for each organ to annotate cell types using a literature-grounded knowledge graph. We benchmark SSAF-T on both array-based and imaging-based spatial transcriptomics datasets in terms of accuracy, reproducibility, and scalability. We further show that SSAF-T provides an accurate cell segmentation based on the segmentation-free mapping, which ensure compatibility to existing downstream analysis ecosystem, and eventually enable quantitative analysis at single-cell level.",
+      "categories": [
+        "bioinformatics"
+      ],
+      "announce_type": "biorxiv",
+      "url": "https://www.biorxiv.org/content/10.64898/2026.11.05.764509v1",
+      "tier": "mention",
+      "why": "SSAF-T uses literature-grounded LLM agents to annotate cell types directly from spatial gene expression without segmentation or reference datasets, then uses that to improve segmentation itself."
+    },
+    {
+      "id": "2603.24882",
+      "title": "AutoCSF: Provably Space-Efficient Indexing of Skewed Key-Value Workloads via Filter-Augmented Compressed Static Functions",
+      "authors": [
+        "David Torres Ramos",
+        "Vihan Lakshman",
+        "Chen Luo",
+        "Todd Treangen",
+        "Benjamin Coleman"
+      ],
+      "abstract": "We study the problem of building space-efficient, in-memory indexes for massive key-value datasets with highly skewed value distributions. This challenge arises in many data-intensive domains and is particularly acute in computational genomics, where k-mer count tables can contain billions of entries dominated by a single frequent value. While recent work has proposed to address this problem by augmenting compressed static functions (CSFs) with pre-filters, existing approaches rely on complex heuristics and lack formal guarantees. In this paper, we introduce a principled algorithm, called AutoCSF, for combining CSFs with pre-filtering to provably handle skewed distributions with near-optimal space usage. We improve upon prior CSF pre-filtering constructions by (1) deriving a mathematically rigorous decision criterion for when filter augmentation is beneficial; (2) presenting a general algorithmic framework for integrating CSFs with modern set membership data structures beyond the classic Bloom filter; and (3) establishing theoretical guarantees on the overall space usage of the resulting indexes. Our open-source implementation of AutoCSF demonstrates space savings over baseline methods while maintaining low query latency.",
+      "categories": [
+        "cs.DS",
+        "cs.DB",
+        "q-bio.GN"
+      ],
+      "announce_type": "cross",
+      "url": "https://arxiv.org/abs/2603.24882",
+      "tier": "mention",
+      "why": "AutoCSF gives a provably space-efficient method for indexing skewed k-mer count tables, a practical infrastructure improvement for large-scale genomics beyond typical methods-paper hype."
+    }
+  ]
+}
